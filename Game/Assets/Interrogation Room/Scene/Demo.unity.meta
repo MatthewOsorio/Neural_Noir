@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 98cb0f3c20f12534d80a4a32afe14d9b
+timeCreated: 1461400722
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Scene/Demo.unity
+  uploadId: 618504

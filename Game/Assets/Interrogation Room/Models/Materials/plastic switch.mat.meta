@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d235c1f10b0ab96449e0adf6c3d1ca11
+timeCreated: 1461567771
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/plastic switch.mat
+  uploadId: 618504

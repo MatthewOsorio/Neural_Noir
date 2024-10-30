@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b611303a1b5c64f428f1d6f459b74a7a
+timeCreated: 1461777665
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Prefabs/Door wall.prefab
+  uploadId: 618504

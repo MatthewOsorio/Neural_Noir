@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b0b45f0e631c6224781b98db4a5126cb
+timeCreated: 1461430749
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/cigarette.mat
+  uploadId: 618504

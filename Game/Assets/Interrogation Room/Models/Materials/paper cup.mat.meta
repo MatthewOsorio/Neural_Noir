@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 608f500517f499a4d943f3df1e769d03
+timeCreated: 1461431366
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/paper cup.mat
+  uploadId: 618504

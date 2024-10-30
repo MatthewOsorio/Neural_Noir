@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1081e7f40acc4d344b83b4b9997fbf61
+timeCreated: 1461571289
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/camera.mat
+  uploadId: 618504

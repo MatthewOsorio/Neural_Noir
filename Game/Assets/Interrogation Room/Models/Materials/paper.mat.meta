@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8de42ea2095480e44a934098a2ba90ac
+timeCreated: 1461659220
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/paper.mat
+  uploadId: 618504

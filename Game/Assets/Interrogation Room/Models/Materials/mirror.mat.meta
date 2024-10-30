@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b403a683fe3443c4da8d5e41de089cc1
+timeCreated: 1461568473
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/mirror.mat
+  uploadId: 618504

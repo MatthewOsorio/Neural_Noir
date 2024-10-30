@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8e480207cbe605b49b2e297ed95330f7
+timeCreated: 1461777346
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Prefabs/Camera.prefab
+  uploadId: 618504

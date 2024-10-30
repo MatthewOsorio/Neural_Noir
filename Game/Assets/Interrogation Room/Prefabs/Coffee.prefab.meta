@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 88fe4db1065a493448542cc4794ffae4
+timeCreated: 1461777632
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Prefabs/Coffee.prefab
+  uploadId: 618504

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 13ba5452902c8d34ea95d0616792b2ed
+timeCreated: 1461777740
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Prefabs/Radiator.prefab
+  uploadId: 618504

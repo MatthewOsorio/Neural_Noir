@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 843c9598aa5f863469d0a176ec54fca5
+timeCreated: 1461430933
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/glass ashtray.mat
+  uploadId: 618504

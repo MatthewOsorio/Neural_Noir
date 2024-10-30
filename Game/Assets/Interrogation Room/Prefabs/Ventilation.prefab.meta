@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f0b1fa8e2551e5a4aa515a9202c11a12
+timeCreated: 1461777806
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Prefabs/Ventilation.prefab
+  uploadId: 618504

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2c7b677e4f5909b419c159467eb76c59
+timeCreated: 1461688652
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/ceiling.mat
+  uploadId: 618504

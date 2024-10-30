@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e7c52a3f693cea843bb77ecc6b61a0f5
+timeCreated: 1461777674
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Prefabs/Mirror.prefab
+  uploadId: 618504

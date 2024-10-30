@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 057e0a7376ecc574d9ca7a47d8a367d5
+timeCreated: 1461607327
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Models/Materials/metallic lamp.mat
+  uploadId: 618504

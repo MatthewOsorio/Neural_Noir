@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2cd4a9cc266639446bcf01ace2c5396a
+timeCreated: 1461777363
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 61286
+  packageName: Interrogation Room
+  packageVersion: 1.2
+  assetPath: Assets/Interrogation Room/Prefabs/Chair.prefab
+  uploadId: 618504
