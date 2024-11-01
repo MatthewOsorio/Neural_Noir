@@ -1,9 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\matto\\Game\\",
+  "WorkspaceRootPath": "C:\\Users\\matto\\Documents\\Senior_Project\\Neural_Noir\\Game\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DDFBC18F-9396-3137-9CFE-DEB2CDB74636}|Assembly-CSharp.csproj|c:\\users\\matto\\game\\assets\\interrogation room\\scripts\\rotatemovecamera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{DDFBC18F-9396-3137-9CFE-DEB2CDB74636}|Assembly-CSharp.csproj|c:\\users\\matto\\documents\\senior_project\\neural_noir\\game\\assets\\interrogation room\\postprocessing\\runtime\\components\\motionblurcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBC18F-9396-3137-9CFE-DEB2CDB74636}|Assembly-CSharp.csproj|solutionrelative:assets\\interrogation room\\postprocessing\\runtime\\components\\motionblurcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBC18F-9396-3137-9CFE-DEB2CDB74636}|Assembly-CSharp.csproj|c:\\users\\matto\\documents\\senior_project\\neural_noir\\game\\assets\\interrogation room\\scripts\\rotatemovecamera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DDFBC18F-9396-3137-9CFE-DEB2CDB74636}|Assembly-CSharp.csproj|solutionrelative:assets\\interrogation room\\scripts\\rotatemovecamera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -19,10 +23,23 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "MotionBlurComponent.cs",
+              "DocumentMoniker": "C:\\Users\\matto\\Documents\\Senior_Project\\Neural_Noir\\Game\\Assets\\Interrogation Room\\PostProcessing\\Runtime\\Components\\MotionBlurComponent.cs",
+              "RelativeDocumentMoniker": "Assets\\Interrogation Room\\PostProcessing\\Runtime\\Components\\MotionBlurComponent.cs",
+              "ToolTip": "C:\\Users\\matto\\Documents\\Senior_Project\\Neural_Noir\\Game\\Assets\\Interrogation Room\\PostProcessing\\Runtime\\Components\\MotionBlurComponent.cs",
+              "RelativeToolTip": "Assets\\Interrogation Room\\PostProcessing\\Runtime\\Components\\MotionBlurComponent.cs",
+              "ViewState": "AgIAALgAAAAAAAAAAAAQwF0BAAB3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-01T20:56:08.703Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "RotateMoveCamera.cs",
-              "DocumentMoniker": "C:\\Users\\matto\\Game\\Assets\\Interrogation Room\\Scripts\\RotateMoveCamera.cs",
+              "DocumentMoniker": "C:\\Users\\matto\\Documents\\Senior_Project\\Neural_Noir\\Game\\Assets\\Interrogation Room\\Scripts\\RotateMoveCamera.cs",
               "RelativeDocumentMoniker": "Assets\\Interrogation Room\\Scripts\\RotateMoveCamera.cs",
-              "ToolTip": "C:\\Users\\matto\\Game\\Assets\\Interrogation Room\\Scripts\\RotateMoveCamera.cs",
+              "ToolTip": "C:\\Users\\matto\\Documents\\Senior_Project\\Neural_Noir\\Game\\Assets\\Interrogation Room\\Scripts\\RotateMoveCamera.cs",
               "RelativeToolTip": "Assets\\Interrogation Room\\Scripts\\RotateMoveCamera.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
