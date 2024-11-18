@@ -6,12 +6,15 @@ from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 import time 
 
+import menu
+
 class main(ShowBase):
     def __init__(self):
         super().__init__()
 
-        print("Test")
-        
+        self.menuManager = menu.menuManager(self)
+
+        self.menuManager.showMain()
 
 app = main()
 app.run()
