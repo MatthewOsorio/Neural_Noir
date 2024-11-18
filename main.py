@@ -16,5 +16,7 @@ class main(ShowBase):
 
         self.menuManager.showMain()
 
+        print("Test")
+
 app = main()
 app.run()
