@@ -4,11 +4,11 @@ class EmotibitReader:
         self.__database= database
         self.__logic= logic
         self.__filename= filename
-        self.__startTime= -1.0
-        self.__endTime= -1.0
-        self.__temperature=  -1.0
-        self.__heartRate= -1
-        self.__skinConduction= -1.0
+        self.__startTime= None
+        self.__endTime= None
+        self.__temperature=  None
+        self.__heartRate= None
+        self.__skinConduction= None
     
     #This methods is supposed to utlize the brianflow sdk to collect data from emotibit and write it to the file
     def readData(self):
@@ -27,31 +27,25 @@ class EmotibitReader:
         pass
 
     #Getter for filename
-    @property
-    def filename(self):
+    def getFilename(self):
         return self.__filename
     
     #Setter for filename
-    @filename.setter
-    def filename(self, filename):
+    def setFilename(self, filename):
         self.__filename= filename
 
     #Getter for start time
-    @property
-    def startTime(self):
+    def getStartTime(self):
         return self.__startTime
     
     #Setter for start time
-    @startTime.setter
-    def startTime(self, time):
+    def setStartTime(self, time):
         self.__startTime= time
 
     #Getter for end time
-    @property
-    def endTime(self):
+    def getEndTime(self): 
         return self.__endTime
     
     #Setter for end time
-    @endTime.setter
-    def endTime(self, time):
+    def setEndTime(self, time):
         self.__endTime= time
