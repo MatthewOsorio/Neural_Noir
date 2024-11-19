@@ -8,6 +8,7 @@ import time
 
 import menu
 
+
 class main(ShowBase):
     def __init__(self):
         super().__init__()
@@ -15,8 +16,6 @@ class main(ShowBase):
         self.menuManager = menu.menuManager(self)
 
         self.menuManager.showMain()
-
-        print("Test")
 
 app = main()
 app.run()
