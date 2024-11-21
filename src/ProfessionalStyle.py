@@ -1,6 +1,6 @@
-import NLPInterface
+import StyleInterface
 
-class ProfessionalStyle(NLPInterface.NLPInterface):
+class ProfessionalStyle(StyleInterface.StyleInterface):
     #Constructor, this class has no state
     def __init__(self):
         self.style= "professional"
@@ -8,5 +8,5 @@ class ProfessionalStyle(NLPInterface.NLPInterface):
     def getStyle(self):
         return self.style
     
-    def getSystemRole(self):
-        return {"role": "system", "content": "You are a veteran detective who acts professsionally but you're a little rough around the edges."}
+    def getSystemRole(self) -> dict:
+        return {"role": "system", "content": "You are a veteran detective who acts professsionally but you're a still serious. You do everything by the book."}

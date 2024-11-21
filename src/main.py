@@ -14,9 +14,26 @@
 import ProfessionalStyle as ps
 import NLPController as nc
 import InteractionModel as im
+import FriendlyStyle as fs
+import IntimidatingStyle as IS
 
-test= nc.NLPController(ps.ProfessionalStyle(), im.IneractionModel())
+professional = ps.ProfessionalStyle()
+friendly= fs.FriendlySytle()
+intimidating= IS.IntimidatingSytle()
 
+test= nc.NLPController(professional, im.IneractionModel())
+print(test.getFirstQuestion())
+
+counter=1
 while True:
-    print(test.getResponse())
+
     test.addUserInput(input("> "))
+    print(test.generateResponse())
+
+    counter += 1
+    if(counter % 3 == 1):
+        test.changeStyle(professional)
+    elif (counter % 3 == 2):
+        test.changeStyle(friendly)
+    elif (counter % 3 == 0):
+        test.changeStyle(intimidating)
