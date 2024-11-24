@@ -6,8 +6,10 @@ from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 import time 
+import sys
 
 import audio
+
 
 #Controls menu navigation and allows each menu to use Aspect2d from main
 #In menu classes, use manager.base.aspect2D to use Aspect2d 
@@ -19,34 +21,38 @@ class menuManager:
         self.mainMenu = mainMenu(self)
         self.settingsMenu = settingsMenu(self)
         self.audioMenu = audioSettings(self)
+        self.quitMenu = confirmQuit(self)
 
     def showMain(self):
         self.mainMenu.show()
-        self.settingsMenu.hide()
 
     def showSettings(self):
         self.settingsMenu.show()
-        self.mainMenu.hide()
-        self.audioMenu.hide()
 
     def showAudio(self):
         self.audioMenu.show()
+
+    def showQuit(self):
+        self.quitMenu.show()
         
 #The Main menu screen. 
 class mainMenu:
     def __init__(self, manager):
+
         self.manager = manager
 
         self.mainMenu = DirectFrame(
-            frameColor=(0, 0, 0, 1),
+            frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
             parent=self.manager.base.aspect2d
         )
 
         self.titleImage = OnscreenImage(
-            image='Assets/Images/Room_Backdrop_Blur.png', 
+            image='images/Room_Backdrop_Blur.png', 
             parent=self.mainMenu
         )
+
+        self.titleImage.reparentTo(self.manager.base.render2d)
      
         self.titleText = TextNode('TitleText')
         self.titleText.setText("Title")
@@ -75,7 +81,8 @@ class mainMenu:
             text="Quit",
             scale=0.1,
             pos=(0, 0, -0.3),
-            parent=self.mainMenu
+            parent=self.mainMenu,
+            command=self.moveToQuit
         )
 
         self.bottomText = TextNode('BottomText')
@@ -92,6 +99,11 @@ class mainMenu:
         self.hide()
         self.manager.showSettings()     
 
+    def moveToQuit(self):
+        self.hide()
+        self.manager.showQuit()
+        
+
     def show(self):
         self.mainMenu.show()
 
@@ -103,16 +115,21 @@ class settingsMenu:
     def __init__(self, manager):
         self.manager = manager
 
+        
+
         self.settingsMenu = DirectFrame(
-            frameColor=(0, 0, 0, 1),
+            frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
             parent=self.manager.base.aspect2d
         )
+        self.hide()
 
         self.titleImage = OnscreenImage(
-            image='Assets/Images/Room_Backdrop_Blur.png', 
+            image='images/Room_Backdrop_Blur.png', 
             parent=self.settingsMenu
         )
+
+        self.titleImage.reparentTo(self.manager.base.render2d)
 
         self.topText = TextNode('TopText')
         self.topText.setText("Settings")
@@ -125,22 +142,32 @@ class settingsMenu:
             scale=0.1,
             pos=(0, 0, 0),
             parent=self.settingsMenu,
-            command=self.manager.showMain
+            command=self.moveToMain
         )
 
         self.audioButton = DirectButton(
             text="audio",
             scale=0.1,
             pos=(0, 0, -0.8),
-            command=self.manager.showAudio,
+            command=self.moveToAudio,
             parent=self.settingsMenu
         )
+
+    def moveToMain(self):
+        self.hide()
+        self.manager.showMain()
+
+    def moveToAudio(self):
+        self.hide()
+        self.manager.showAudio()
 
     def show(self):
         self.settingsMenu.show()
 
     def hide(self):
         self.settingsMenu.hide()
+
+
 
 class audioSettings:
     def __init__(self, manager):    
@@ -149,15 +176,17 @@ class audioSettings:
         self.audio = audio.audioManager(manager.base)
 
         self.audioMenu = DirectFrame(
-            frameColor=(0, 0, 0, 1), 
+            frameColor=(0, 0, 0, 0), 
             frameSize=(-1, 1, -1, 1), 
             parent=self.manager.base.aspect2d
         )
 
         self.titleImage = OnscreenImage(
-            image='Assets/Images/Room_Backdrop_Blur.png', 
+            image='images/Room_Backdrop_Blur.png', 
             parent=self.audioMenu
         )
+
+        self.titleImage.reparentTo(self.manager.base.render2d)
 
         self.topText = TextNode('TopText')
         self.topText.setText("Audio Settings")
@@ -211,10 +240,14 @@ class audioSettings:
             scale = 0.12,
             pos = (0,0,-0.7),
             parent = self.audioMenu,
-            command = self.manager.showSettings
+            command = self.moveToSettings
         )
 
         self.hide()
+
+    def moveToSettings(self):
+        self.hide()
+        self.manager.showSettings()
 
     def show(self):
         self.audioMenu.show()
@@ -224,3 +257,60 @@ class audioSettings:
 
     def setVolumeV(self):
         self.audio.setVolumeValue(self.volumeSlider['value'])
+
+#ConfirmQuit code originally written by Matt
+#Modified and integrated by Evie 
+class confirmQuit:
+
+    def __init__(self, manager):
+        self.manager = manager
+
+        self.generateBackground()
+        self.createContents()
+        self.hide()
+
+    def generateBackground(self):
+        self.backgroundImage= OnscreenImage(image='images/Room_Backdrop_Blur.png',
+                                            pos=(0, 0, 0,),
+                                            parent=self.manager.base.render2d)
+    
+    def createContents(self):
+        self.parentFrame = DirectFrame(frameColor=(0, 0, 0, 0),
+                            frameSize=(-0.75, 0.75, -0.75, 0.75),
+                            pos= (0, 0, 0),
+                            parent=self.manager.base.aspect2d)
+        
+        titleText= 'Are you sure?'
+        #TitleFrame= DirectFrame(parent= parentFrame,
+                                #frameColor= (0, 0, 0, 0),
+                                #frameSize= (-0.50, 0.50, -0.25, 0.25),
+                                #pos= (0, 0, 0.5))
+        
+        self.titleTextFrame= DirectLabel(parent= self.parentFrame,
+                                    text= titleText,
+                                    text_scale= (0.1, 0.1),
+                                    text_fg= (255, 255, 255, 0.9),
+                                    frameColor= (0, 0, 0, 0),
+                                    pos = (0,0.5,0.5))
+        
+        self.yesButtom= DirectButton(parent= self.parentFrame,
+                                text="Yes",
+                                scale= 0.075,
+                                pos= (-0.40, 0, 0),
+                                command = sys.exit)
+        
+        self.noButtom= DirectButton(parent= self.parentFrame,
+                        text="No",
+                        scale= 0.075,
+                        pos= (0.40, 0, 0),
+                        command = self.moveToMain)
+        
+    def moveToMain(self):
+        self.hide()
+        self.manager.showMain()
+
+    def hide(self):
+        self.parentFrame.hide()
+
+    def show(self):
+        self.parentFrame.show()
