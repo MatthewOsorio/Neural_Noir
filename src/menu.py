@@ -23,6 +23,11 @@ class menuManager:
         self.audioMenu = audioSettings(self)
         self.quitMenu = confirmQuit(self)
 
+        self.titleImage = OnscreenImage(
+            image='../images/Room_Backdrop_Blur.png', 
+            parent=self.base.render2d
+        )
+
     def showMain(self):
         self.mainMenu.show()
 
@@ -34,6 +39,9 @@ class menuManager:
 
     def showQuit(self):
         self.quitMenu.show()
+
+    def hideImage(self):
+        self.titleImage.hide()
         
 #The Main menu screen. 
 class mainMenu:
@@ -47,13 +55,6 @@ class mainMenu:
             parent=self.manager.base.aspect2d
         )
 
-        self.titleImage = OnscreenImage(
-            image='../images/Room_Backdrop_Blur.png', 
-            parent=self.mainMenu
-        )
-
-        self.titleImage.reparentTo(self.manager.base.render2d)
-     
         self.titleText = TextNode('TitleText')
         self.titleText.setText("Title")
         self.titleText_np = self.mainMenu.attachNewNode(self.titleText)  
@@ -94,6 +95,7 @@ class mainMenu:
 
     def startGame(self):
         self.hide()
+        self.manager.hideImage()
 
     def moveToSettings(self):
         self.hide()
@@ -116,20 +118,12 @@ class settingsMenu:
         self.manager = manager
 
         
-
         self.settingsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
             parent=self.manager.base.aspect2d
         )
         self.hide()
-
-        self.titleImage = OnscreenImage(
-            image='../images/Room_Backdrop_Blur.png', 
-            parent=self.settingsMenu
-        )
-
-        self.titleImage.reparentTo(self.manager.base.render2d)
 
         self.topText = TextNode('TopText')
         self.topText.setText("Settings")
@@ -163,9 +157,10 @@ class settingsMenu:
 
     def show(self):
         self.settingsMenu.show()
-
+        
     def hide(self):
         self.settingsMenu.hide()
+        
 
 
 
@@ -180,13 +175,6 @@ class audioSettings:
             frameSize=(-1, 1, -1, 1), 
             parent=self.manager.base.aspect2d
         )
-
-        self.titleImage = OnscreenImage(
-            image='../images/Room_Backdrop_Blur.png', 
-            parent=self.audioMenu
-        )
-
-        self.titleImage.reparentTo(self.manager.base.render2d)
 
         self.topText = TextNode('TopText')
         self.topText.setText("Audio Settings")
@@ -265,15 +253,9 @@ class confirmQuit:
     def __init__(self, manager):
         self.manager = manager
 
-        self.generateBackground()
         self.createContents()
         self.hide()
 
-    def generateBackground(self):
-        self.backgroundImage= OnscreenImage(image='../images/Room_Backdrop_Blur.png',
-                                            pos=(0, 0, 0,),
-                                            parent=self.manager.base.render2d)
-    
     def createContents(self):
         self.parentFrame = DirectFrame(frameColor=(0, 0, 0, 0),
                             frameSize=(-0.75, 0.75, -0.75, 0.75),
