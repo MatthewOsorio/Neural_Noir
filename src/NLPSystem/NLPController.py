@@ -1,11 +1,12 @@
 from openai import OpenAI
+from NLPSystem.InteractionModel import IneractionModel as im
 
 class NLPController:
 
-    def __init__(self, style, interactionModel) -> None:
-        self.client= OpenAI()
+    def __init__(self, style) -> None:
+        self.gpt= OpenAI()
         self.style= style
-        self.interaction= interactionModel
+        self.interaction= im()
 
         #Initalize the system role with the context of the interrogation
         self.context= {"role": "system", "content": self.interaction.getContext()}
@@ -14,7 +15,7 @@ class NLPController:
         #Initalize the system role with th passed in style behavior
         self.interaction.addToInteraction(style.getSystemRole())
         #Insert first question
-        self.interaction.addToInteraction({"role": "assistant", "content": "Where were you last time?"})
+        self.interaction.addToInteraction({"role": "assistant", "content": "Where were you last night?"})
 
     def addUserInput(self, input) -> None:
         userMessage= {"role": "user", "content": input}
@@ -25,8 +26,8 @@ class NLPController:
         return self.interaction.getLast()
 
     def generateResponse(self) -> str:
-        print(self.style.getStyle())
-        response = self.client.chat.completions.create(
+        # print(self.style.getStyle())
+        response = self.gpt.chat.completions.create(
             model= "gpt-4",
             messages= self.interaction.getInteraction()
         )

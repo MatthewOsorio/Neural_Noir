@@ -1,6 +1,6 @@
-import StyleInterface
+from NLPSystem.StyleInterface import StyleInterface
 
-class IntimidatingSytle(StyleInterface.StyleInterface):
+class IntimidatingSytle(StyleInterface):
     #Constructor, this class has no state
     def __init__(self) -> None:
         self.style= "intimidating"
