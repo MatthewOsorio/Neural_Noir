@@ -4,7 +4,7 @@ class InterrogationRoom(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
-        # Disable deafult mouse controls
+        # Disable default mouse camera controls
         self.disableMouse()
 
         # Load the room model

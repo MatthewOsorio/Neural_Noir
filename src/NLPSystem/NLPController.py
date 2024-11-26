@@ -1,5 +1,6 @@
 from openai import OpenAI
 from NLPSystem.InteractionModel import IneractionModel as im
+from SRSystem.SpeechToText import SpeechToText as stt
 
 class NLPController:
 
@@ -18,7 +19,7 @@ class NLPController:
         self.interaction.addToInteraction({"role": "assistant", "content": "Where were you last night?"})
 
     def addUserInput(self, input) -> None:
-        userMessage= {"role": "user", "content": input}
+        userMessage = {"role": "user", "content": input}
         self.interaction.addToInteraction(userMessage)
 
     #Can possibly use this to ask for basic info, like how josh said to get the suspect in the habit of saying yes
