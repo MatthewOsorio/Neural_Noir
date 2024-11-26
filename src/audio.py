@@ -10,7 +10,7 @@ class audioManager:
             "testSound" : self.base.loader.loadSfx('../Assets/Audio/testSound.mp3')
         }
 
-        self.soundEffects['testSound'].play()
+        #self.soundEffects['testSound'].play()
 
     def setVolumeValue(self, value):
         for self.name, self.sound in self.soundEffects.items():
