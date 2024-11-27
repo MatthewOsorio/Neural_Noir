@@ -16,4 +16,16 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
+        self.base.taskMgr.add(self.moveCamera, "Move Camera")
+
+
+    def moveCamera(self, base):
+
+        if self.base.mouseWatcherNode.hasMouse():
+            x = self.base.mouseWatcherNode.getMouseX()
+            y = self.base.mouseWatcherNode.getMouseY()
+
+            print("X: ", x, " ", "Y: ", y)
+
+        return base.cont
 
