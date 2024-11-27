@@ -2,14 +2,17 @@ import GameController as gc
 from NLPSystem.NLPController import NLPController as nlp
 from NLPSystem.IntimidatingStyle import IntimidatingSytle
 from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
-from DatabaseController import DatabaseController as db
+from SRSystem.SpeechToText import SpeechToText as stt
 
 intimidating = IntimidatingSytle()
 nlpController = nlp(intimidating)
-game = gc.GameController(nlpController, ttsc(), db())
+game = gc.GameController(stt(), nlpController, ttsc())
 
 game.startInterrogation()
 
-# while True:
-#     game.speechInput(input("> "))
-#     print(game.createDetectiveResponse())
+while True:
+    speech = game.speechInput()
+    print(f"< {speech}")
+    print(game.createDetectiveResponse())
+
+

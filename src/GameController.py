@@ -1,10 +1,10 @@
 import SessionController as sc
 
 class GameController:
-    def __init__(self, nlpController, ttsController, dbController):
-        self.nlp= nlpController
-        self.tts= ttsController
-        self.session= sc.SessionController(dbController)
+    def __init__(self, speechToText, nlpController, ttsController):
+        self.stt = speechToText
+        self.nlp = nlpController
+        self.tts = ttsController
 
     def convertSpeechToText(self):
         processed_audio_input = self.stt.listen()
