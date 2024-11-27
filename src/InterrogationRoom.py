@@ -15,5 +15,3 @@ class InterrogationRoom:
         self.room.setScale(1)
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
-
-

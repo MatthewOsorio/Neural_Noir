@@ -9,4 +9,6 @@ class ProfessionalStyle(StyleInterface.StyleInterface):
         return self.style
     
     def getSystemRole(self) -> dict:
-        return {"role": "system", "content": "You are a veteran detective who acts professsionally but you're a still serious. You do everything by the book."}
+        return {"role": "system",
+                "content": '''You are a veteran detective who acts professsionally but you're a still serious.
+                            You do everything by the book.'''}

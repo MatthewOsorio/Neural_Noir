@@ -1,11 +1,19 @@
 class GameController:
-    def __init__(self, nlpController, ttsController):
-        self.nlp= nlpController
-        self.tts= ttsController
+    def __init__(self, speechToText, nlpController, ttsController):
+        self.stt = speechToText
+        self.nlp = nlpController
+        self.tts = ttsController
 
-    def speechInput(self, input):
+    def convertSpeechToText(self):
+        processed_audio_input = self.stt.listen()
+        transcription = self.stt.transcribe(processed_audio_input)
+        return transcription
+
+    def speechInput(self):
+        input = self.convertSpeechToText()
         self.nlp.addUserInput(input)
-    
+        return input
+
     def createDetectiveResponse(self):
         response= self.nlp.generateResponse()
         self.convertTextToSpeech(response)
