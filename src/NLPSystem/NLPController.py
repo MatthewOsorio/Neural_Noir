@@ -1,6 +1,5 @@
 from openai import OpenAI
 from NLPSystem.InteractionModel import IneractionModel as im
-from SRSystem.SpeechToText import SpeechToText as stt
 
 class NLPController:
 

@@ -4,7 +4,6 @@ from NLPSystem.IntimidatingStyle import IntimidatingSytle
 from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
 
-
 intimidating = IntimidatingSytle()
 nlpController = nlp(intimidating)
 game = gc.GameController(stt(), nlpController, ttsc())
@@ -15,3 +14,5 @@ while True:
     speech = game.speechInput()
     print(f"< {speech}")
     print(game.createDetectiveResponse())
+
+
