@@ -9,20 +9,7 @@ class InterrogationRoom:
         # Disable deafult mouse controls
         self.base.disableMouse()
 
-        self.cameraSetUp = cameraSetUp(self.base)
-
-        # Load the room model
-        self.room = self.base.loader.loadModel("../blender/converted_room_whole/room.bam")
-        self.room.reparentTo(self.base.render)
-        self.room.setScale(1)
-        self.room.setPos(5.6, 6, 0.2)
-        self.room.setHpr(0, 0, 0)
-
-
-class cameraSetUp:
-    def __init__(self, base):
-        self.base = base
-
+    def cameraSetUp(self):
         #Moved the camera back slightly so that it does not clip the table
         self.base.camera.setPos(0, -0.2 , 0)
         #Test print for the camera position if we need to change it
@@ -51,4 +38,17 @@ class cameraSetUp:
             #print("X: ", self.x, " ", "Y: ", self.y)
 
         return base.cont
+      
+    def loadModels(self):
+        # Load the room model
+        self.room = self.base.loader.loadModel("../blender/converted_room_whole/room.bam")
+        self.room.reparentTo(self.base.render)
+        self.room.setScale(1)
+        self.room.setPos(5.6, 6, 0.2)
+        self.room.setHpr(0, 0, 0)
+
+
+
+
+
 
