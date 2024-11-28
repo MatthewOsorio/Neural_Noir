@@ -5,3 +5,4 @@
 ## Please install these dependencies:
 - pip install openai
 - pip install playsound==1.2.2
+- pip install PyAudio
