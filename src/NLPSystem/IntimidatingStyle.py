@@ -9,6 +9,5 @@ class IntimidatingSytle(StyleInterface):
         return self.style
     
     def getSystemRole(self) -> dict:
-        return {"role": "system", "content": '''You are a veteran detective who is professional 
-                but you're very rough around the edges. You use intimidation as your style of interrogation.
-                '''}
+        return {"role": "system", "content": '''You are a veteran detective who is professioal but you're very rough around the edges.
+                                                You use intimidation as your style of interrogation'''}

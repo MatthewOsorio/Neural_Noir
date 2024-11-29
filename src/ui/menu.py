@@ -16,7 +16,7 @@ import audio
 class menuManager:
     def __init__(self, base):
         self.base = base
-
+        
         #Instance of each menu
         self.mainMenu = mainMenu(self)
         self.settingsMenu = settingsMenu(self)
@@ -117,7 +117,6 @@ class settingsMenu:
     def __init__(self, manager):
         self.manager = manager
 
-        
         self.settingsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
