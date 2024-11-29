@@ -23,6 +23,9 @@ class InterrogationRoom:
         self.nlpController = nlp(self.initialStyle)
         self.game = gc.GameController(stt(), self.nlpController, ttsc(), db())
 
+        self.startGame()
+
+        
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
         self.pauseMenu = PauseMenu(self)
@@ -36,3 +39,11 @@ class InterrogationRoom:
         if(self.gameState == 'gameplay'):
             self.pauseMenu.show()
             self.pauseMenu.showImage()
+
+    def startGame(self):
+        self.game.startInterrogation()
+
+        while True:
+            self.speech = self.game.speechInput()
+            print(f"< {self.speech}")
+            print(self.game.createDetectiveResponse())
