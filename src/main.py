@@ -4,7 +4,7 @@ from panda3d.core import TextNode
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
-import time 
+import time
 
 from ui.menu import menuManager
 from ui.interrogationRoom import InterrogationRoom
