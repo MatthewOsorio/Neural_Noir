@@ -12,4 +12,6 @@ class SessionController:
     def start(self):
         self.startTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.databaseAPI.insertStartSession(self.sessionID, self.startTime)
-        
+
+    def getSessionID(self):
+        return self.sessionID

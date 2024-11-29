@@ -23,8 +23,44 @@ class DatabaseController:
                 cur.execute("""
                                 INSERT INTO GameSession(sessionID, sessionStartTime)
                                 VALUES (%s, %s)
-                            """, (uuid, startTime) )
+                            """, (uuid, startTime) 
+                            )
                 
-                connection.commit() 
+            connection.commit() 
+
         except Exception as e:
             raise("Error executing insert statement", e)
+        
+    def insertInteraction(self, start, end, userInput, response, sessionID):
+        try:
+            connection= self.getConnection()
+            with connection.cursor() as cur:
+                cur.execute('''
+                                INSERT INTO Interaction(interactionID, startTime, endTime, userInput, generatedResponse, sessionID)
+                                VALUES(uuid_generate_v4(), %s, %s, %s, %s, %s)''', 
+                                (start, end, userInput, response, sessionID)
+                            )
+                
+            connection.commit()
+        
+        except Exception as e:
+            raise("Error executing insert statment", e)
+        
+    def fetchConversation(self, sessionID):
+        #Change onces its implemented
+        temp = '7b026d58-8991-4e39-91dc-c58be5b6391f'
+        try:
+            connection = self.getConnection()
+            with connection.cursor() as cur:
+                cur.execute('''
+                                SELECT generatedResponse, userInput 
+                                FROM Interaction
+                                WHERE sessionID= %s''',
+                                (temp,)
+                            )
+                
+                conversation = cur.fetchall()
+                return conversation
+        except Exception as e:
+            raise("Error retrieving conversation", e)
+        
