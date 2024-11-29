@@ -10,10 +10,12 @@ def checkInternet(url="https://www.google.com", timeout=60):
         return False
     except requests.RequestException: # Send a report
         return False
-    
+
+'''   
 # Test
 if checkInternet():
     print("Internet connected")
 else:
     print("Internet not connected")
+'''
     

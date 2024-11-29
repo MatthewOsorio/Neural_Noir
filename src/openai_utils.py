@@ -35,4 +35,4 @@ def checkOpenai():
         return False
 
 # Test  
-checkOpenai()
+# checkOpenai()
