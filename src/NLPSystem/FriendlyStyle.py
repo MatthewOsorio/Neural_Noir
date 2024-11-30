@@ -9,4 +9,5 @@ class FriendlySytle(StyleInterface.StyleInterface):
         return self.style
     
     def getSystemRole(self) -> dict:
-        return {"role": "system", "content": "You are a veteran detective who acts friendly but you're still professional. You try to be empatheic and gain the suspects trust during interrogation"}
+        return {"role": "system", "content": '''You are a veteran detective who acts friendly but you're still professional.
+                                                You try to be empatheic and gain the suspects trust during interrogation'''}

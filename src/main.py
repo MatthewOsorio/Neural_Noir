@@ -5,15 +5,15 @@ from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 
-import menu
-import InterrogationRoom
+from ui.menu import menuManager
+from ui.interrogationRoom import InterrogationRoom
 
 class main(ShowBase):
     def __init__(self):
         super().__init__()
 
-        self.menuManager = menu.menuManager(self)
-        self.interrogationRoom = InterrogationRoom.InterrogationRoom(self)
+        self.menuManager = menuManager(self)
+        self.interrogationRoom = InterrogationRoom(self)
 
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
 
