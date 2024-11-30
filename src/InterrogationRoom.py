@@ -1,4 +1,9 @@
-from direct.showbase.ShowBase import ShowBase
+import GameController as gc
+from NLPSystem.NLPController import NLPController as nlp
+from NLPSystem.IntimidatingStyle import IntimidatingSytle
+from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
+from SRSystem.SpeechToText import SpeechToText as stt
+from DatabaseController import DatabaseController as db
 
 #Code originally written by Christine 
 #Modified by Evie 
@@ -8,6 +13,7 @@ class InterrogationRoom:
 
         # Disable deafult mouse controls
         self.base.disableMouse()
+
 
     def cameraSetUp(self):
         #Moved the camera back slightly so that it does not clip the table
@@ -46,6 +52,7 @@ class InterrogationRoom:
         self.room.setScale(1)
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
+
 
 
 

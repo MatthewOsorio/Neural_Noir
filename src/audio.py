@@ -1,4 +1,5 @@
 from direct.showbase.ShowBase import ShowBase
+import pyaudio
 
 class audioManager:
     def __init__(self, base):
@@ -15,3 +16,7 @@ class audioManager:
     def setVolumeValue(self, value):
         for self.name, self.sound in self.soundEffects.items():
             self.sound.setVolume(value)
+
+class microphoneTest:
+    def __init__(self, base):
+        self.base = base

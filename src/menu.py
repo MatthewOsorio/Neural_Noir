@@ -9,6 +9,7 @@ import time
 import sys
 
 import audio
+import ScriptDisplay
 
 
 #Controls menu navigation and allows each menu to use Aspect2d from main
@@ -322,6 +323,7 @@ class confirmQuit:
 class pauseMenu:
     def __init__(self, manager):
         self.manager = manager
+        self.scriptDisplay = ScriptDisplay.showScript(manager.base)
 
         self.pauseMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -343,7 +345,15 @@ class pauseMenu:
             pos=(0, 0, -0.2),
             parent=self.pauseMenu,
             command=self.moveToMain
-        )        
+        )    
+
+        self.Script = DirectButton(
+            text="Script",
+            scale=0.1,
+            pos=(0, 0, -0.3),
+            parent=self.pauseMenu,
+            command=self.loadScript
+        )       
 
         self.backButton = DirectButton(
             text="Back",
@@ -363,4 +373,8 @@ class pauseMenu:
 
     def moveToMain(self):
         self.manager.showMain()
+        self.hide()
+
+    def loadScript(self):
+        self.scriptDisplay.show()
         self.hide()
