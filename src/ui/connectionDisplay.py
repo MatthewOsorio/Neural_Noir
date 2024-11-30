@@ -4,47 +4,31 @@ from panda3d.core import TextNode
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.OnscreenText import OnscreenText
 from direct.interval.IntervalGlobal import *
-# import sys    # implement for sys.exit() later on
+# import sys     implement for sys.exit() later on
 
-class ConnectionDisplay:
-    def __init__(self, base):
+class ConnectionDisplay(ShowBase):
+    def __init__(self, base) :
         self.base = base
-
         
+        self.text = TextNode('connectionDisplayText')
+        self.text.setAlign(TextNode.ACenter)
+        self.textNodePath = self.base.aspect2d.attachNewNode(self.text)
+        self.textNodePath.setScale(0.1)
+        self.textNodePath.setPos(0, 0, 0)
 
-        self.titleImage = OnscreenImage(
+        self.background = OnscreenImage(
             image = '../images/black_background_832x472.png',
             parent = self.base.render2d
         )
 
     def displayCheckingInternet(self):
-        self.textObject = OnscreenText(
-            text='Checking internet connection...',
-            scale=0.1,
-            pos=(0,0)
-        )
+        self.text.setText("Checking internet connection...")
 
     def displayEstablishingConn(self):
-        self.textObject = OnscreenText(
-            text='Establishing connection with OpenAI...',
-            scale=0.1,
-            pos=(0,0)
-        )
+        self.text.setText("Establishing connection with OpenAI...")
 
     def displayInternetOffline(self):
-        self.textObject = OnscreenText(
-            text='Internet is offline. Please check your connection and restart the game',
-            scale=0.1,
-            pos=(0,0)
-        )
-
+        self.text.setText('''Internet is offline\n\n Please check your connection and restart the game''')
+        
     def displayUnableToEstablishConn(self):
-        self.textObject = OnscreenText(
-            text='''Unable to establish a connection
-
-                    Please report this to the development team:
-                    placeholder@gmail.com
-                    ''',
-            scale=0.1,
-            pos=(0,0)
-        )
+        self.text.setText("Unable to establish a connection\n\n Please report this to the development team:\n placeholder@gmail.com")
