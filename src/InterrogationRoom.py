@@ -4,6 +4,7 @@ from NLPSystem.IntimidatingStyle import IntimidatingSytle
 from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
 from DatabaseController import DatabaseController as db
+import threading
 
 #Code originally written by Christine 
 #Modified by Evie 
@@ -13,6 +14,11 @@ class InterrogationRoom:
 
         # Disable deafult mouse controls
         self.base.disableMouse()
+
+        intimidating = IntimidatingSytle()
+        nlpController = nlp(intimidating)
+        self.game = gc.GameController(stt(), nlpController, ttsc(), db())
+        self.mlThreadRun = threading.Thread(target = self.runInterrogation)
 
 
     def cameraSetUp(self):
@@ -52,6 +58,15 @@ class InterrogationRoom:
         self.room.setScale(1)
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
+
+    def runInterrogation(self):
+        print("Run-True")
+        self.game.startInterrogation()
+        
+        while True:
+            speech = self.game.speechInput()
+            print(f"< {speech}")
+            print(self.game.createDetectiveResponse())
 
 
 

@@ -15,14 +15,18 @@ class InterrogationRoom:
         self.base.disableMouse()
         self.gameState= 'gameplay'
 
+        #pause game if escape is pressed
+        self.base.accept('escape', self.pauseGame)
+
+        intimidating = IntimidatingSytle()
+        nlpController = nlp(intimidating)
+        self.game = gc.GameController(stt(), nlpController, ttsc(), db())       
+
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
         self.pauseMenu = PauseMenu(self)
         self.pauseMenu.hide()
         self.pauseMenu.hideImage()
-
-        #pause game if escape is pressed
-        self.base.accept('escape', self.pauseGame)
 
     def pauseGame(self):
         if(self.gameState == 'gameplay'):
@@ -66,3 +70,12 @@ class InterrogationRoom:
         self.room.setScale(1)
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
+
+    #Run on separate thread
+    def runInterrogation(self):
+        self.game.startInterrogation()
+        
+        while True:
+            speech = self.game.speechInput()
+            print(f"< {speech}")
+            print(self.game.createDetectiveResponse())

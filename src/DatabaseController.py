@@ -60,7 +60,6 @@ class DatabaseController:
                             )
                 
                 conversation = cur.fetchall()
-                conversation = ""
                 return conversation
         except Exception as e:
             raise("Error retrieving conversation", e)
