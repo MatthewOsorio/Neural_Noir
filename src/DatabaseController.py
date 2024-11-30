@@ -7,7 +7,7 @@ class DatabaseController:
         self.user = "postgres"
         self.password = "password"
         self.host= "localhost"
-        self.port= "5432"
+        self.port = "5432"
     
     def getConnection(self):
         try:
@@ -48,7 +48,7 @@ class DatabaseController:
         
     def fetchConversation(self, sessionID):
         #Change onces its implemented
-        temp = '7b026d58-8991-4e39-91dc-c58be5b6391f'
+        temp = 'b751e6db-0df8-4b8d-ac6f-f1aa06e82ea6'
         try:
             connection = self.getConnection()
             with connection.cursor() as cur:
@@ -60,6 +60,7 @@ class DatabaseController:
                             )
                 
                 conversation = cur.fetchall()
+                conversation = ""
                 return conversation
         except Exception as e:
             raise("Error retrieving conversation", e)

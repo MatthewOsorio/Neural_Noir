@@ -13,8 +13,8 @@ class PauseMenu():
     def __init__(self, manager):
         self.manager = manager
 
-        self.scriptMenu = ScriptDisplay(self, self.manager.game)
-        self.scriptMenu.hide()
+        #self.scriptMenu = ScriptDisplay(self, self.manager)
+        #self.scriptMenu.hide()
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 

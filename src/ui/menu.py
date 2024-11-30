@@ -23,7 +23,6 @@ class menuManager:
         self.settingsMenu = settingsMenu(self)
         self.audioMenu = audioSettings(self)
         self.quitMenu = confirmQuit(self)
-        self.pauseMenu = pauseMenu(self)
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
@@ -31,8 +30,6 @@ class menuManager:
         )
 
         self.gameStart = False
-
-        self.base.accept("escape", self.showPause)
         
     def showMain(self):
         self.mainMenu.show()
@@ -47,14 +44,6 @@ class menuManager:
         self.quitMenu.show()
 
     def hideImage(self):
-        self.titleImage.hide()
-
-    def showPause(self):
-        self.pauseMenu.show()
-        self.titleImage.show()
-
-    def hidePause(self):
-        self.pauseMenu.hide()
         self.titleImage.hide()
 
     def beginGame(self):
@@ -318,62 +307,3 @@ class confirmQuit:
 
     def show(self):
         self.parentFrame.show()
-
-class pauseMenu:
-    def __init__(self, manager):
-        self.manager = manager
-        self.scriptDisplay = ScriptDisplay.showScript(manager.base)
-
-        self.pauseMenu = DirectFrame(
-            frameColor=(0, 0, 0, 0),
-            frameSize=(-1, 1, -1, 1),
-            pos = (-1, 0, 0),
-            parent=self.manager.base.aspect2d
-        )
-
-        self.titleText = TextNode('TitleText')
-        self.titleText.setText("Paused")
-        self.titleText_np = self.pauseMenu.attachNewNode(self.titleText)  
-        self.titleText_np.setScale(0.3)
-        self.titleText_np.setPos(0, 0, 0.7)
-        self.titleText.setAlign(self.titleText.ACenter)
-
-        self.Quit = DirectButton(
-            text="Quit",
-            scale=0.1,
-            pos=(0, 0, -0.2),
-            parent=self.pauseMenu,
-            command=self.moveToMain
-        )    
-
-        self.Script = DirectButton(
-            text="Script",
-            scale=0.1,
-            pos=(0, 0, -0.3),
-            parent=self.pauseMenu,
-            command=self.loadScript
-        )       
-
-        self.backButton = DirectButton(
-            text="Back",
-            scale=0.1,
-            pos=(0, 0, 0),
-            parent=self.pauseMenu,
-            command=self.manager.hidePause
-        )
-
-        self.hide()
-
-    def show(self):
-        self.pauseMenu.show()
-
-    def hide(self):
-        self.pauseMenu.hide()
-
-    def moveToMain(self):
-        self.manager.showMain()
-        self.hide()
-
-    def loadScript(self):
-        self.scriptDisplay.show()
-        self.hide()
