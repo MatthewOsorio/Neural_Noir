@@ -25,7 +25,6 @@ class InterrogationRoom:
 
         self.startGame()
 
-        
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
         self.pauseMenu = PauseMenu(self)
