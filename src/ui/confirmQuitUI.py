@@ -15,7 +15,7 @@ class confirmQuit:
         self.generateBackground()
         self.createContents()
         self.hide()
-
+    
         self.mainMenu = mainMenu(self)
 
     def generateBackground(self):
@@ -59,4 +59,3 @@ class confirmQuit:
 
     def show(self):
         self.parentFrame.show()
-        

@@ -9,6 +9,7 @@ import time
 import sys
 
 import audio
+import ScriptDisplay
 
 
 #Controls menu navigation and allows each menu to use Aspect2d from main
@@ -16,7 +17,7 @@ import audio
 class menuManager:
     def __init__(self, base):
         self.base = base
-
+        
         #Instance of each menu
         self.mainMenu = mainMenu(self)
         self.settingsMenu = settingsMenu(self)
@@ -28,6 +29,8 @@ class menuManager:
             parent=self.base.render2d
         )
 
+        self.gameStart = False
+        
     def showMain(self):
         self.mainMenu.show()
 
@@ -42,6 +45,14 @@ class menuManager:
 
     def hideImage(self):
         self.titleImage.hide()
+
+    def beginGame(self):
+        self.gameStart = True
+        print("Menu -", self.gameStart)
+
+    def doNothing(self):
+        print("F")
+        
         
 #The Main menu screen. 
 class mainMenu:
@@ -96,6 +107,7 @@ class mainMenu:
     def startGame(self):
         self.hide()
         self.manager.hideImage()
+        self.manager.beginGame()
 
     def moveToSettings(self):
         self.hide()
@@ -117,7 +129,6 @@ class settingsMenu:
     def __init__(self, manager):
         self.manager = manager
 
-        
         self.settingsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
