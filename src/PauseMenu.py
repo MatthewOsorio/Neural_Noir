@@ -45,6 +45,14 @@ class PauseMenu():
                                             command= self.showScriptMenu
                             )
         
+        self.backButton = DirectButton(
+            text = "Back",
+            scale = 0.075,
+            pos = (0, 0, 0.25),
+            parent = self.pauseMenu,
+            command = self.resumeGame
+        )
+        
     def show(self):
         self.pauseMenu.show()
         self.manager.gameState = 'script'
@@ -61,4 +69,9 @@ class PauseMenu():
     def showScriptMenu(self):
         self.hide()
         self.scriptMenu.show()
+
+    def resumeGame(self):
+        self.hide()
+        self.hideImage()
+        self.manager.gameState = 'gameplay'
 
