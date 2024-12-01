@@ -46,6 +46,9 @@ class menuManager:
     def hideImage(self):
         self.titleImage.hide()
 
+    def showImage(self):
+        self.titleImage.show()
+
     def beginGame(self):
         self.gameStart = True
         print("Menu -", self.gameStart)

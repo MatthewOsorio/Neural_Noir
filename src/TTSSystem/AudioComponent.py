@@ -1,7 +1,10 @@
-from playsound import playsound
+from pydub import AudioSegment
+from pydub.playback import play
+
 
 class AudioController:
     def __init__(self):
         pass
     def playText(self, path):
-        playsound(str(path))
+        self.sound = AudioSegment.from_file(str(path))
+        self.play = self.sound

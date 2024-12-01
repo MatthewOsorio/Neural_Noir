@@ -4,7 +4,7 @@ from panda3d.core import TextNode
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
-import threading
+
 
 import time
 
@@ -21,9 +21,6 @@ class main(ShowBase):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         self.roomLoaded = False
 
-        #Stars interrogation api calls on a separate thread once the game is started
-        self.interrogationThread = threading.Thread(target=self.interrogationRoom.runInterrogation)
-
     #Will not load the interrogation room until the game actually starts 
     #Note: Give it about a second after "start" is selected for the room to load        
     def checkForGameStart(self, task):
@@ -34,7 +31,7 @@ class main(ShowBase):
             self.roomLoaded = True   
             print ("Check - Loaded")
         
-            self.interrogationThread.start()
+            self.interrogationRoom.startThread()
             return task.done
 
         return task.cont
