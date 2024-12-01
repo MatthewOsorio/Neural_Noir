@@ -15,8 +15,9 @@ class main(ShowBase):
     def __init__(self):
         super().__init__()
 
-        self.menuManager = menuManager(self)
-        self.interrogationRoom = InterrogationRoom(self)
+        self.start = False
+        self.menuManager = menuManager(self, self.start)
+        self.interrogationRoom = InterrogationRoom(self, self.menuManager)
 
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         self.roomLoaded = False
