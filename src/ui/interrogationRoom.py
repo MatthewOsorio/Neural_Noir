@@ -5,7 +5,6 @@ from NLPSystem.IntimidatingStyle import IntimidatingSytle
 from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
 from DatabaseController import DatabaseController as db
-import threading
 
 #Code originally written by Christine 
 #Modified by Evie 
@@ -28,10 +27,6 @@ class InterrogationRoom:
         self.pauseMenu = PauseMenu(self)
         self.pauseMenu.hide()
         self.pauseMenu.hideImage()
-
-        #Stars interrogation api calls on a separate thread once the game is started
-        self.interrogationThread = threading.Thread(target=self.runInterrogation)
-        self.stopRun = threading.Event()
 
     def pauseGame(self):
         if(self.gameState == 'gameplay'):
@@ -80,26 +75,7 @@ class InterrogationRoom:
     def runInterrogation(self):
         self.game.startInterrogation()
         
-        while not self.stopRun.is_set():
+        while True:
             speech = self.game.speechInput()
             print(f"< {speech}")
             print(self.game.createDetectiveResponse())
-
-    def startThread(self):
-        self.interrogationThread.start()
-
-    def startThread(self):
-        self.stopRun.clear()  
-        if not self.interrogationThread.is_alive():  
-            self.interrogationThread = threading.Thread(target=self.runInterrogation) 
-            self.interrogationThread.start()
-
-    def stopThread(self):
-        self.stopRun.set()
-        self.base.taskMgr.add(self.checkForStop, "Check for thread stop")
-        
-    def checkForStop(self, task):
-        if self.interrogationThread:
-            return task.done
-        
-        return task.cont

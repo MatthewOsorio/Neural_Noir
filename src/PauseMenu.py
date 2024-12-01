@@ -5,7 +5,6 @@ from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 from direct.gui.DirectButton import DirectButton
 from panda3d.core import TextNode
 from ScriptDisplay import ScriptDisplay
-from ui.menu import menuManager
 
 # from GameController import GameController
 # from ScriptDisplay import ScriptDisplay    
@@ -13,8 +12,6 @@ from ui.menu import menuManager
 class PauseMenu():
     def __init__(self, manager):
         self.manager = manager
-        self.menu = menuManager(manager.base)
-        self.menu.gameStart = True
 
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
@@ -48,20 +45,12 @@ class PauseMenu():
                                             command= self.showScriptMenu
                             )
         
-        self.resumeButton = DirectButton(
-            text = "Resume",
+        self.backButton = DirectButton(
+            text = "Back",
             scale = 0.075,
             pos = (0, 0, 0.25),
             parent = self.pauseMenu,
             command = self.resumeGame
-        )
-
-        self.quitButtom = DirectButton(
-            text = "Quit",
-            scale = 0.075,
-            pos = (0, 0, 0),
-            parent = self.pauseMenu,
-            command = self.returnToMain
         )
         
     def show(self):
@@ -85,12 +74,4 @@ class PauseMenu():
         self.hide()
         self.hideImage()
         self.manager.gameState = 'gameplay'
-
-    def returnToMain(self):
-        self.hide()
-        self.hideImage()
-        self.menu.showMain()
-        self.menu.showImage()
-        self.manager.gameState = 'gamePlay'
-        self.manager.stopThread()
 
