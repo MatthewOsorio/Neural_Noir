@@ -15,7 +15,7 @@ import ScriptDisplay
 #Controls menu navigation and allows each menu to use Aspect2d from main
 #In menu classes, use manager.base.aspect2D to use Aspect2d 
 class menuManager:
-    def __init__(self, base):
+    def __init__(self, base, startFlag):
         self.base = base
         
         #Instance of each menu
@@ -29,13 +29,16 @@ class menuManager:
             parent=self.base.render2d
         )
 
-        self.gameStart = False
+        self.gameStart = startFlag
+        self.gameState = 'menu'
         
     def showMain(self):
         self.mainMenu.show()
+        self.gameState = 'menu'
 
     def showSettings(self):
         self.settingsMenu.show()
+        self.gameState = 'menu'
 
     def showAudio(self):
         self.audioMenu.show()
@@ -46,9 +49,13 @@ class menuManager:
     def hideImage(self):
         self.titleImage.hide()
 
+    def showImage(self):
+        self.titleImage.show()
+
     def beginGame(self):
         self.gameStart = True
         print("Menu -", self.gameStart)
+        self.gameState = 'gameplay'
 
     def doNothing(self):
         print("F")

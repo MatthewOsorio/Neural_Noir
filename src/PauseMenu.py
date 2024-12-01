@@ -6,15 +6,20 @@ from direct.gui.DirectButton import DirectButton
 from panda3d.core import TextNode
 from ScriptDisplay import ScriptDisplay
 
+
 # from GameController import GameController
 # from ScriptDisplay import ScriptDisplay    
 #Pause Menu Screen
 class PauseMenu():
-    def __init__(self, manager):
+    def __init__(self, manager, menu):
         self.manager = manager
+        self.menu = menu
 
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
+
+        self.start = True
+        
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
@@ -45,6 +50,22 @@ class PauseMenu():
                                             command= self.showScriptMenu
                             )
         
+        self.resumeButton = DirectButton(
+            text = "Resume",
+            scale = 0.075,
+            pos = (0, 0, 0.25),
+            parent = self.pauseMenu,
+            command = self.resumeGame
+        )
+
+        self.quitButton = DirectButton(
+            text = "Quit",
+            scale = 0.075,
+            pos = (0, 0, 0),
+            parent = self.pauseMenu,
+            command = self.returnToMain
+        )
+        
     def show(self):
         self.pauseMenu.show()
         self.manager.gameState = 'script'
@@ -61,4 +82,16 @@ class PauseMenu():
     def showScriptMenu(self):
         self.hide()
         self.scriptMenu.show()
+
+    def resumeGame(self):
+        self.hide()
+        self.hideImage()
+        self.manager.gameState = 'gameplay'
+
+    def returnToMain(self):
+        self.hide()
+        self.hideImage()
+        self.manager.gameState = 'gameplay'
+        self.menu.showMain()
+        self.menu.showImage()
 
