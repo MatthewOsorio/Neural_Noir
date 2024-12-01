@@ -72,6 +72,12 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
+    def unloadModels(self):
+        self.room.detachNode()
+        self.room.removeNode()
+        self.room = None
+        #print("Unload models")
+
     #Run on separate thread
     def runInterrogation(self):
         self.game.startInterrogation()

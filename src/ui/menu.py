@@ -54,12 +54,8 @@ class menuManager:
 
     def beginGame(self):
         self.gameStart = True
-        print("Menu -", self.gameStart)
+        #print("Menu -", self.gameStart)
         self.gameState = 'gameplay'
-
-    def doNothing(self):
-        print("F")
-        
         
 #The Main menu screen. 
 class mainMenu:

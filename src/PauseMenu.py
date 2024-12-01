@@ -18,9 +18,6 @@ class PauseMenu():
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
 
-        self.start = True
-        
-
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
             parent=self.manager.base.render2d
@@ -92,6 +89,9 @@ class PauseMenu():
         self.hide()
         self.hideImage()
         self.manager.gameState = 'gameplay'
+        self.manager.unloadModels()
         self.menu.showMain()
         self.menu.showImage()
+        self.menu.gameStart = False
+        self.manager.base.checkGameStartFlag()
 
