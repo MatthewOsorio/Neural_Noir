@@ -7,7 +7,7 @@ class DatabaseController:
         self.user = "postgres"
         self.password = "password"
         self.host= "localhost"
-        self.port = "5432"
+        self.port = "5433"
     
     def getConnection(self):
         try:
