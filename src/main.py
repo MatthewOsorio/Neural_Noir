@@ -39,7 +39,7 @@ class main(ShowBase):
             self.roomLoaded = True   
             #print ("Check - Loaded")
         
-            #self.interrogationThread.start()
+            self.interrogationThread.start()
             return task.done
 
         return task.cont
