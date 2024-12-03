@@ -96,8 +96,5 @@ class PauseMenu():
         self.menu.showImage()
         self.menu.gameStart = False
         self.manager.base.checkGameStartFlag()
-        self.manager.game.tts.audio.endMixer()
         self.manager.game.database.closeConnection()
         self.ended = True
-        self.manager.game = None
-

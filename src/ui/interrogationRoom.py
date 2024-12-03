@@ -29,7 +29,6 @@ class InterrogationRoom:
         self.pauseMenu.hide()
         self.pauseMenu.hideImage()
         
-
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = True
         
@@ -89,8 +88,8 @@ class InterrogationRoom:
     def runInterrogation(self):
         
         self.game.startInterrogation()
-        self.plsEnd = False
-        while self.plsEnd==False:
+        self.end = False
+        while self.end==False:
            
             #print("Playing")
             self.pausable = False
@@ -101,6 +100,3 @@ class InterrogationRoom:
             print(self.game.createDetectiveResponse())
             
         self.ended = False
-
-    def ended(self):
-        return self.pauseMenu.ended

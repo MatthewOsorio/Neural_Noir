@@ -23,14 +23,7 @@ class main(ShowBase):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         
         self.roomLoaded = False
-
-        #Stars interrogation api calls on a separate thread once the game is started
-        self.threadEvent = Event()
-        
-        
-        
-        self.threadEvent.set()
-
+   
     def checkGameStartFlag(self):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
 
@@ -43,14 +36,13 @@ class main(ShowBase):
             self.interrogationRoom.cameraSetUp()
             self.interrogationRoom.loadModels()    
             self.roomLoaded = True   
+            #Stars interrogation api calls on a separate thread once the game is started
             self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation)
             self.interrogationThread.start()
-            self.threadEvent.clear()
             self.interrogationRoom = None
             return task.done
 
         return task.cont
     
-
 app = main()
 app.run()
