@@ -64,3 +64,7 @@ class DatabaseController:
         except Exception as e:
             raise("Error retrieving conversation", e)
         
+    def closeConnection(self):
+        self.conn = self.getConnection()
+        self.conn.close()
+        

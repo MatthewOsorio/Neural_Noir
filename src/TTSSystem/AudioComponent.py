@@ -5,6 +5,7 @@ class AudioController:
     def __init__(self):
         pygame.mixer.init()
         self.paused = False
+        self.mixerExist = True
 
     def playText(self, path):
         pygame.mixer.music.load(str(path))
@@ -22,7 +23,8 @@ class AudioController:
         pygame.mixer.music.unload()
 
     def playing(self):
-        return pygame.mixer.music.get_busy()
+        if self.mixerExist == True:
+            return pygame.mixer.music.get_busy()
     
     def pauseSpeech(self):
         if self.paused == False:
@@ -36,3 +38,7 @@ class AudioController:
             pygame.mixer.music.unpause()
             self.paused = False
         #print("audio unpased")
+
+    def endMixer(self):
+        pygame.mixer.quit()
+        self.mixerExist = False

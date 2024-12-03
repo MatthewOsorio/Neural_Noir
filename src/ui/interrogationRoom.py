@@ -28,6 +28,7 @@ class InterrogationRoom:
         self.pauseMenu = PauseMenu(self, self.menu)
         self.pauseMenu.hide()
         self.pauseMenu.hideImage()
+        
 
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = True
@@ -86,17 +87,20 @@ class InterrogationRoom:
 
     #Run on separate thread
     def runInterrogation(self):
+        
         self.game.startInterrogation()
-        while True:
-            #Stall interrogation while game is paused          
-            if self.gameState != 'gameplay':
-                #print("Paused state")
-                continue
+        self.plsEnd = False
+        while self.plsEnd==False:
+           
+            #print("Playing")
+            self.pausable = False
+            speech = self.game.speechInput()
+            print(f"< {speech}")
+            self.pausable = True
+            
+            print(self.game.createDetectiveResponse())
+            
+        self.ended = False
 
-            if self.gameState == 'gameplay':
-                #print("Playing")
-                self.pausable = False
-                speech = self.game.speechInput()
-                print(f"< {speech}")
-                self.pausable = True
-                print(self.game.createDetectiveResponse())
+    def ended(self):
+        return self.pauseMenu.ended

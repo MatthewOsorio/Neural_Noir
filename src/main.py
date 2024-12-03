@@ -4,7 +4,8 @@ from panda3d.core import TextNode
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
-import threading
+from direct.stdpy.threading import BoundedSemaphore, Condition, Event, ExternalThread, Lock, MainThread, RLock, Semaphore, Thread, ThreadBase, Timer, active_count, current_thread, enumerate, main_thread, setprofile, settrace, stack_size
+
 
 import time
 
@@ -17,14 +18,18 @@ class main(ShowBase):
 
         self.start = False
         self.menuManager = menuManager(self, self.start)
-        self.interrogationRoom = InterrogationRoom(self, self.menuManager)
+        self.interrogationRoom = None
 
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         
         self.roomLoaded = False
 
         #Stars interrogation api calls on a separate thread once the game is started
-        self.interrogationThread = threading.Thread(target=self.interrogationRoom.runInterrogation)
+        self.threadEvent = Event()
+        
+        
+        
+        self.threadEvent.set()
 
     def checkGameStartFlag(self):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
@@ -33,16 +38,19 @@ class main(ShowBase):
     #Note: Give it about a second after "start" is selected for the room to load        
     def checkForGameStart(self, task):
         if self.menuManager.gameStart == True:
+            self.interrogationRoom = InterrogationRoom(self, self.menuManager)
             #print("Main - True")
             self.interrogationRoom.cameraSetUp()
             self.interrogationRoom.loadModels()    
             self.roomLoaded = True   
-            #print ("Check - Loaded")
-        
+            self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation)
             self.interrogationThread.start()
+            self.threadEvent.clear()
+            self.interrogationRoom = None
             return task.done
 
         return task.cont
+    
 
 app = main()
 app.run()
