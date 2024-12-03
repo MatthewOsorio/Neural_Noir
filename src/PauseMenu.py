@@ -84,6 +84,7 @@ class PauseMenu():
         self.hide()
         self.hideImage()
         self.manager.gameState = 'gameplay'
+        self.manager.game.tts.audio.resumeSpeech()
 
     def returnToMain(self):
         self.hide()

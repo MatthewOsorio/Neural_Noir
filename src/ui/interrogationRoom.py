@@ -38,6 +38,7 @@ class InterrogationRoom:
             self.pauseMenu.show()
             self.pauseMenu.showImage()
             self.gameState = 'paused'
+            self.game.tts.audio.pauseSpeech()
         
     def cameraSetUp(self):
         #Moved the camera back slightly so that it does not clip the table

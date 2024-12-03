@@ -48,7 +48,7 @@ class DatabaseController:
         
     def fetchConversation(self, sessionID):
         #Change onces its implemented
-        temp = 'b751e6db-0df8-4b8d-ac6f-f1aa06e82ea6'
+        temp = '3cc75489-4993-4e9a-a75a-1dfe9da8805f'
         try:
             connection = self.getConnection()
             with connection.cursor() as cur:
