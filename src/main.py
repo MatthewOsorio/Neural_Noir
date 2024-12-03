@@ -10,6 +10,8 @@ import time
 
 from ui.menu import menuManager
 from ui.interrogationRoom import InterrogationRoom
+from connection_utils import Connection
+from ui.connectionDisplay import ConnectionDisplay
 
 class main(ShowBase):
     def __init__(self):

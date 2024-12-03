@@ -180,8 +180,6 @@ class settingsMenu:
         self.settingsMenu.hide()
         
 
-
-
 class audioSettings:
     def __init__(self, manager):    
 
@@ -247,6 +245,22 @@ class audioSettings:
             pos = (0,0,-0.7),
             parent = self.audioMenu,
             command = self.moveToSettings
+        )
+
+        self.testInput = DirectButton(
+            text = ("Test Microphone"),
+            scale = 0.1,
+            pos = (-0.4,0,-0.9),
+            parent = self.audioMenu,
+            command = self.audio.testAudioInput
+        )
+
+        self.testOutput = DirectButton(
+            text = ("Test Speakers"),
+            scale = 0.1,
+            pos = (0.4,0,-0.9),
+            parent = self.audioMenu,
+            command = self.audio.testAudioOutput
         )
 
         self.hide()
