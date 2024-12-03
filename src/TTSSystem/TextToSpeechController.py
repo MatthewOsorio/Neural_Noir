@@ -1,6 +1,7 @@
 from openai import OpenAI
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+
 from TTSSystem.AudioComponent import AudioController as ac
 
 class TextToSpeechController:
@@ -29,5 +30,7 @@ class TextToSpeechController:
     def speak(self, filepath):
         self.audio.playText(filepath)
         #print(filepath.exists())
+        #print("Not busy")
         filepath.unlink()
         #print(filepath.exists())
+

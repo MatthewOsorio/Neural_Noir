@@ -18,15 +18,13 @@ class PauseMenu():
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
 
-        self.start = True
-        
-
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
             parent=self.manager.base.render2d
         )
 
         self.displayPauseMenu()
+        self.ended = False
 
     def displayPauseMenu(self):
         self.pauseMenu = DirectFrame(
@@ -87,11 +85,16 @@ class PauseMenu():
         self.hide()
         self.hideImage()
         self.manager.gameState = 'gameplay'
+        self.manager.game.tts.audio.resumeSpeech()
 
     def returnToMain(self):
         self.hide()
         self.hideImage()
         self.manager.gameState = 'gameplay'
+        self.manager.unloadModels()
         self.menu.showMain()
         self.menu.showImage()
-
+        self.menu.gameStart = False
+        self.manager.base.checkGameStartFlag()
+        self.manager.game.database.closeConnection()
+        self.ended = True

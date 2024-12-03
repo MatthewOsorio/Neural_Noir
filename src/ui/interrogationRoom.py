@@ -28,12 +28,18 @@ class InterrogationRoom:
         self.pauseMenu = PauseMenu(self, self.menu)
         self.pauseMenu.hide()
         self.pauseMenu.hideImage()
-
+        
+        #Game will not be pausable if it is the user's turn to reply
+        self.pausable = True
+        
     def pauseGame(self):
-        if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay'):
+        #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
+        if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True):
             self.pauseMenu.show()
             self.pauseMenu.showImage()
-
+            self.gameState = 'paused'
+            self.game.tts.audio.pauseSpeech()
+        
     def cameraSetUp(self):
         #Moved the camera back slightly so that it does not clip the table
         self.base.camera.setPos(0, -0.2 , 0)
@@ -72,11 +78,25 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
+    def unloadModels(self):
+        self.room.detachNode()
+        self.room.removeNode()
+        self.room = None
+        #print("Unload models")
+
     #Run on separate thread
     def runInterrogation(self):
-        self.game.startInterrogation()
         
-        while True:
+        self.game.startInterrogation()
+        self.end = False
+        while self.end==False:
+           
+            #print("Playing")
+            self.pausable = False
             speech = self.game.speechInput()
             print(f"< {speech}")
+            self.pausable = True
+            
             print(self.game.createDetectiveResponse())
+            
+        self.ended = False
