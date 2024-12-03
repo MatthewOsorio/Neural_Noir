@@ -9,8 +9,9 @@ from DatabaseController import DatabaseController as db
 #Code originally written by Christine 
 #Modified by Evie 
 class InterrogationRoom:
-    def __init__(self, base):
+    def __init__(self, base, menu):
         self.base = base
+        self.menu = menu
 
         self.base.disableMouse()
         self.gameState= 'gameplay'
@@ -24,12 +25,12 @@ class InterrogationRoom:
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
-        self.pauseMenu = PauseMenu(self)
+        self.pauseMenu = PauseMenu(self, self.menu)
         self.pauseMenu.hide()
         self.pauseMenu.hideImage()
 
     def pauseGame(self):
-        if(self.gameState == 'gameplay'):
+        if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay'):
             self.pauseMenu.show()
             self.pauseMenu.showImage()
 
