@@ -88,7 +88,7 @@ class InterrogationRoom:
         self.game.startInterrogation()
         while True:
             #Stall interrogation while game is paused          
-            if self.gameState == 'paused':
+            if self.gameState != 'gameplay':
                 #print("Paused state")
                 continue
 
