@@ -47,4 +47,3 @@ class AudioController:
     def setVolume(self, value):
         self.volume = value
         pygame.mixer.music.set_volume(self.volume)
-        print(self.volume)

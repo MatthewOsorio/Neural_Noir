@@ -299,7 +299,6 @@ class audioSettings:
         self.audioMenu.hide()
 
     def setVolumeV(self):
-        print("set volume")
         self.manager.audio.setVolumeValue(self.volumeSlider['value'])
 
     def setVoiceVolumeV(self):
