@@ -178,9 +178,11 @@ class settingsMenu:
         
 
 class audioSettings:
-    def __init__(self, manager):    
+    def __init__(self, manager, back_callback=None):    
 
         self.manager = manager
+        self.audio = audio.audioManager(manager.base)
+        self.back_callback = back_callback
 
         self.audioMenu = DirectFrame(
             frameColor=(0, 0, 0, 0), 
@@ -240,7 +242,7 @@ class audioSettings:
             scale = 0.12,
             pos = (0,0,-0.7),
             parent = self.audioMenu,
-            command = self.moveToSettings
+            command = self.handleBack
         )
 
         self.testInput = DirectButton(
@@ -260,6 +262,14 @@ class audioSettings:
         )
 
         self.hide()
+
+    def handleBack(self):
+        if self.back_callback:
+            self.hide()
+            self.back_callback()
+        else:
+            self.hide()
+            self.moveToSettings()
 
     def moveToSettings(self):
         self.hide()

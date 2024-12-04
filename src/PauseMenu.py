@@ -5,6 +5,8 @@ from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 from direct.gui.DirectButton import DirectButton
 from panda3d.core import TextNode
 from ScriptDisplay import ScriptDisplay
+from audio import audioManager
+from ui.menu import audioSettings
 
 
 # from GameController import GameController
@@ -17,6 +19,8 @@ class PauseMenu():
 
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
+        
+        self.audioSettingsMenu = audioSettings(self.manager, back_callback=self.show)
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
@@ -64,6 +68,14 @@ class PauseMenu():
             command = self.returnToMain
         )
         
+        self.audioButton = DirectButton(
+            text = "Audio",
+            scale = 0.075,
+            pos = (0, 0, 0.5),
+            parent = self.pauseMenu,
+            command = self.testAudioSettings
+        )
+        
     def show(self):
         self.pauseMenu.show()
         self.manager.gameState = 'script'
@@ -98,3 +110,10 @@ class PauseMenu():
         self.manager.base.checkGameStartFlag()
         self.manager.game.database.closeConnection()
         self.ended = True
+        
+    def testAudioSettings(self):
+        self.hide()
+        self.audioSettingsMenu.show()
+        
+        
+        
