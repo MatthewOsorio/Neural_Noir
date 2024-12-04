@@ -25,7 +25,8 @@ class audioManager:
         #Sound effects library 
         self.soundEffects = {
             "testMusic" : self.base.loader.loadSfx('../Assets/Audio/testSong.mp3'),
-            "testSound" : self.base.loader.loadSfx('../Assets/Audio/testSound.mp3')
+            "testSound" : self.base.loader.loadSfx('../Assets/Audio/testSound.mp3'),
+            "errorSound" : self.base.loader.loadSfx('../Assets/Audio/ErrorSound.mp3')
         }
     
     # def itemSel(self, selection):
@@ -164,3 +165,7 @@ class audioManager:
     def setVolumeValue(self, value):
         for self.name, self.sound in self.soundEffects.items():
             self.sound.setVolume(value)
+
+    def playSound(self, sound):
+        self.soundName = self.soundEffects.get(sound)
+        self.soundName.play()

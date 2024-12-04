@@ -24,6 +24,8 @@ class menuManager:
         self.audioMenu = audioSettings(self)
         self.quitMenu = confirmQuit(self)
 
+        self.audio = audio.audioManager(self.base)
+
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
             parent=self.base.render2d
