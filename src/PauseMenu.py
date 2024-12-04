@@ -20,7 +20,7 @@ class PauseMenu():
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
         
-        self.audioSettingsMenu = audioSettings(self.manager, back_callback=self.show)
+        self.audioSettingsMenu = audioSettings(self.manager.base.menuManager, back_callback=self.show)
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 

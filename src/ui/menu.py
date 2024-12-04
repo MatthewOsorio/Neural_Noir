@@ -181,7 +181,6 @@ class audioSettings:
     def __init__(self, manager, back_callback=None):    
 
         self.manager = manager
-        self.audio = audio.audioManager(manager.base)
         self.back_callback = back_callback
 
         self.audioMenu = DirectFrame(
