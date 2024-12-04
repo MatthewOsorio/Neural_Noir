@@ -17,7 +17,8 @@ import ScriptDisplay
 class menuManager:
     def __init__(self, base, startFlag):
         self.base = base
-        
+
+        self.audio = audio.audioManager(self.base)
         #Instance of each menu
         self.mainMenu = mainMenu(self)
         self.settingsMenu = settingsMenu(self)
@@ -180,7 +181,6 @@ class audioSettings:
     def __init__(self, manager, back_callback=None):    
 
         self.manager = manager
-        self.audio = audio.audioManager(manager.base)
         self.back_callback = back_callback
 
         self.audioMenu = DirectFrame(
@@ -197,21 +197,39 @@ class audioSettings:
         self.topText.setWordwrap(25.0)
 
         self.volumeText = OnscreenText(
-            text = 'Volume',
+            text = 'Sfx Volume',
             scale = 0.15,
             parent = self.audioMenu,
             fg = (1,1,1,1),
-            pos = (0,0.3,0.1)
+            pos = (0,0.5,0.5)
         )
 
         self.volumeSlider = DirectSlider(
             range=(0,1),
             pageSize = 20,
-            pos=(0, 0.2, 0.2),
+            pos=(0, 0.4, 0.4),
             scale=0.5,
             parent = self.audioMenu,
             value=0.5,
             command=self.setVolumeV
+        )
+
+        self.voiceVolumeText = OnscreenText(
+            text = 'Dialogue Volume',
+            scale = 0.15,
+            parent = self.audioMenu,
+            fg = (1,1,1,1),
+            pos = (0,0.2,0.2)
+        )
+
+        self.voiceVolumeSlider = DirectSlider(
+            range=(0,1),
+            pageSize = 20,
+            pos=(0, 0.1, 0.1),
+            scale=0.5,
+            parent = self.audioMenu,
+            value=0.5,
+            command=self.setVoiceVolumeV
         )
 
         self.subTitlesText = OnscreenText(
@@ -219,21 +237,21 @@ class audioSettings:
             scale = 0.15,
             parent = self.audioMenu,
             fg = (1,1,1,1),
-            pos = (0, -0.1 ,-0.2)
+            pos = (0, -0.2 ,-0.3)
         )
 
         self.subTitlesOn = DirectCheckButton(
             text = "On",
             parent = self.audioMenu,
             scale = 0.1,
-            pos = (-0.3, -0.2, -0.3)
+            pos = (-0.3, -0.3, -0.4)
         )
 
         self.subTitlesOff = DirectCheckButton(
             text = "Off",
             parent = self.audioMenu,
             scale = 0.1,
-            pos = (0.4, -0.2, -0.3)
+            pos = (0.4, -0.3, -0.4)
         )
 
         self.backButton = DirectButton(
@@ -249,7 +267,7 @@ class audioSettings:
             scale = 0.1,
             pos = (-0.4,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioInput
+            command = self.manager.audio.testAudioInput
         )
 
         self.testOutput = DirectButton(
@@ -257,7 +275,7 @@ class audioSettings:
             scale = 0.1,
             pos = (0.4,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioOutput
+            command = self.manager.audio.testAudioOutput
         )
 
         self.hide()
@@ -281,7 +299,11 @@ class audioSettings:
         self.audioMenu.hide()
 
     def setVolumeV(self):
-        self.audio.setVolumeValue(self.volumeSlider['value'])
+        self.manager.audio.setVolumeValue(self.volumeSlider['value'])
+
+    def setVoiceVolumeV(self):
+        if self.manager.gameStart == True:
+            self.manager.base.interrogationRoom.game.tts.audio.setVolume(self.voiceVolumeSlider['value'])
 
 #ConfirmQuit code originally written by Matt
 #Modified and integrated by Evie 
