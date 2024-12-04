@@ -8,6 +8,7 @@ from direct.interval.IntervalGlobal import *
 from panda3d.core import *
 import speech_recognition as sr
 import pyaudio
+import pygame
 import numpy as np
 import threading
 
@@ -21,13 +22,17 @@ class audioManager:
         self.inputDevice = None
         self.outputDevice = None
         self.stream = None
+        pygame.mixer.init()
 
         #Sound effects library 
         self.soundEffects = {
-            "testMusic" : self.base.loader.loadSfx('../Assets/Audio/testSong.mp3'),
-            "testSound" : self.base.loader.loadSfx('../Assets/Audio/testSound.mp3'),
-            "errorSound" : self.base.loader.loadSfx('../Assets/Audio/ErrorSound.mp3')
+            "testMusic" : pygame.mixer.Sound('../Assets/Audio/testSong.mp3'),
+            "testSound" : pygame.mixer.Sound('../Assets/Audio/testSound.mp3'),
+            "errorSound" : pygame.mixer.Sound('../Assets/Audio/ErrorSound.mp3')
         }
+
+        #self.soundTest = self.soundEffects.get("testMusic")
+        #self.soundTest.play()
     
     # def itemSel(self, selection):
     #     self.selectedDevice = selection
@@ -164,7 +169,7 @@ class audioManager:
     # Change to setOutputVolumeValue
     def setVolumeValue(self, value):
         for self.name, self.sound in self.soundEffects.items():
-            self.sound.setVolume(value)
+            self.sound.set_volume(value)
 
     def playSound(self, sound):
         self.soundName = self.soundEffects.get(sound)

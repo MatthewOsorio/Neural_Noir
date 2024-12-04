@@ -17,14 +17,13 @@ import ScriptDisplay
 class menuManager:
     def __init__(self, base, startFlag):
         self.base = base
-        
+
+        self.audio = audio.audioManager(self.base)
         #Instance of each menu
         self.mainMenu = mainMenu(self)
         self.settingsMenu = settingsMenu(self)
         self.audioMenu = audioSettings(self)
         self.quitMenu = confirmQuit(self)
-
-        self.audio = audio.audioManager(self.base)
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
@@ -182,7 +181,6 @@ class audioSettings:
     def __init__(self, manager):    
 
         self.manager = manager
-        self.audio = audio.audioManager(manager.base)
 
         self.audioMenu = DirectFrame(
             frameColor=(0, 0, 0, 0), 
@@ -250,7 +248,7 @@ class audioSettings:
             scale = 0.1,
             pos = (-0.4,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioInput
+            command = self.manager.audio.testAudioInput
         )
 
         self.testOutput = DirectButton(
@@ -258,7 +256,7 @@ class audioSettings:
             scale = 0.1,
             pos = (0.4,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioOutput
+            command = self.manager.audio.testAudioOutput
         )
 
         self.hide()
@@ -274,7 +272,7 @@ class audioSettings:
         self.audioMenu.hide()
 
     def setVolumeV(self):
-        self.audio.setVolumeValue(self.volumeSlider['value'])
+        self.manager.audio.setVolumeValue(self.volumeSlider['value'])
 
 #ConfirmQuit code originally written by Matt
 #Modified and integrated by Evie 
