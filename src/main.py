@@ -25,6 +25,8 @@ class main(ShowBase):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         
         self.roomLoaded = False
+
+        self.voiceVolume = 1
    
     def checkGameStartFlag(self):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
@@ -41,7 +43,6 @@ class main(ShowBase):
             #Stars interrogation api calls on a separate thread once the game is started
             self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation)
             self.interrogationThread.start()
-            self.interrogationRoom = None
             return task.done
 
         return task.cont

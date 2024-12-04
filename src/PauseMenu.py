@@ -47,7 +47,7 @@ class PauseMenu():
         self.displayScriptButton = DirectButton(
                                             text= "Script",
                                             scale= 0.075,
-                                            pos=(0, 0, 0.50),
+                                            pos=(0, 0, 0.25),
                                             parent=self.pauseMenu,
                                             command= self.showScriptMenu
                             )
@@ -55,7 +55,7 @@ class PauseMenu():
         self.resumeButton = DirectButton(
             text = "Resume",
             scale = 0.075,
-            pos = (0, 0, 0.25),
+            pos = (0, 0, 0.50),
             parent = self.pauseMenu,
             command = self.resumeGame
         )
@@ -63,7 +63,7 @@ class PauseMenu():
         self.quitButton = DirectButton(
             text = "Quit",
             scale = 0.075,
-            pos = (0, 0, 0),
+            pos = (0, 0, -0.25),
             parent = self.pauseMenu,
             command = self.returnToMain
         )
@@ -71,7 +71,7 @@ class PauseMenu():
         self.audioButton = DirectButton(
             text = "Audio",
             scale = 0.075,
-            pos = (0, 0, 0.5),
+            pos = (0, 0, 0),
             parent = self.pauseMenu,
             command = self.testAudioSettings
         )
