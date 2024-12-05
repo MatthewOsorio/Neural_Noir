@@ -34,7 +34,9 @@ class PauseMenu():
         self.pauseMenu = DirectFrame(
                 frameColor=(0, 0, 0, 0),
                 frameSize=(-1.5, 1.5, -0.85, 0.85),
-                pos=(0, 0, 0))
+                pos=(0, 0, 0),
+                parent=self.manager.base.aspect2d
+        )
         
         self.title= DirectLabel(
                 parent=self.pauseMenu,
