@@ -20,7 +20,7 @@ class PauseMenu():
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
         
-        self.audioSettingsMenu = audioSettings(self.manager, back_callback=self.show)
+        self.audioSettingsMenu = audioSettings(self.manager.base.menuManager, back_callback=self.show)
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
@@ -49,7 +49,7 @@ class PauseMenu():
         self.displayScriptButton = DirectButton(
                                             text= "Script",
                                             scale= 0.075,
-                                            pos=(0, 0, 0.50),
+                                            pos=(0, 0, 0.25),
                                             parent=self.pauseMenu,
                                             command= self.showScriptMenu
                             )
@@ -57,7 +57,7 @@ class PauseMenu():
         self.resumeButton = DirectButton(
             text = "Resume",
             scale = 0.075,
-            pos = (0, 0, 0.25),
+            pos = (0, 0, 0.50),
             parent = self.pauseMenu,
             command = self.resumeGame
         )
@@ -65,7 +65,7 @@ class PauseMenu():
         self.quitButton = DirectButton(
             text = "Quit",
             scale = 0.075,
-            pos = (0, 0, 0),
+            pos = (0, 0, -0.25),
             parent = self.pauseMenu,
             command = self.returnToMain
         )
@@ -73,7 +73,7 @@ class PauseMenu():
         self.audioButton = DirectButton(
             text = "Audio",
             scale = 0.075,
-            pos = (0, 0, 0.5),
+            pos = (0, 0, 0),
             parent = self.pauseMenu,
             command = self.testAudioSettings
         )

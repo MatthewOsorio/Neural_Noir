@@ -6,6 +6,7 @@ class AudioController:
         pygame.mixer.init()
         self.paused = False
         self.mixerExist = True
+        self.volume = 1
 
     def playText(self, path):
         pygame.mixer.music.load(str(path))
@@ -42,3 +43,7 @@ class AudioController:
     def endMixer(self):
         pygame.mixer.quit()
         self.mixerExist = False
+
+    def setVolume(self, value):
+        self.volume = value
+        pygame.mixer.music.set_volume(self.volume)
