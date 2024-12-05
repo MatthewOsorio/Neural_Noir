@@ -17,6 +17,8 @@ import ScriptDisplay
 class menuManager:
     def __init__(self, base, startFlag):
         self.base = base
+        self.titleImage = None
+        self.initializeBackground()
         
         #Instance of each menu
         self.mainMenu = mainMenu(self)
@@ -26,11 +28,22 @@ class menuManager:
 
         self.titleImage = OnscreenImage(
             image='../images/Room_Backdrop_Blur.png', 
-            parent=self.base.render2d
+            parent=self.base.render2d,
+            sort=1
         )
+        self.titleImage.setName("MainMenuBackground") # assign a name to the image to debug nodes
 
         self.gameStart = startFlag
         self.gameState = 'menu'
+
+    def initializeBackground(self):
+        if self.titleImage is not None: 
+            self.titleImage.hide() # hide the background if the game has started
+        self.titleImage = OnscreenImage(
+            image='../images/Room_Backdrop_Blur.png',
+            parent=self.base.render2d
+        )
+        self.showImage()
         
     def showMain(self):
         self.mainMenu.show()

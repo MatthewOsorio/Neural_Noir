@@ -6,7 +6,7 @@ class Connection:
     def __init__(self):
         pass
 
-    def checkInternet(url="https://www.google.com", timeout=60):
+    def checkInternet(self, url="https://www.google.com", timeout=60):
         try:
             response = requests.head(url, timeout=timeout)
             return response.status_code == 200 # Internet connection available
@@ -17,7 +17,7 @@ class Connection:
         except requests.RequestException: # Send a report
             return False
         
-    def checkOpenai():
+    def checkOpenai(self):
         client = OpenAI(
             api_key = os.environ.get("OPENAI_API_KEY")
         )
@@ -34,6 +34,7 @@ class Connection:
             print(completion)
             print("OpenAI API connection successful.")
             return True
+        # write out error messages to JSON file later
         except client.error.AuthenticationError:
             print("Authentication error: Cannot establish a connection with the current API key.")
             return False
@@ -49,15 +50,3 @@ class Connection:
         except:
             print("OpenAI API connection failed.")
             return False
-        
-'''   
-# Test internet
-if checkInternet():
-    print("Internet connected")
-else:
-    print("Internet not connected")
-
-# Test OpenAI
-checkOpenai()
-'''
-    

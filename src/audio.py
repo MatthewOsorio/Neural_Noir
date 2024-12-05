@@ -28,84 +28,86 @@ class audioManager:
             "testSound" : self.base.loader.loadSfx('../Assets/Audio/testSound.mp3')
         }
     
-    # def itemSel(self, selection):
-    #     self.selectedDevice = selection
+    ''' Additional functionality for audio devices that can be handled instead by the OS
 
-    # def listAudioInput(self):
-    #     self.inputDeviceList = []
-    #     seenDevices = set()
+    def itemSel(self, selection):
+        self.selectedDevice = selection
 
-    #     for i in range(self.pyaudio.get_device_count()):
-    #         inputDevice = self.pyaudio.get_device_info_by_index(i)
+    def listAudioInput(self):
+        self.inputDeviceList = []
+        seenDevices = set()
+
+        for i in range(self.pyaudio.get_device_count()):
+            inputDevice = self.pyaudio.get_device_info_by_index(i)
             
-    #         if (
-    #             inputDevice['maxInputChannels'] > 0
-    #             and inputDevice['name'] not in seenDevices
-    #             and "Microsoft" not in inputDevice['name']
-    #             and "Mapper" not in inputDevice['name']
-    #             and "Primary" not in inputDevice['name']
-    #             and "Array" not in inputDevice['name']
-    #             and "Sonar" not in inputDevice['name']
-    #             and "Hands-Free" not in inputDevice['name']
-    #             and (
-    #                 "Microphone" in inputDevice['name'] or
-    #                 "Headset" in inputDevice['name']
-    #             )
-    #         ):
-    #             self.inputDeviceList.append(inputDevice['name'])
-    #             seenDevices.add(inputDevice['name'])
+            if (
+                inputDevice['maxInputChannels'] > 0
+                and inputDevice['name'] not in seenDevices
+                and "Microsoft" not in inputDevice['name']
+                and "Mapper" not in inputDevice['name']
+                and "Primary" not in inputDevice['name']
+                and "Array" not in inputDevice['name']
+                and "Sonar" not in inputDevice['name']
+                and "Hands-Free" not in inputDevice['name']
+                and (
+                    "Microphone" in inputDevice['name'] or
+                    "Headset" in inputDevice['name']
+                )
+            ):
+                self.inputDeviceList.append(inputDevice['name'])
+                seenDevices.add(inputDevice['name'])
                 
-    #     return self.inputDeviceList
+        return self.inputDeviceList
     
-    # def selectAudioInput(self):
-    #     self.audInMenu = DirectOptionMenu(
-    #         text="Audio Output",
-    #         scale=0.12,
-    #         command=self.itemSel,
-    #         items=self.listAudioInput(),
-    #         initialitem=1,
-    #         highlightColor=(0.65, 0.65, 0.65, 1)
-    #     )
+    def selectAudioInput(self):
+        self.audInMenu = DirectOptionMenu(
+            text="Audio Output",
+            scale=0.12,
+            command=self.itemSel,
+            items=self.listAudioInput(),
+            initialitem=1,
+            highlightColor=(0.65, 0.65, 0.65, 1)
+        )
 
-    # def listAudioOutput(self):
-    #     self.outputDeviceList = []
-    #     seenDevices = set()
+    def listAudioOutput(self):
+        self.outputDeviceList = []
+        seenDevices = set()
 
-    #     for i in range(self.pyaudio.get_device_count()):
-    #         outputDevice = self.pyaudio.get_device_info_by_index(i)
+        for i in range(self.pyaudio.get_device_count()):
+            outputDevice = self.pyaudio.get_device_info_by_index(i)
             
-    #         if (
-    #             outputDevice['maxOutputChannels'] > 0
-    #             and outputDevice['name'] not in seenDevices
-    #             and "Microsoft" not in outputDevice['name']
-    #             and "Mapper" not in outputDevice['name']
-    #             and "Primary" not in outputDevice['name']
-    #             and "Array" not in outputDevice['name']
-    #             and "Sonar" not in outputDevice['name']
-    #             and "Hands-Free" not in outputDevice['name']
-    #             and (
-    #                 "Speakers" in outputDevice['name'] or
-    #                 "Headset" in outputDevice['name'] or
-    #                 "Headphones" in outputDevice['name']
-    #             )
-    #         ):
-    #             self.outputDeviceList.append(outputDevice['name'])
-    #             seenDevices.add(outputDevice['name'])
+            if (
+                outputDevice['maxOutputChannels'] > 0
+                and outputDevice['name'] not in seenDevices
+                and "Microsoft" not in outputDevice['name']
+                and "Mapper" not in outputDevice['name']
+                and "Primary" not in outputDevice['name']
+                and "Array" not in outputDevice['name']
+                and "Sonar" not in outputDevice['name']
+                and "Hands-Free" not in outputDevice['name']
+                and (
+                    "Speakers" in outputDevice['name'] or
+                    "Headset" in outputDevice['name'] or
+                    "Headphones" in outputDevice['name']
+                )
+            ):
+                self.outputDeviceList.append(outputDevice['name'])
+                seenDevices.add(outputDevice['name'])
                 
-    #     return self.outputDeviceList
+        return self.outputDeviceList
 
-    # def selectAudioOutput(self):
-    #     self.audInMenu = DirectOptionMenu(
-    #         text="Audio Output",
-    #         scale=0.12,
-    #         command=self.itemSel,
-    #         items=self.listAudioOutput(),
-    #         initialitem=1,
-    #         highlightColor=(0.65, 0.65, 0.65, 1)
-    #     )
+    def selectAudioOutput(self):
+        self.audInMenu = DirectOptionMenu(
+            text="Audio Output",
+            scale=0.12,
+            command=self.itemSel,
+            items=self.listAudioOutput(),
+            initialitem=1,
+            highlightColor=(0.65, 0.65, 0.65, 1)
+        )
+    '''
 
     def testAudioInput(self):
-        # Initial dialog asking the user to speak
         self.dialog = DirectDialog(
             frameSize=(-0.5, 0.5, -0.3, 0.3),
             fadeScreen=0.4,
@@ -121,7 +123,7 @@ class audioManager:
                 while True:
                     with sr.Microphone() as source:
                         audio = self.recognizer.listen(source, timeout=0.5, phrase_time_limit=0.5)
-                        data = np.frombuffer(audio.frame_data, dtype=np.int16)
+                        data = np.frombuffer(audio.frame_data, dtype=np.int16) # calculate volume in percentage
                         volume = (np.abs(data).mean() / 32768.0) * 100
 
                         if volume > 0:
@@ -151,6 +153,7 @@ class audioManager:
         self.base.taskMgr.add(check_mic_input, "CheckMicInput")
         self.base.taskMgr.doMethodLater(5, check_no_audio, "CheckNoAudio")
 
+    # explicitly destroy the message box so it disappears from the audio settings menu
     def close_dialog(self, task=None):
         if hasattr(self, "dialog") and self.dialog:
             self.dialog.destroy()
