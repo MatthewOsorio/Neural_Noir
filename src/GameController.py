@@ -1,4 +1,5 @@
 from SessionController import SessionController as sc
+from  BiometricSystem.BiometricController import BiometricController as bc
 
 class GameController:
     def __init__(self, speechToText, nlpController, ttsController, database):
@@ -7,8 +8,10 @@ class GameController:
         self.tts = ttsController
         self.database= database
         self.session= sc(self.database)
+        self.biometricController = bc(self, self.database)
         self.tempUserInput= None
         self.tempGeneratedResponse= None
+        self.userNervous= False
 
     def convertSpeechToText(self):
         processed_audio_input = self.stt.listen()
@@ -26,6 +29,7 @@ class GameController:
         response= self.nlp.generateResponse()
         self.convertTextToSpeech(response)
         self.tempGeneratedResponse = response
+        # print(self.userNervous)
         return response
 
     def convertTextToSpeech(self, response):
@@ -48,3 +52,5 @@ class GameController:
         conversation =self.database.fetchConversation(self.session.getSessionID())
         return conversation
     
+    def nervousUpdate(self):
+        self.userNervous = self.biometricController.getNervous()
