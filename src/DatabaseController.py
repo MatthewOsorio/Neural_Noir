@@ -13,6 +13,7 @@ class DatabaseController:
         try:
             conn= connect(f"dbname= {self.dname} user= {self.user} password={self.password} host={self.host} port={self.port}")
             return conn
+        
         except Exception as e:
             raise("Error connecting to the database: ", e)
 
@@ -47,8 +48,6 @@ class DatabaseController:
             raise("Error executing insert statment", e)
         
     def fetchConversation(self, sessionID):
-        #Change onces its implemented
-        temp = '3cc75489-4993-4e9a-a75a-1dfe9da8805f'
         try:
             connection = self.getConnection()
             with connection.cursor() as cur:
@@ -56,7 +55,7 @@ class DatabaseController:
                                 SELECT generatedResponse, userInput 
                                 FROM Interaction
                                 WHERE sessionID= %s''',
-                                (temp,)
+                                (sessionID,)
                             )
                 
                 conversation = cur.fetchall()
@@ -64,6 +63,20 @@ class DatabaseController:
         except Exception as e:
             raise("Error retrieving conversation", e)
         
+    def insertBiometrics(self, startTime, endTime, temperature, heartRate, skinConduction, sessionID):
+        try:
+            connection= self.getConnection()
+            with connection.cursor() as cur:
+                cur.execute('''
+                                INSERT INTO BiometricFeedback (feedbackID, startTime, endTime, temperature, heartRate, skinConduction, sessionID)
+                                VALUES (uuid_generate_v4(), %s, %s, %s, %s, %s, %s)
+                            ''', (startTime, endTime, temperature, heartRate, skinConduction, sessionID))
+                
+                connection.commit()
+
+        except Exception as e:
+            raise("Error inserting biometrics", e)
+
     def closeConnection(self):
         self.conn = self.getConnection()
         self.conn.close()
