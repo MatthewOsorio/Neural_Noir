@@ -26,9 +26,9 @@ class audioManager:
 
         #Sound effects library 
         self.soundEffects = {
-            "testMusic" : pygame.mixer.Sound('../Assets/Audio/testSong.mp3'),
-            "testSound" : pygame.mixer.Sound('../Assets/Audio/testSound.mp3'),
-            "errorSound" : pygame.mixer.Sound('../Assets/Audio/ErrorSound.mp3')
+            "testMusic" : pygame.mixer.Sound('../Neural_Noir/Assets/Audio/testSong.mp3'),
+            "testSound" : pygame.mixer.Sound('../Neural_Noir/Assets/Audio/testSound.mp3'),
+            "errorSound" : pygame.mixer.Sound('../Neural_Noir/Assets/Audio/ErrorSound.mp3')
         }
 
         #self.soundTest = self.soundEffects.get("testMusic")

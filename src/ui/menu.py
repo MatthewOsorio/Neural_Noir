@@ -8,7 +8,7 @@ from direct.gui.DirectGui import *
 import time 
 import sys
 
-import audio
+from audio import audioManager
 import ScriptDisplay
 
 
@@ -20,7 +20,7 @@ class menuManager:
         self.titleImage = None
         self.initializeBackground()
         
-        self.audio = audio.audioManager(self.base)
+        self.audio = audioManager(self.base)
         
         #Instance of each menu
         self.mainMenu = mainMenu(self)
