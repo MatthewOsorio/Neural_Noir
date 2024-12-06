@@ -48,7 +48,6 @@ class main(ShowBase):
             #Stars interrogation api calls on a separate thread once the game is started
             self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation)
             self.interrogationThread.start()
-            self.interrogationRoom = None
 
         if self.menuManager.gameStart == True:
             self.connectionDisplay.checkInternetAndDisplay(
