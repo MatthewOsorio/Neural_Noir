@@ -21,6 +21,7 @@ class ScriptDisplay():
         return script
     
     def getScript(self):
+        print("Getting script")
         conversation= self.gameController.getConversationFromDB()
         script = self.formatScript(conversation)
         return script

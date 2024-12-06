@@ -34,6 +34,7 @@ class DatabaseController:
         
     def insertInteraction(self, start, end, userInput, response, sessionID):
         try:
+            print("Inserting Interaction")
             connection= self.getConnection()
             with connection.cursor() as cur:
                 cur.execute('''
@@ -48,7 +49,9 @@ class DatabaseController:
             raise("Error executing insert statment", e)
         
     def fetchConversation(self, sessionID):
+        print(sessionID)
         try:
+            print("fetching convo")
             connection = self.getConnection()
             with connection.cursor() as cur:
                 cur.execute('''

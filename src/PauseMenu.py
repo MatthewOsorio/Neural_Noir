@@ -93,6 +93,7 @@ class PauseMenu():
 
     def showScriptMenu(self):
         self.hide()
+        self.scriptMenu.generateDisplayBox()
         self.scriptMenu.show()
 
     def resumeGame(self):
