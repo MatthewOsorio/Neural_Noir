@@ -10,6 +10,7 @@ class ScriptDisplay():
         self.manager= mangaer
         self.gameController= gameController
         self.generateDisplayBox()
+        print("ScriptDisplay intialized") # debug
 
     def formatScript(self, conversation):
         script = []
@@ -22,7 +23,9 @@ class ScriptDisplay():
     
     def getScript(self):
         conversation= self.gameController.getConversationFromDB()
+        print("fetched conversation from db", conversation) # debug
         script = self.formatScript(conversation)
+        print("formatted script:", script)
         return script
 
     def generateDisplayBox(self):
@@ -43,6 +46,8 @@ class ScriptDisplay():
                         text_fg = (255, 255, 255, 1))
 
         dialogue_texts = self.getScript()
+        print("Dialogue texts for display:", dialogue_texts) # debug
+        print("Creating GUI elements for ScriptDisplay") # debug
 
         line_height= 0.1
         margin= 0.25
@@ -87,6 +92,7 @@ class ScriptDisplay():
         # self.getConversation() 
 
     def show(self):
+        print("Displaying ScriptDisplay")
         self.scriptDisplay.show()
 
     def hide(self):

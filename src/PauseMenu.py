@@ -17,7 +17,9 @@ class PauseMenu():
         self.manager = manager
         self.menu = menu
 
+        print("Initializing pause menu") # debug
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
+        print("scriptdisplay instance created") # debug
         self.scriptMenu.hide()
         
         self.audioSettingsMenu = audioSettings(self.manager.base.menuManager, back_callback=self.show)
@@ -29,6 +31,8 @@ class PauseMenu():
 
         self.displayPauseMenu()
         self.ended = False
+
+        print("Pause menu initialized") # debug
 
     def displayPauseMenu(self):
         self.pauseMenu = DirectFrame(
@@ -53,6 +57,7 @@ class PauseMenu():
                                             parent=self.pauseMenu,
                                             command= self.showScriptMenu
                             )
+        print("script button initialized") # debug
         
         self.resumeButton = DirectButton(
             text = "Resume",
@@ -92,6 +97,7 @@ class PauseMenu():
         self.titleImage.hide()
 
     def showScriptMenu(self):
+        print("button clicked") # debug
         self.hide()
         self.scriptMenu.show()
 
