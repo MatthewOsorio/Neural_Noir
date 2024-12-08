@@ -21,7 +21,7 @@ class BiometricController:
                 raise(f"Error with emotibit, {e}")
 
     def isNervous(self, heartRate):
-        if heartRate > 100.00:
+        if heartRate > 80.00:
             self.setNervous(True)
         else:
             self.setNervous(False)
