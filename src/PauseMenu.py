@@ -113,6 +113,7 @@ class PauseMenu():
         self.manager.base.checkGameStartFlag()
         self.manager.game.database.closeConnection()
         self.manager.game.biometricController.biometricReader.restartBoard()
+        self.manager.game.begin = False
         self.ended = True
         
     def testAudioSettings(self):

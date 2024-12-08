@@ -21,8 +21,11 @@ class BiometricController:
                 self.reconnect(e)
                 
     def reconnect(self, error):
-        print("Error - Attempting to reconnect to Emotibit")
-        self.biometricReader.setup()
+        if self.gc.begin == True:
+            print("Error - Attempting to reconnect to Emotibit")
+            self.biometricReader.setup()
+        
+
 
     def isNervous(self, heartRate):
         if heartRate > 80.00:

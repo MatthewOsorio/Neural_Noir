@@ -12,6 +12,7 @@ class GameController:
         self.tempUserInput= None
         self.tempGeneratedResponse= None
         self.userNervous= False
+        self.begin = False
 
     def convertSpeechToText(self):
         processed_audio_input = self.stt.listen()
