@@ -17,8 +17,8 @@ class BiometricReader:
 
     def setup(self):
         params= BrainFlowInputParams()
-        params.serial_port= 'COM3'
-        self.emotibit = BoardShim(BoardIds.EMOTIBIT_BOARD.value, params)
+        #Can be run without specific address but it will take longer
+        self.emotibit = BoardShim(BoardIds.EMOTIBIT_BOARD, params)
     
     def read(self):
         self.emotibit.prepare_session()
