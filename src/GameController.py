@@ -26,10 +26,13 @@ class GameController:
         return input
 
     def createDetectiveResponse(self):
+        self.nlp.userNervous = self.userNervous
+        print("User Nervous: ", self.userNervous)
+        print("Heartrate: ", self.biometricController.biometricReader.getHeartRate())
         response= self.nlp.generateResponse()
         self.convertTextToSpeech(response)
         self.tempGeneratedResponse = response
-        # print(self.userNervous)
+        
         return response
 
     def convertTextToSpeech(self, response):

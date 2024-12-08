@@ -7,6 +7,7 @@ class NLPController:
         self.gpt= OpenAI()
         self.style= style
         self.interaction= im()
+        self.userNervous = False
 
         #Initalize the system role with the context of the interrogation
         self.context= {"role": "system", "content": self.interaction.getContext()}
@@ -49,6 +50,18 @@ class NLPController:
         self.interaction.addToInteraction({"role": "assistant",
                                           "content": firstQuestion})
         return self.interaction.getLast()
+    
+    def getNervous(self) -> str:
+        self.nervousString = ""
+
+        if self.userNervous == True:
+            self.nervousString = "The suspect is currently nervous. Reply accordingly."
+
+        if self.userNervous == False:
+            self.nervousString = "The suspect is not currently nervous. Reply accordingly."
+
+        print(self.nervousString)
+        return self.nervousString
 
     def generateResponse(self) -> str:
         # print(self.style.getStyle())
@@ -58,8 +71,10 @@ class NLPController:
         )
 
         generatedResponse= response.choices[0].message.content
+        isNervous = self.getNervous()
+
         self.interaction.addToInteraction({"role": "assistant",
-                                           "content": generatedResponse})
+                                           "content": generatedResponse + isNervous})
 
         return generatedResponse
 
