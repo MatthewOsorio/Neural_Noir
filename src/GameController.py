@@ -26,7 +26,7 @@ class GameController:
         return input
 
     def createDetectiveResponse(self):
-        self.nlp.userNervous = self.userNervous
+        self.nlp.interaction.userNervous = self.userNervous
         print("User Nervous: ", self.userNervous)
         print("Heartrate: ", self.biometricController.biometricReader.getHeartRate())
         response= self.nlp.generateResponse()
