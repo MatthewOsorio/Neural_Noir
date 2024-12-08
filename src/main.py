@@ -25,10 +25,12 @@ class main(ShowBase):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         self.roomLoaded = False
 
-        self.connection = Connection()
-        self.connectionDisplay = ConnectionDisplay(self, self.connection)
+        self.connection = None
+        self.connectionDisplay = None
+        self.connections()
 
         self.voiceVolume = 1
+        self.interrogationThread = None
    
     def checkGameStartFlag(self):
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
@@ -36,7 +38,7 @@ class main(ShowBase):
     #Will not load the interrogation room until the game actually starts 
     #Note: Give it about a second after "start" is selected for the room to load        
     def checkForGameStart(self, task):
-
+        self.connections()
         def on_success():
             self.connectionDisplay.destroyConnectionStatus()
             
@@ -47,7 +49,7 @@ class main(ShowBase):
             self.roomLoaded = True   
             self.interrogationRoom.game.begin = True
             #Stars interrogation api calls on a separate thread once the game is started
-            self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation)
+            self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation, daemon = True)
             self.interrogationThread.start()
 
         if self.menuManager.gameStart == True:
@@ -62,13 +64,16 @@ class main(ShowBase):
     def returnToMenu(self, task=None):
 
         self.connectionDisplay.destroyConnectionStatus()
-        self.interrogationRoom.unloadModels()
         self.interrogationRoom = None
-
+        self.interrogationThread = None
         self.menuManager.showMain()
         self.menuManager.showImage()
         if task:
             return task.done
+        
+    def connections(self):
+        self.connection = Connection()
+        self.connectionDisplay = ConnectionDisplay(self, self.connection)        
         
 app = main()
 app.run()
