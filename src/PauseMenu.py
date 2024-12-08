@@ -19,7 +19,7 @@ class PauseMenu():
 
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
-        
+
         self.audioSettingsMenu = audioSettings(self.manager.base.menuManager, back_callback=self.show)
 
         self.titleImage = OnscreenImage(
@@ -79,7 +79,7 @@ class PauseMenu():
         )
         
     def show(self):
-        self.pauseMenu.show()
+        self.displayPauseMenu()
         self.manager.gameState = 'script'
 
     def hide(self):

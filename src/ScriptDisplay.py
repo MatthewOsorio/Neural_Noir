@@ -3,13 +3,29 @@ from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectLabel import DirectLabel
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
+from direct.gui.DirectButton import DirectButton
 from panda3d.core import TextNode
 
 class ScriptDisplay():
     def __init__(self, mangaer ,gameController):
         self.manager= mangaer
         self.gameController= gameController
+        
         self.generateDisplayBox()
+
+        self.scriptMenu = DirectFrame(
+            frameColor=(0, 0, 0, 0),
+            frameSize=(-1, 1, -1, 1),
+            parent=self.manager.menu.base.aspect2d
+        )
+
+        self.backButton = DirectButton(
+            text="Back",
+            scale=0.1,
+            pos=(-1, -1, -1),
+            parent=self.scriptMenu,
+            command = self.returnToPause
+        )
 
     def formatScript(self, conversation):
         script = []
@@ -89,6 +105,12 @@ class ScriptDisplay():
 
     def show(self):
         self.scriptDisplay.show()
+        self.scriptMenu.show()
 
     def hide(self):
         self.scriptDisplay.hide()
+        self.scriptMenu.hide()
+
+    def returnToPause(self):
+        self.hide()
+        self.manager.show()
