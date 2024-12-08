@@ -10,6 +10,10 @@ class AudioController:
 
     def playText(self, path):
         pygame.mixer.music.load(str(path))
+
+        while self.paused == True:
+            continue
+        
         pygame.mixer.music.play()
 
         self.paused = False
