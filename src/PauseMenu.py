@@ -103,18 +103,24 @@ class PauseMenu():
         self.manager.game.tts.audio.resumeSpeech()
 
     def returnToMain(self):
-        self.hide()
-        self.hideImage()
-        self.manager.gameState = 'gameplay'
-        self.manager.unloadModels()
-        self.menu.showMain()
-        self.menu.showImage()
-        self.menu.gameStart = False
-        self.manager.base.checkGameStartFlag()
-        self.manager.game.database.closeConnection()
-        self.manager.game.biometricController.biometricReader.restartBoard()
-        self.manager.game.begin = False
-        self.ended = True
+        self.quitClicked = False
+
+        #Ensures quit command is not sent twice 
+        if self.quitClicked == False:
+            self.quitClicked == True
+            self.hide()
+            self.hideImage()
+            self.manager.gameState = 'gameplay'
+            self.manager.unloadModels()
+            self.menu.showMain()
+            self.menu.showImage()
+            self.menu.gameStart = False
+            self.manager.base.checkGameStartFlag()
+            self.manager.game.database.closeConnection()
+            self.manager.game.biometricController.biometricReader.restartBoard()
+            self.manager.game.begin = False
+            self.ended = True
+            self.manager.base.returnToMenu()
         
     def testAudioSettings(self):
         self.hide()
