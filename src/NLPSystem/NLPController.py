@@ -7,6 +7,7 @@ class NLPController:
         self.gpt= OpenAI()
         self.style= style
         self.interaction= im()
+        
 
         #Initalize the system role with the context of the interrogation
         self.context= {"role": "system", "content": self.interaction.getContext()}
@@ -49,15 +50,15 @@ class NLPController:
         self.interaction.addToInteraction({"role": "assistant",
                                           "content": firstQuestion})
         return self.interaction.getLast()
-
+    
     def generateResponse(self) -> str:
         # print(self.style.getStyle())
         response = self.gpt.chat.completions.create(
             model= "gpt-4o",
             messages= self.interaction.getInteraction()
         )
-
         generatedResponse= response.choices[0].message.content
+
         self.interaction.addToInteraction({"role": "assistant",
                                            "content": generatedResponse})
 
