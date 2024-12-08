@@ -19,7 +19,7 @@ class PauseMenu():
 
         self.scriptMenu = ScriptDisplay(self, self.manager.game)
         self.scriptMenu.hide()
-        
+
         self.audioSettingsMenu = audioSettings(self.manager.base.menuManager, back_callback=self.show)
 
         self.titleImage = OnscreenImage(
@@ -79,7 +79,7 @@ class PauseMenu():
         )
         
     def show(self):
-        self.pauseMenu.show()
+        self.displayPauseMenu()
         self.manager.gameState = 'script'
 
     def hide(self):
@@ -112,6 +112,8 @@ class PauseMenu():
         self.menu.gameStart = False
         self.manager.base.checkGameStartFlag()
         self.manager.game.database.closeConnection()
+        self.manager.game.biometricController.biometricReader.restartBoard()
+        self.manager.game.begin = False
         self.ended = True
         
     def testAudioSettings(self):
