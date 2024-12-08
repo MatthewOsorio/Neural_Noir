@@ -18,7 +18,7 @@ class PauseMenu():
         self.menu = menu
 
         print("Initializing pause menu") # debug
-        self.scriptMenu = ScriptDisplay(self, self.manager.game)
+        self.scriptMenu = ScriptDisplay(self, self.manager.game, self)
         print("scriptdisplay instance created") # debug
         self.scriptMenu.hide()
         
@@ -82,7 +82,7 @@ class PauseMenu():
             parent = self.pauseMenu,
             command = self.testAudioSettings
         )
-        
+
     def show(self):
         self.pauseMenu.show()
         self.manager.gameState = 'script'

@@ -2,13 +2,15 @@ from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectLabel import DirectLabel
+from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 from panda3d.core import TextNode
 
 class ScriptDisplay():
-    def __init__(self, mangaer ,gameController):
+    def __init__(self, mangaer ,gameController, pauseMenu):
         self.manager= mangaer
         self.gameController= gameController
+        self.pauseMenu = pauseMenu
         self.generateDisplayBox()
         print("ScriptDisplay intialized") # debug
 
@@ -90,11 +92,23 @@ class ScriptDisplay():
                 text_fg=(1, 1, 1, 1)
             )
 
+        self.exitScriptButton = DirectButton(
+            text="Back",
+            scale=0.1,
+            pos=(-1.385, 0, -0.85),
+            parent=self.scriptDisplay,
+            command=self.goBackToPauseMenu
+        )
+
         # self.getConversation() 
 
     def show(self):
         print("Displaying ScriptDisplay")
         self.scriptDisplay.show()
+
+    def goBackToPauseMenu(self):
+        self.hide()
+        self.pauseMenu.show()
 
     def hide(self):
         self.scriptDisplay.hide()
