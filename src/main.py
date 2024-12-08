@@ -62,6 +62,8 @@ class main(ShowBase):
     def returnToMenu(self, task=None):
 
         self.connectionDisplay.destroyConnectionStatus()
+        self.interrogationRoom.unloadModels()
+        self.interrogationRoom = None
 
         self.menuManager.showMain()
         self.menuManager.showImage()
