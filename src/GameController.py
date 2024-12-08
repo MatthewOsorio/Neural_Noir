@@ -27,9 +27,14 @@ class GameController:
 
     def createDetectiveResponse(self):
         self.nlp.interaction.userNervous = self.userNervous
+
         #Do not set nervous flag if no biometric data 
         if self.biometricController.biometricReader.getHeartRate() == None:
             self.nlp.interaction.ignoreBio = True
+            
+        if self.biometricController.biometricReader.getHeartRate():
+            self.nlp.interaction.ignoreBio = False
+
         print("User Nervous: ", self.userNervous)
         print("Heartrate: ", self.biometricController.biometricReader.getHeartRate())
         response= self.nlp.generateResponse()
