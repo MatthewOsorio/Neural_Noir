@@ -1,6 +1,7 @@
 class IneractionModel:
     def __init__(self):
         self.userNervous = False
+        self.ignoreBio = False
 
         self.context= '''A murder was commited last night, the victim was a CEO of a company with a reputation of being terrible to this employees and being very unlikeable.
                         He was murder last night at a company event, when the murder happened all the lights shut off and there was a loud bang. 
@@ -10,13 +11,18 @@ class IneractionModel:
 
     def getNervous(self) -> list:
         self.nervousString = ""
+        print("Ignore: ", self.ignoreBio)
 
         #User nervous set in game controller 
-        if self.userNervous == True:
+        if self.userNervous == True and self.ignoreBio == False:
             self.nervousString = "The suspect is currently nervous. Reply accordingly."
 
-        if self.userNervous == False:
+        if self.userNervous == False and self.ignoreBio == False:
             self.nervousString = "The suspect is not currently nervous. Reply accordingly."
+
+        #Remains Neutral if no biometric data 
+        if self.ignoreBio == True:
+            self.nervousString = ""
 
         print(self.nervousString)
         return {"role": "system", 
