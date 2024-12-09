@@ -6,7 +6,7 @@ from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
 from DatabaseController import DatabaseController as db
 from panda3d.core import *
-
+import time
 
 #Code originally written by Christine 
 #Modified by Evie 
@@ -32,7 +32,7 @@ class InterrogationRoom:
         self.pauseMenu.hideImage()
         
         #Game will not be pausable if it is the user's turn to reply
-        self.pausable = True
+        self.pausable = False
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -116,7 +116,9 @@ class InterrogationRoom:
     #Run on separate thread
     def runInterrogation(self):
         
+        self.pausable = True
         self.game.startInterrogation()
+        
         self.end = False
         while self.end==False:
            

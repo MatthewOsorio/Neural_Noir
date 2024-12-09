@@ -21,7 +21,7 @@ class PauseMenu():
         self.scriptMenu = ScriptDisplay(self, self.manager.game, self)
         print("scriptdisplay instance created") # debug
         self.scriptMenu.hide()
-        
+
         self.audioSettingsMenu = audioSettings(self.manager.base.menuManager, back_callback=self.show)
 
         self.titleImage = OnscreenImage(
@@ -84,7 +84,7 @@ class PauseMenu():
         )
 
     def show(self):
-        self.pauseMenu.show()
+        self.displayPauseMenu()
         self.manager.gameState = 'script'
 
     def hide(self):
@@ -109,16 +109,24 @@ class PauseMenu():
         self.manager.game.tts.audio.resumeSpeech()
 
     def returnToMain(self):
-        self.hide()
-        self.hideImage()
-        self.manager.gameState = 'gameplay'
-        self.manager.unloadModels()
-        self.menu.showMain()
-        self.menu.showImage()
-        self.menu.gameStart = False
-        self.manager.base.checkGameStartFlag()
-        self.manager.game.database.closeConnection()
-        self.ended = True
+        self.quitClicked = False
+
+        #Ensures quit command is not sent twice 
+        if self.quitClicked == False:
+            self.quitClicked == True
+            self.hide()
+            self.hideImage()
+            self.manager.gameState = 'gameplay'
+            self.manager.unloadModels()
+            self.menu.showMain()
+            self.menu.showImage()
+            self.menu.gameStart = False
+            self.manager.base.checkGameStartFlag()
+            self.manager.game.database.closeConnection()
+            self.manager.game.biometricController.biometricReader.restartBoard()
+            self.manager.game.begin = False
+            self.ended = True
+            self.manager.base.returnToMenu()
         
     def testAudioSettings(self):
         self.hide()

@@ -89,3 +89,7 @@ class BiometricReader:
     
     def getEndTime(self):
         return self.endTime
+    
+    def restartBoard(self):
+        self.emotibit.release_session()
+        self.emotibit = None

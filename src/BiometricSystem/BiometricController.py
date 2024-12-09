@@ -18,7 +18,15 @@ class BiometricController:
                 # print(type(self.biometricReader.getHeartRate()))
                 self.sendToDB()
             except Exception as e:
-                raise(f"Error with emotibit, {e}")
+                self.reconnect(e)
+                
+    def reconnect(self, error):
+        #Will attempt to reconnect to emotibit so long as the game session has begun
+        if self.gc.begin == True:
+            print("Error - Attempting to reconnect to Emotibit")
+            self.biometricReader.setup()
+        
+
 
     def isNervous(self, heartRate):
         if heartRate > 80.00:
