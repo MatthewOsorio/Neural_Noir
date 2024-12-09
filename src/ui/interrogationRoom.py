@@ -130,6 +130,6 @@ class InterrogationRoom:
             
             response = self.game.createDetectiveResponse()
             print(response)
-            return response
+            #return response
             
         self.ended = False
