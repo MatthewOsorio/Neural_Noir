@@ -24,11 +24,11 @@ class ScriptDisplay():
         return script
     
     def getScript(self):
-        print("Getting script")
+        print("Getting script") # debug
         conversation= self.gameController.getConversationFromDB()
         print("fetched conversation from db", conversation) # debug
         script = self.formatScript(conversation)
-        print("formatted script:", script)
+        print("formatted script:", script) # debug
         return script
 
     def generateDisplayBox(self):
@@ -103,7 +103,7 @@ class ScriptDisplay():
         # self.getConversation() 
 
     def show(self):
-        print("Displaying ScriptDisplay")
+        print("Displaying ScriptDisplay") # debug
         self.scriptDisplay.show()
 
     def goBackToPauseMenu(self):

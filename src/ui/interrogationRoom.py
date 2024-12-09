@@ -99,6 +99,8 @@ class InterrogationRoom:
             print(f"< {speech}")
             self.pausable = True
             
-            print(self.game.createDetectiveResponse())
+            response = self.game.createDetectiveResponse()
+            print(response)
+            return response
             
         self.ended = False
