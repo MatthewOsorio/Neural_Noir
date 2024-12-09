@@ -46,6 +46,7 @@ class main(ShowBase):
             #print("Main - True")
             self.interrogationRoom.cameraSetUp()
             self.interrogationRoom.loadModels()    
+            self.interrogationRoom.loadLighting()
             self.roomLoaded = True   
             self.interrogationRoom.game.begin = True
             #Stars interrogation api calls on a separate thread once the game is started
