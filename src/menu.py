@@ -85,7 +85,7 @@ class mainMenu:
         )
 
         self.titleText = TextNode('TitleText')
-        self.titleText.setText("Title")
+        self.titleText.setText("Neural Noir")
         self.titleText_np = self.mainMenu.attachNewNode(self.titleText)  
         self.titleText_np.setScale(0.3)
         self.titleText_np.setPos(0, 0, 0.7)

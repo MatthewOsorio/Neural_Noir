@@ -5,6 +5,7 @@ from NLPSystem.IntimidatingStyle import IntimidatingSytle
 from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
 from DatabaseController import DatabaseController as db
+from panda3d.core import *
 import time
 
 #Code originally written by Christine 
@@ -81,11 +82,36 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
+        # load policeman
+        self.policeman = self.base.loader.loadModel("../blender/policeman/converted/policeman_converted.bam")
+        self.policeman.setScale(0.5)
+        self.policeman.setPos(-0.43, 2, -1.5)
+        self.room.setHpr(0, 0, 0)
+        self.policeman.reparentTo(self.base.render)
+        
     def unloadModels(self):
         self.room.detachNode()
         self.room.removeNode()
         self.room = None
+
+        self.policeman.detachNode()
+        self.policeman.removeNode()
+        self.policeman = None
         #print("Unload models")
+
+    def loadLighting(self):
+        # Point lighting
+        # self.plight = PointLight('plight')
+        # self.plight.setColor((0.5,0.5,0.5,1))
+        # self.plnp = self.base.render.attachNewNode(self.plight)
+        # self.plnp.setPos(0,2,3)
+        # self.base.render.setLight(self.plnp)
+
+        # Ambient lighting
+        self.ambient = AmbientLight('ambient')
+        self.ambient.setColor((0.3, 0.3, 0.3, 1))
+        self.ambientNP = self.base.render.attachNewNode(self.ambient)
+        self.base.render.setLight(self.ambientNP)
 
     #Run on separate thread
     def runInterrogation(self):
@@ -102,6 +128,8 @@ class InterrogationRoom:
             print(f"< {speech}")
             self.pausable = True
             
-            print(self.game.createDetectiveResponse())
+            response = self.game.createDetectiveResponse()
+            print(response)
+            return response
             
         self.ended = False
