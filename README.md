@@ -8,3 +8,7 @@
 - pip install PyAudio
 - pip install pygame
 
+
+Note from Christine Angela Barlaan:
+  Due to commit misattribution during early development, I have manually counted the lines of code from my initial commits.
+  Total contribution = 724 (additions and deletions) + existing documented commits
