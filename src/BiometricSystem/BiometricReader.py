@@ -13,7 +13,9 @@ class BiometricReader:
         self.temperature= None
         self.startTime= None
         self.endTime= None
+        self.activeBoards = {}
         self.setup()
+        
 
     def setup(self):
         params= BrainFlowInputParams()
@@ -21,6 +23,8 @@ class BiometricReader:
         params.ip_address = '192.168.137.255'
         self.emotibit = BoardShim(BoardIds.EMOTIBIT_BOARD, params)
         BoardShim.disable_board_logger()
+        self.activeBoards[BoardIds.EMOTIBIT_BOARD] = self.emotibit
+        
     
     def read(self):
         self.emotibit.prepare_session()
@@ -91,5 +95,11 @@ class BiometricReader:
         return self.endTime
     
     def restartBoard(self):
-        self.emotibit.release_session()
+        if self.emotibit.is_prepared():
+            self.emotibit.release_session()
+
         self.emotibit = None
+
+    def clear(self):
+        if self.activeBoards[BoardIds.EMOTIBIT_BOARD]:
+            self.emotibit.release_session()
