@@ -156,9 +156,10 @@ class settingsMenu:
 
         self.topText = TextNode('TopText')
         self.topText.setText("Settings")
-        self.topText_np = self.settingsMenu.attachNewNode(self.topText)
-        self.topText_np.setScale(0.2)
-        self.topText_np.setPos(-0.2, 0, 0.7)
+        self.topText_np = self.settingsMenu.attachNewNode(self.topText)  
+        self.topText_np.setScale(0.25)
+        self.topText_np.setPos(0, 0, 0.7)
+        self.topText.setAlign(self.topText.ACenter)
 
         self.backButton = DirectButton(
             text="Back",
@@ -169,9 +170,9 @@ class settingsMenu:
         )
 
         self.audioButton = DirectButton(
-            text="audio",
+            text="Audio",
             scale=0.1,
-            pos=(0, 0, -0.8),
+            pos=(0, 0, 0.3),
             command=self.moveToAudio,
             parent=self.settingsMenu
         )
