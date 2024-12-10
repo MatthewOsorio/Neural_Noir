@@ -26,6 +26,7 @@ class audioManager:
 
         #Sound effects library 
         self.soundEffects = {
+            # DENY_SOUND.mp3 by ciapaqua -- https://freesound.org/s/637108/ -- License: Creative Commons 0
             "errorSound" : pygame.mixer.Sound('../Neural_Noir/Assets/Audio/ErrorSound.mp3')
         }
 
