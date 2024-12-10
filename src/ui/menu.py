@@ -208,8 +208,9 @@ class audioSettings:
         self.topText.setText("Audio Settings")
         self.topText_np = self.audioMenu.attachNewNode(self.topText)
         self.topText_np.setScale(0.2)
-        self.topText_np.setPos(-0.9, 0, 0.8)
+        self.topText_np.setPos(0, 0, 0.8)
         self.topText.setWordwrap(25.0)
+        self.topText.setAlign(self.topText.ACenter)
 
         self.volumeText = OnscreenText(
             text = 'Sfx Volume',
