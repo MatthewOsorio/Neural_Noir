@@ -156,9 +156,10 @@ class settingsMenu:
 
         self.topText = TextNode('TopText')
         self.topText.setText("Settings")
-        self.topText_np = self.settingsMenu.attachNewNode(self.topText)
-        self.topText_np.setScale(0.2)
-        self.topText_np.setPos(-0.2, 0, 0.7)
+        self.topText_np = self.settingsMenu.attachNewNode(self.topText)  
+        self.topText_np.setScale(0.25)
+        self.topText_np.setPos(0, 0, 0.7)
+        self.topText.setAlign(self.topText.ACenter)
 
         self.backButton = DirectButton(
             text="Back",
@@ -169,9 +170,9 @@ class settingsMenu:
         )
 
         self.audioButton = DirectButton(
-            text="audio",
+            text="Audio",
             scale=0.1,
-            pos=(0, 0, -0.8),
+            pos=(0, 0, 0.3),
             command=self.moveToAudio,
             parent=self.settingsMenu
         )
@@ -207,8 +208,9 @@ class audioSettings:
         self.topText.setText("Audio Settings")
         self.topText_np = self.audioMenu.attachNewNode(self.topText)
         self.topText_np.setScale(0.2)
-        self.topText_np.setPos(-0.9, 0, 0.8)
+        self.topText_np.setPos(0, 0, 0.8)
         self.topText.setWordwrap(25.0)
+        self.topText.setAlign(self.topText.ACenter)
 
         self.volumeText = OnscreenText(
             text = 'Sfx Volume',
@@ -258,14 +260,16 @@ class audioSettings:
             text = "On",
             parent = self.audioMenu,
             scale = 0.1,
-            pos = (-0.3, -0.3, -0.4)
+            pos = (-0.3, -0.3, -0.4),
+            command = self.turnSubtitlesOn
         )
 
         self.subTitlesOff = DirectCheckButton(
             text = "Off",
             parent = self.audioMenu,
             scale = 0.1,
-            pos = (0.4, -0.3, -0.4)
+            pos = (0.4, -0.3, -0.4),
+            command = self.turnSubtitlesOff
         )
 
         self.backButton = DirectButton(
@@ -318,6 +322,14 @@ class audioSettings:
     def setVoiceVolumeV(self):
         if self.manager.gameStart == True:
             self.manager.base.interrogationRoom.game.tts.audio.setVolume(self.voiceVolumeSlider['value'])
+
+    def turnSubtitlesOn(self, state):
+        self.subTitlesOff["indicatorValue"] = False
+        self.subTitlesOff.setIndicatorValue
+    
+    def turnSubtitlesOff(self, state):
+        self.subTitlesOn["indicatorValue"] = False
+        self.subTitlesOn.setIndicatorValue
 
 #ConfirmQuit code originally written by Matt
 #Modified and integrated by Evie 
