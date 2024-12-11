@@ -3,12 +3,12 @@ from BiometricSystem.BiometricReader import BiometricReader
 
 class TestBiometricReader(unittest.TestCase):
     
-    def setup(self):
-        pass
+    def setUp(self):
+        self.biometric_reader = BiometricReader()
     
     def test_read(self):
         pass
-    
+
     def test_processdata(self):
         pass
     

@@ -24,7 +24,6 @@ class TestAudio(unittest.TestCase):
         self.assertEqual(self.audio.dialog, None)
         self.assertEqual(result, 0)
 
-
     def test_set_volume_value(self):
         mock_sound = Mock()
         self.audio.soundEffects = {"sound1": mock_sound}

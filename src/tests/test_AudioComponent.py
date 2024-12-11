@@ -4,8 +4,8 @@ from TTSSystem.AudioComponent import AudioController
 class TestAudioComponent(unittest.TestCase):
     
     def setup(self):
-        pass
-    
+        self.audio_component = AudioController()
+
     def test_playtext(self):
         pass
     
