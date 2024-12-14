@@ -1,5 +1,5 @@
 import unittest
-from ScriptDisplay import ScriptDisplay
+from ui.ScriptDisplay import ScriptDisplay
 
 class TestScriptDisplay(unittest.TestCase):
     

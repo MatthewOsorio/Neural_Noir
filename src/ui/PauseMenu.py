@@ -4,8 +4,8 @@ from direct.gui.DirectLabel import DirectLabel
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 from direct.gui.DirectButton import DirectButton
 from panda3d.core import TextNode
-from ScriptDisplay import ScriptDisplay
-from audio import audioManager
+from ui.ScriptDisplay import ScriptDisplay
+from ui.audio import audioManager
 from ui.menu import audioSettings
 
 

@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from audio import audioManager
+from ui.audio import audioManager
 
 class TestAudio(unittest.TestCase):
     @patch("pygame.mixer.Sound")

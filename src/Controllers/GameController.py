@@ -1,4 +1,4 @@
-from SessionController import SessionController as sc
+from Controllers.SessionController import SessionController as sc
 from  BiometricSystem.BiometricController import BiometricController as bc
 
 class GameController:

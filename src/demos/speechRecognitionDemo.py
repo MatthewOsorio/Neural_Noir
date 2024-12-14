@@ -1,10 +1,10 @@
-import GameController as gc
+import Controllers.GameController as gc
 from NLPSystem.NLPController import NLPController as nlp
 from NLPSystem.IntimidatingStyle import IntimidatingSytle
 from NLPSystem.InteractionModel import IneractionModel
 from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
-from DatabaseController import DatabaseController as db
+from Controllers.DatabaseController import DatabaseController as db
 
 newInteraction = IneractionModel()
 intimidating = IntimidatingSytle()
