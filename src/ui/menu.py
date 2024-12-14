@@ -8,8 +8,8 @@ from direct.gui.DirectGui import *
 import time 
 import sys
 
-from audio import audioManager
-import ScriptDisplay
+from ui.audio import audioManager
+import ui.ScriptDisplay as ScriptDisplay
 
 
 #Controls menu navigation and allows each menu to use Aspect2d from main
