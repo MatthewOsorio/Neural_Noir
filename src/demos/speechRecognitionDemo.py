@@ -13,7 +13,6 @@ game = gc.GameController(stt(), nlpController, ttsc(), db())
 
 game.startInterrogation()
 
-
 while True:
     speech = game.speechInput()
     print(f"< {speech}")
