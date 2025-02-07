@@ -27,7 +27,7 @@ class IneractionModel:
         print(self.nervousString)
         return {"role": "system", 
                 "content": self.nervousString}
-
+    
     def addToInteraction(self, input) -> None:
         self.interaction.append(input)
 
