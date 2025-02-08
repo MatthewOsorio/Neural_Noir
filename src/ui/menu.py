@@ -11,6 +11,7 @@ import sys
 from ui.audio import audioManager
 import ui.ScriptDisplay as ScriptDisplay
 
+limeLight = "../Assets/Fonts/Limelight/Limelight-Regular.ttf"
 
 #Controls menu navigation and allows each menu to use Aspect2d from main
 #In menu classes, use manager.base.aspect2D to use Aspect2d 
@@ -78,49 +79,72 @@ class mainMenu:
 
         self.manager = manager
 
+
         self.mainMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
             parent=self.manager.base.aspect2d
         )
 
+        self.backdrop = OnscreenImage(
+            "../Assets/Images/NeuralNoir_Background_Image.jpg", 
+            pos = (1, 0, 0), 
+            parent = self.mainMenu)
+        
+        self.backdropBack = OnscreenImage(
+            "../Assets/Images/Black.jpg",
+            pos = (-1, 0, 0),
+            parent = self.mainMenu
+        )
+
         self.titleText = TextNode('TitleText')
         self.titleText.setText("Neural Noir")
         self.titleText_np = self.mainMenu.attachNewNode(self.titleText)  
-        self.titleText_np.setScale(0.3)
-        self.titleText_np.setPos(0, 0, 0.7)
+        self.titleText_np.setScale(0.25)
+        self.titleText_np.setPos(-1, 0, 0.7)
         self.titleText.setAlign(self.titleText.ACenter)
+        self.titleText.font = loader.loadFont(limeLight)
 
         self.startButton = DirectButton(
             text="Start Game",
+            text_font = loader.loadFont(limeLight),
+            text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(0, 0, 0.3),
+            pos=(-1, 0, 0.3),
             parent=self.mainMenu,
-            command = self.startGame
+            command = self.startGame,
+            frameColor = (0,0,0,0)
         )
  
         self.settingsButton = DirectButton(
             text="Settings",
+            text_font = loader.loadFont(limeLight),
+            text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(0, 0, 0.0),
+            pos=(-1, 0, 0.0),
             parent=self.mainMenu,
-            command=self.moveToSettings
+            command=self.moveToSettings,
+            frameColor = (0,0,0,0)
         )
 
         self.quitButton = DirectButton(
             text="Quit",
+            text_font = loader.loadFont(limeLight),
+            text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(0, 0, -0.3),
+            pos=(-1, 0, -0.3),
             parent=self.mainMenu,
-            command=self.moveToQuit
+            command=self.moveToQuit,
+            frameColor = (0,0,0,0)
         )
 
         self.bottomText = TextNode('BottomText')
         self.bottomText.setText("Created by CS425 T25")
         self.bottomText_np = self.mainMenu.attachNewNode(self.bottomText)  
         self.bottomText_np.setScale(0.07)
-        self.bottomText_np.setPos(0, 0, -0.9)
+        self.bottomText_np.setPos(-1, 0, -0.9)
         self.bottomText.setAlign(self.bottomText.ACenter)
+        self.bottomText.font = loader.loadFont(limeLight)
 
     def startGame(self):
         self.hide()
@@ -152,6 +176,12 @@ class settingsMenu:
             frameSize=(-1, 1, -1, 1),
             parent=self.manager.base.aspect2d
         )
+
+        self.backdropBack = OnscreenImage(
+            "../Assets/Images/Black.jpg",
+            pos = (-1, 0, 0),
+            parent = self.settingsMenu
+        )
         self.hide()
 
         self.topText = TextNode('TopText')
@@ -160,9 +190,11 @@ class settingsMenu:
         self.topText_np.setScale(0.25)
         self.topText_np.setPos(0, 0, 0.7)
         self.topText.setAlign(self.topText.ACenter)
+        self.topText.font = loader.loadFont(limeLight)
 
         self.backButton = DirectButton(
             text="Back",
+            text_font = loader.loadFont(limeLight),
             scale=0.1,
             pos=(0, 0, 0),
             parent=self.settingsMenu,
@@ -171,6 +203,7 @@ class settingsMenu:
 
         self.audioButton = DirectButton(
             text="Audio",
+            text_font = loader.loadFont(limeLight),
             scale=0.1,
             pos=(0, 0, 0.3),
             command=self.moveToAudio,
