@@ -30,8 +30,8 @@ class ConversationModel:
     conversation=[]
     conversation.append({'role': 'developer', 'content': context})
 
-    def updateConversation(self, input) -> None:
-        ConversationModel.conversation.append(input)
+    def updateConversation(self, new_input) -> None:
+        ConversationModel.conversation.append(new_input)
 
     def getLast(self) -> str:
         return self.interaction[-1]["content"]
