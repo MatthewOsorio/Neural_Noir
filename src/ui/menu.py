@@ -104,16 +104,18 @@ class mainMenu:
         self.titleText_np.setPos(-1, 0, 0.7)
         self.titleText.setAlign(self.titleText.ACenter)
         self.titleText.font = loader.loadFont(limeLight)
+        self.mainTextColor = (1,1,1,1)
+        self.hoverColor = (1,1,0.5,1)
 
         self.startButton = DirectButton(
             text="Start Game",
             text_font = loader.loadFont(limeLight),
-            text_fg = (1,1,1,1),
             scale=0.1,
             pos=(-1, 0, 0.3),
             parent=self.mainMenu,
             command = self.startGame,
-            frameColor = (0,0,0,0)
+            frameColor = (0,0,0,0),
+            text_fg=self.mainTextColor,
         )
  
         self.settingsButton = DirectButton(
@@ -146,6 +148,19 @@ class mainMenu:
         self.bottomText.setAlign(self.bottomText.ACenter)
         self.bottomText.font = loader.loadFont(limeLight)
 
+        self.startButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.startButton))  # Mouse enters
+        self.startButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.startButton)) 
+
+        self.settingsButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.settingsButton))  # Mouse enters
+        self.settingsButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.settingsButton)) 
+
+        self.startButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.startButton))  # Mouse enters
+        self.startButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.startButton)) 
+
+        self.quitButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.quitButton))  # Mouse enters
+        self.quitButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.quitButton)) 
+        
+
     def startGame(self):
         self.hide()
         self.manager.hideImage()
@@ -167,6 +182,14 @@ class mainMenu:
         self.mainMenu.hide()
 
 
+
+    def setColorHover (self, button):
+        button["text_fg"] = self.hoverColor
+
+    def setColorDefault (self, button):
+        button["text_fg"] = self.mainTextColor
+
+
 class settingsMenu:
     def __init__(self, manager):
         self.manager = manager
@@ -176,6 +199,11 @@ class settingsMenu:
             frameSize=(-1, 1, -1, 1),
             parent=self.manager.base.aspect2d
         )
+
+        self.backdrop = OnscreenImage(
+            "../Assets/Images/NeuralNoir_Background_Image.jpg", 
+            pos = (1, 0, 0), 
+            parent = self.settingsMenu)
 
         self.backdropBack = OnscreenImage(
             "../Assets/Images/Black.jpg",
@@ -188,7 +216,7 @@ class settingsMenu:
         self.topText.setText("Settings")
         self.topText_np = self.settingsMenu.attachNewNode(self.topText)  
         self.topText_np.setScale(0.25)
-        self.topText_np.setPos(0, 0, 0.7)
+        self.topText_np.setPos(-1, 0, 0.7)
         self.topText.setAlign(self.topText.ACenter)
         self.topText.font = loader.loadFont(limeLight)
 
@@ -196,7 +224,7 @@ class settingsMenu:
             text="Back",
             text_font = loader.loadFont(limeLight),
             scale=0.1,
-            pos=(0, 0, 0),
+            pos=(-1, 0, 0),
             parent=self.settingsMenu,
             command=self.moveToMain
         )
@@ -205,7 +233,7 @@ class settingsMenu:
             text="Audio",
             text_font = loader.loadFont(limeLight),
             scale=0.1,
-            pos=(0, 0, 0.3),
+            pos=(-1, 0, 0.3),
             command=self.moveToAudio,
             parent=self.settingsMenu
         )
