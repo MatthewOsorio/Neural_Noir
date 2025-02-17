@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from openai import OpenAI
 
 if TYPE_CHECKING:
-    from AI.AI_Behavior.AI_Context import AIBehavior
+    from AI_Context import AIContext
 
 class AI(ABC):
     def __init__(self, conversation):
@@ -12,11 +12,11 @@ class AI(ABC):
         self.conversation = conversation
 
     @property
-    def behavior(self) -> AIBehavior:
+    def behavior(self) -> AIContext:
         return self._behavior
     
     @behavior.setter
-    def behavior(self, behavior: AIBehavior) -> None:
+    def behavior(self, behavior: AIContext) -> None:
         self._behavior = behavior
 
     @abstractmethod

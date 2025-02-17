@@ -3,7 +3,7 @@ from .AI import AI
 
 class AIContext():
 
-    state = None
+    _state = None
     
     def __init__(self, state: AI) -> None:
         self.setAIBehavior(state)
