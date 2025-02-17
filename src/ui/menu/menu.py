@@ -15,8 +15,6 @@ from ui.menu.PauseMenu import PauseMenu
 from ui.audio import audioManager
 import ui.ScriptDisplay as ScriptDisplay
 
-
-
 #Controls menu navigation and allows each menu to use Aspect2d from main
 #In menu classes, use manager.base.aspect2D to use Aspect2d 
 class menuManager:
@@ -29,6 +27,10 @@ class menuManager:
         
         self.gameStart = startFlag
         self.gameState = 'menu'
+
+        self.limeLight = "../Assets/Fonts/Limelight/Limelight-Regular.ttf"
+        self.mainBackGround = "../Assets/Images/NeuralNoir_Background_Image.jpg"
+        self.backGroundBlack = "../Assets/Images/Black.jpg"
         
         #Instance of each menu
         self.mainMenu = mainMenu(self, self.base)

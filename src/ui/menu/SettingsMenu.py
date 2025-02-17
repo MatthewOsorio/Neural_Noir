@@ -13,6 +13,9 @@ class settingsMenu:
         self.base = base
         self.manager = manager
 
+        self.mainTextColor = (1,1,1,1)
+        self.hoverColor = (1,1,0.5,1)
+
         self.settingsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
@@ -42,20 +45,30 @@ class settingsMenu:
         self.backButton = DirectButton(
             text="Back",
             text_font = loader.loadFont(limeLight),
+            text_fg = (1,1,1,1),
             scale=0.1,
             pos=(-1, 0, 0),
             parent=self.settingsMenu,
-            command=self.moveToMain
+            command=self.moveToMain,
+            frameColor = (0,0,0,0)
         )
 
         self.audioButton = DirectButton(
             text="Audio",
             text_font = loader.loadFont(limeLight),
+            text_fg = (1,1,1,1),
             scale=0.1,
             pos=(-1, 0, 0.3),
             command=self.moveToAudio,
-            parent=self.settingsMenu
+            parent=self.settingsMenu,
+            frameColor = (0,0,0,0)
         )
+
+        self.backButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.backButton))  # Mouse enters
+        self.backButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.backButton)) 
+
+        self.audioButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.audioButton))  # Mouse enters
+        self.audioButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.audioButton)) 
 
     def moveToMain(self):
         self.hide()
@@ -70,3 +83,9 @@ class settingsMenu:
         
     def hide(self):
         self.settingsMenu.hide()
+
+    def setColorHover (self, button):
+        button["text_fg"] = self.hoverColor
+
+    def setColorDefault (self, button):
+        button["text_fg"] = self.mainTextColor     

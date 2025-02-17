@@ -46,6 +46,7 @@ class PauseMenu():
                 parent=self.pauseMenu,
                 text= "Pause",
                 text_scale= (0.110, 0.110),
+                text_font = loader.loadFont(self.manager.limeLight),
                 pos= (0, 0, 0.767),
                 frameColor= (0, 0, 0, 0),
                 text_fg = (255, 255, 255, 1))
@@ -62,6 +63,7 @@ class PauseMenu():
         self.resumeButton = DirectButton(
             text = "Resume",
             scale = 0.075,
+            text_font = loader.loadFont(self.manager.limeLight),
             pos = (0, 0, 0.50),
             parent = self.pauseMenu,
             command = self.resumeGame
@@ -69,6 +71,7 @@ class PauseMenu():
 
         self.quitButton = DirectButton(
             text = "Quit",
+            text_font = loader.loadFont(self.manager.limeLight),
             scale = 0.075,
             pos = (0, 0, -0.25),
             parent = self.pauseMenu,
@@ -77,6 +80,7 @@ class PauseMenu():
         
         self.audioButton = DirectButton(
             text = "Audio",
+            text_font = loader.loadFont(self.manager.limeLight),
             scale = 0.075,
             pos = (0, 0, 0),
             parent = self.pauseMenu,

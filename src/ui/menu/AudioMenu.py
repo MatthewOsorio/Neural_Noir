@@ -27,9 +27,11 @@ class audioSettings:
         self.topText_np.setPos(0, 0, 0.8)
         self.topText.setWordwrap(25.0)
         self.topText.setAlign(self.topText.ACenter)
+        self.topText.font = loader.loadFont(self.manager.limeLight)
 
         self.volumeText = OnscreenText(
             text = 'Sfx Volume',
+            font = loader.loadFont(self.manager.limeLight),
             scale = 0.15,
             parent = self.audioMenu,
             fg = (1,1,1,1),
@@ -48,6 +50,7 @@ class audioSettings:
 
         self.voiceVolumeText = OnscreenText(
             text = 'Dialogue Volume',
+            font = loader.loadFont(self.manager.limeLight),
             scale = 0.15,
             parent = self.audioMenu,
             fg = (1,1,1,1),
@@ -66,6 +69,7 @@ class audioSettings:
 
         self.subTitlesText = OnscreenText(
             text = 'Subtitles',
+            font = loader.loadFont(self.manager.limeLight),
             scale = 0.15,
             parent = self.audioMenu,
             fg = (1,1,1,1),
@@ -74,6 +78,7 @@ class audioSettings:
 
         self.subTitlesOn = DirectCheckButton(
             text = "On",
+            text_font = loader.loadFont(self.manager.limeLight),
             parent = self.audioMenu,
             scale = 0.1,
             pos = (-0.3, -0.3, -0.4),
@@ -82,6 +87,7 @@ class audioSettings:
 
         self.subTitlesOff = DirectCheckButton(
             text = "Off",
+            text_font = loader.loadFont(self.manager.limeLight),
             parent = self.audioMenu,
             scale = 0.1,
             pos = (0.4, -0.3, -0.4),
@@ -90,6 +96,7 @@ class audioSettings:
 
         self.backButton = DirectButton(
             text = ("Back"),
+            text_font = loader.loadFont(self.manager.limeLight),
             scale = 0.12,
             pos = (0,0,-0.7),
             parent = self.audioMenu,
@@ -98,16 +105,18 @@ class audioSettings:
 
         self.testInput = DirectButton(
             text = ("Test Microphone"),
+            text_font = loader.loadFont(self.manager.limeLight),
             scale = 0.1,
-            pos = (-0.4,0,-0.9),
+            pos = (-0.6,0,-0.9),
             parent = self.audioMenu,
             command = self.audio.testAudioInput
         )
 
         self.testOutput = DirectButton(
             text = ("Test Speakers"),
+            text_font = loader.loadFont(self.manager.limeLight),
             scale = 0.1,
-            pos = (0.4,0,-0.9),
+            pos = (0.6,0,-0.9),
             parent = self.audioMenu,
             command = self.audio.testAudioOutput
         )
@@ -124,7 +133,7 @@ class audioSettings:
 
     def moveToSettings(self):
         self.hide()
-        self.manbaseager.showSettings()
+        self.manager.showSettings()
 
     def show(self):
         self.audioMenu.show()
