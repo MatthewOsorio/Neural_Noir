@@ -1,4 +1,4 @@
-from ui.PauseMenu import PauseMenu
+from ui.menu.PauseMenu import PauseMenu
 import Controllers.GameController as gc
 from NLPSystem.NLPController import NLPController as nlp
 from NLPSystem.IntimidatingStyle import IntimidatingSytle
@@ -17,6 +17,7 @@ class InterrogationRoom:
 
         self.base.disableMouse()
         self.gameState= 'gameplay'
+        self.menu.gameState = 'gameplay'
 
         #pause game if escape is pressed
         self.base.accept('escape', self.pauseGame)
@@ -27,9 +28,11 @@ class InterrogationRoom:
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
-        self.pauseMenu = PauseMenu(self, self.menu)
-        self.pauseMenu.hide()
-        self.pauseMenu.hideImage()
+        self.menu.initializePauseMenu()
+        self.menu.pauseMenu.getGame(self.game)
+        self.menu.pauseMenu.getRoom(self)
+        self.menu.pauseMenu.hide()
+        self.menu.pauseMenu.hideImage()
         
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = False
@@ -37,9 +40,10 @@ class InterrogationRoom:
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True):
-            self.pauseMenu.show()
-            self.pauseMenu.showImage()
+            self.menu.pauseMenu.show()
+            self.menu.pauseMenu.showImage()
             self.gameState = 'paused'
+            self.menu.gameState = 'paused'
             self.game.tts.audio.pauseSpeech()
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == False):
             self.base.menuManager.audio.playSound("errorSound")

@@ -9,7 +9,7 @@ import sys
 from direct.stdpy.threading import Thread
 import time
 
-from ui.menu import menuManager
+from ui.menu.menu import menuManager
 from ui.interrogationRoom import InterrogationRoom
 from ui.connection_utils import Connection
 from ui.connectionDisplay import ConnectionDisplay
