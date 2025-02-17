@@ -1,20 +1,24 @@
-from GameState import GameState 
-from .AI_Behavior import AI_InitialPhase, AI_EarlyInterrogation, AI_MidInterrogation, AI_FinalInterrogation, AIContext
+from .AI_Behavior import AIInitialPhase, AIEarlyInterrogation, AIMidInterrogation, AIFinalInterrogation, AIContext
 
 class AIController:
-    def __init__(self, gameStateObject):
-        self.gameState = gameStateObject
-        self.ai = None        
+    def __init__(self, conversation):
+        self._ai = None     
+        self._conversation = conversation
 
-    def setAIBehavior(self):
-        match self.gameState.getState():
-            case GameState.initialPhase.value:
-                self.ai = AIContext(AI_InitialPhase(self.conversation))
-            # case GameState.first_interrogation.value:
-            #     self.ai = AIContext(AI_EarlyInterrogation(self.))
-            # case GameState.second_interrogation.value:
-            #     self.ai = AIContext.AIBehavior()
+    def setAIBehavior(self, state):
+        match state.value:
+            case 1:
+                self._ai = AIContext(AIInitialPhase(self._conversation))
+            case 2:
+                self._ai = AIContext(AIEarlyInterrogation(self._conversation))
+            case 3:
+                self._ai = AIContext(AIMidInterrogation(self._conversation))
+            case 4:
+                self._ai = AIContext(AIFinalInterrogation(self._conversation))
+
+    def update(self, state):
+        self.setAIBehavior(state.getCurrentState())
 
     def generateResponse(self):
-        return self.ai.generateResponse()
+        return self._ai.generateResponse()
     # generete responses based on state

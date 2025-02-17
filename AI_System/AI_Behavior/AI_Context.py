@@ -9,8 +9,8 @@ class AIContext():
         self.setAIBehavior(state)
         
     def setAIBehavior(self, state: AI):
-        self.state = state
-        self.state.behavior = self
+        self._state = state
+        self._state.behavior = self
          
     def generateResponse(self):
-        return self.state.generateResponse()
+        return self._state.generateResponse()

@@ -5,6 +5,16 @@ class GameStateManager:
         self._currentState= None
         self._emotibitUsed= None
         self._stateHistory = []
+        self._aiReference= None
+
+    def setAIReference(self, ai_reference):
+        self._aiReference = ai_reference
+
+    def notifyAIReference(self):
+        if self._aiReference == None:
+            raise ValueError("AI reference has not been set in game state mangaer")
+        else:
+            self._aiReference.update(self)
 
     def updateState(self, state):
         try:
@@ -22,6 +32,8 @@ class GameStateManager:
             else:
                 self._stateHistory.append(self._currentState.value)
                 self._currentState = newState
+
+        self.notifyAIReference()
         
     def getCurrentState(self):
         return self._currentState
@@ -34,5 +46,3 @@ class GameStateManager:
             self._emotibitUsed = is_used
         else:
             raise TypeError("Invalid Type... emotibitUsed needs True or False")
-        
-
