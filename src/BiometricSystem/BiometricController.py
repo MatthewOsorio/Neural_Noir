@@ -27,8 +27,6 @@ class BiometricController:
             #self.biometricReader.clear()
             self.biometricReader.setup()
         
-
-
     def isNervous(self, heartRate):
         if heartRate > 100.00:
             self.setNervous(True)

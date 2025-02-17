@@ -28,22 +28,12 @@ class ConversationModel:
                 '''
         
     conversation=[]
-    conversation.append({'role': 'developer', 'content': context})
+
+    def __init__(self):
+        ConversationModel.conversation.append(ConversationModel.context)
 
     def updateConversation(self, new_input) -> None:
         ConversationModel.conversation.append(new_input)
-
-    def getLast(self) -> str:
-        return self.interaction[-1]["content"]
-    
-    def getContext(self) -> str:
-        return self.context
     
     def getConversation(self) -> list:
         return ConversationModel.conversation 
-    
-    def getConversationStatus(self) -> int:
-        return ConversationModel.status
-    
-    def updateStatus(self) -> None:
-        ConversationModel.status += 1
