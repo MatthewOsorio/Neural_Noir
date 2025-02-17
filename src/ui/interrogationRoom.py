@@ -6,6 +6,7 @@ from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
 from Controllers.DatabaseController import DatabaseController as db
 from panda3d.core import *
+from ui.Overlay import Overlay
 import time
 
 #Code originally written by Christine 
@@ -24,7 +25,9 @@ class InterrogationRoom:
 
         intimidating = IntimidatingSytle()
         nlpController = nlp(intimidating)
-        self.game = gc.GameController(stt(), nlpController, ttsc(), db())       
+        self.game = gc.GameController(stt(), nlpController, ttsc(), db()) 
+        self.Overlay = Overlay(self)      
+        self.Overlay.show()
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially

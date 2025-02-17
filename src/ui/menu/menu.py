@@ -39,7 +39,6 @@ class menuManager:
         self.pauseMenu = None
         self.quitMenu = confirmQuit(self)
 
-
     def initializeBackground(self):
         if self.titleImage is not None: 
             self.titleImage.hide() # hide the background if the game has started
