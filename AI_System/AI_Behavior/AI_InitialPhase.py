@@ -3,27 +3,77 @@ from .AI import AI
 class AIInitialPhase(AI):
     def __init__(self, conversation):
         super().__init__(conversation)
-        self.setInstructions()
+        self._questions= [
+            'Is your name Mark Chadenten?',
+            'Do you work at the Reno Times?',
+            'What is your relationship with the Vinh Davis?'
+        ]
+        self._finished = False
+        self._currentQuestion = 0
+
+    def askQuestion(self):
+        if self._finished:
+            return 
+        
+        question = self._questions[self._currentQuestion]
+        self.conversation.addAIResponse(question)
+        return question
+    
+    def processResponse(self, user_response):
+
+        self.conversation.addUserInput(user_response)
+        gpt_response = self.evaluateResponse(user_response)
+
+        if 'Correct' in gpt_response:
+            self._currentQuestion += 1
+        else:
+            self._questions[self._currentQuestion] = gpt_response
+        # print('GPT says:', gpt_response)
+
+    def evaluateResponse(self, user_response):
+        prompt = f'''
+                    You started the interrogation. Based on the current information you have verify the users response: {user_response}.
+                    Determine if it aligns with the current information you have.
+                    
+                    **Rules**
+                        - If the answer is correct or reasonable **respond with Correct**
+                        - Once you responsd with "Correct" **do not** ask another question 
+                        - If the user response with a lie, ask the question again but more intensly
+                '''
+        
+        new_instruction = {'role': 'assistant', 'content': prompt}
+
+        self.conversation.updateConversationInstruction(new_instruction)
+
+        response = self.gpt.chat.completions.create(
+            model='gpt-4o-mini',
+            messages= self.conversation.getConversation()
+        )
+
+        clean_response = response.choices[0].message.content
+
+        return clean_response
 
     def setInstructions(self) -> None:
         print("initial")
         self.conversation.updateConversationInstruction({
             'role': 'assistant',
-            'content': '''
+            'content': """
                 You are now starting the interrogation.
-                To begin, ask rapport-building questions.
 
-                Create and ask one question at a time in this order:
-                    1. Confirm the suspects name is Mark Chadenton
-                    2. Confirm the suspect works at the Reno Times
-                    3. Ask them about their relationship with the victim.
-                    4. Ask what they were doing around 11:30 pm last night.
+                Ask one question at a time in this order:
+                1. Confirm the suspect's name is Mark Chadenton.
+                2. Confirm the suspect works at the Reno Times.
+                3. Ask them about their relationship with the victim.
 
-                Rules:
+                **Rules:**
                 - Ask only **one** question at a time and **wait** for the user's response.
-                - Do **not** create any response to the question you ask.
-                - Do **not** ask the next question until the user responds.
-                - If user contradicts or lies do not move one until you have a valid response
-                - after you asked all four questions **return FINSIHED**
-                ''' 
+                - Do **not** ask the next question until the user provides a response.
+                - If the user contradicts themselves or lies, ask for clarification and do not proceed until the answer is clear.
+                - If the user refuses to answer, try rephrasing or applying light pressure, but do not stay on one question for too long.
+                - Once you have asked all three questions, respond with **"FINISHED"** and do not generate any more responses until further instructed.
+            """
         })
+        
+    def generateResponse(self):
+        return self.askQuestion()

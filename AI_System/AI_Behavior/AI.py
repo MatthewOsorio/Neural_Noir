@@ -23,11 +23,6 @@ class AI(ABC):
     def setInstructions(self) -> None:
         pass
 
+    @abstractmethod
     def generateResponse(self) -> str:
-        response = self.gpt.chat.completions.create(
-            model='gpt-4o-mini',
-            messages= self.conversation.getConversation()
-        )
-
-        formattedResponse = response.choices[0].message.content
-        return formattedResponse
+        pass

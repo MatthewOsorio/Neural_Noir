@@ -11,6 +11,9 @@ class AIContext():
     def setAIBehavior(self, state: AI):
         self._state = state
         self._state.behavior = self
+
+    def processUserResponse(self, userResponse: str):
+        self._state.processResponse(userResponse)
          
     def generateResponse(self):
         return self._state.generateResponse()
