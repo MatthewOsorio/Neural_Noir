@@ -5,6 +5,7 @@ from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
+from panda3d.core import TransparencyAttrib
 
 class audioSettings:
     def __init__(self, manager, base, audio, back_callback=None):    
@@ -19,6 +20,16 @@ class audioSettings:
             frameSize=(-1, 1, -1, 1), 
             parent=self.base.aspect2d
         )
+
+        self.backImage = OnscreenImage(
+            self.manager.backGroundBlack,
+            parent=self.audioMenu,
+            scale=(1.5, 0.975, 0.975),
+            pos=(0, 0, 0)
+        )
+
+        self.backImage.setColor(0, 0, 0, 0.5)
+        self.backImage.setTransparency(TransparencyAttrib.MAlpha)
 
         self.topText = TextNode('TopText')
         self.topText.setText("Audio Settings")

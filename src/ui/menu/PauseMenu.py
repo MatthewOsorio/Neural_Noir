@@ -3,6 +3,8 @@ from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectLabel import DirectLabel
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 from direct.gui.DirectButton import DirectButton
+from panda3d.core import TransparencyAttrib
+
 from panda3d.core import TextNode
 from ui.ScriptDisplay import ScriptDisplay
 from ui.audio import audioManager
@@ -41,6 +43,16 @@ class PauseMenu():
             pos=(0, 0, 0),
             parent=self.manager.base.aspect2d
         )
+
+        self.backImage = OnscreenImage(
+            self.manager.backGroundBlack,
+            parent=self.pauseMenu,
+            scale=(1.5, 0.9, 0.9),
+            pos=(0, 0, 0)
+        )
+
+        self.backImage.setColor(0, 0, 0, 0.5)
+        self.backImage.setTransparency(TransparencyAttrib.MAlpha)
         
         self.title= DirectLabel(
             parent=self.pauseMenu,
