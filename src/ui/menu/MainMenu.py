@@ -108,14 +108,11 @@ class mainMenu:
         self.hide()
         self.manager.showQuit()
         
-
     def show(self):
         self.mainMenu.show()
 
     def hide(self):
         self.mainMenu.hide()
-
-
 
     def setColorHover (self, button):
         button["text_fg"] = self.hoverColor

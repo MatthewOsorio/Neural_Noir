@@ -36,27 +36,28 @@ class PauseMenu():
 
     def displayPauseMenu(self):
         self.pauseMenu = DirectFrame(
-                frameColor=(0, 0, 0, 0),
-                frameSize=(-1.5, 1.5, -0.85, 0.85),
-                pos=(0, 0, 0),
-                parent=self.manager.base.aspect2d
+            frameColor=(0, 0, 0, 0),
+            frameSize=(-1.5, 1.5, -0.85, 0.85),
+            pos=(0, 0, 0),
+            parent=self.manager.base.aspect2d
         )
         
         self.title= DirectLabel(
-                parent=self.pauseMenu,
-                text= "Pause",
-                text_scale= (0.110, 0.110),
-                text_font = loader.loadFont(self.manager.limeLight),
-                pos= (0, 0, 0.767),
-                frameColor= (0, 0, 0, 0),
-                text_fg = (255, 255, 255, 1))
+            parent=self.pauseMenu,
+            text= "Pause",
+            text_scale= (0.110, 0.110),
+            text_font = loader.loadFont(self.manager.limeLight),
+            pos= (0, 0, 0.767),
+            frameColor= (0, 0, 0, 0),
+            text_fg = (255, 255, 255, 1))
         
         self.displayScriptButton = DirectButton(
-                                            text= "Script",
-                                            scale= 0.075,
-                                            pos=(0, 0, 0.25),
-                                            parent=self.pauseMenu,
-                                            command= self.scriptGet
+            text= "Script",
+            text_font = loader.loadFont(self.manager.limeLight),
+            scale= 0.075,
+            pos=(0, 0, 0.25),
+            parent=self.pauseMenu,
+            command= self.scriptGet
                             )
         print("script button initialized") # debug
         
@@ -70,12 +71,12 @@ class PauseMenu():
         )
 
         self.quitButton = DirectButton(
-            text = "Quit",
+            text = "Quit to Menu",
             text_font = loader.loadFont(self.manager.limeLight),
             scale = 0.075,
             pos = (0, 0, -0.25),
             parent = self.pauseMenu,
-            command = self.returnToMain
+            command = self.confirmQuitToMain
         )
         
         self.audioButton = DirectButton(
@@ -113,6 +114,10 @@ class PauseMenu():
         self.manager.gameState = 'gameplay'
         self.game.tts.audio.resumeSpeech()
         self.room.Overlay.show()
+    
+    def confirmQuitToMain(self):
+        self.hide()
+        self.manager.showQuitPause()
 
     def returnToMain(self):
         self.quitClicked = False
@@ -153,4 +158,5 @@ class PauseMenu():
     
     def getRoom(self, room):
         self.room = room
+    
         
