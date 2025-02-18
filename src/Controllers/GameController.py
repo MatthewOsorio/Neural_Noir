@@ -39,10 +39,13 @@ class GameController:
         print("User Nervous: ", self.userNervous)
         print("Heartrate: ", self.biometricController.biometricReader.getHeartRate())
         response= self.nlp.generateResponse()
-        self.convertTextToSpeech(response)
+        #self.convertTextToSpeech(response)
         self.tempGeneratedResponse = response
         
         return response
+    
+    def convertToSpeech(self):
+        self.convertTextToSpeech(self.tempGeneratedResponse)
 
     def convertTextToSpeech(self, response):
         self.tts.generateTTS(response)

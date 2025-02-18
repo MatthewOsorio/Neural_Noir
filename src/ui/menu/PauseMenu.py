@@ -112,6 +112,7 @@ class PauseMenu():
         self.room.gameState = 'gameplay'
         self.manager.gameState = 'gameplay'
         self.game.tts.audio.resumeSpeech()
+        self.room.Overlay.show()
 
     def returnToMain(self):
         self.quitClicked = False

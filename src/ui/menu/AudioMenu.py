@@ -151,7 +151,9 @@ class audioSettings:
     def turnSubtitlesOn(self, state):
         self.subTitlesOff["indicatorValue"] = False
         self.subTitlesOff.setIndicatorValue
+        self.manager.subtitles = True
     
     def turnSubtitlesOff(self, state):
         self.subTitlesOn["indicatorValue"] = False
         self.subTitlesOn.setIndicatorValue
+        self.manager.subtitles = False

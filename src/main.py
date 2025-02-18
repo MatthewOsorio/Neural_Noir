@@ -14,6 +14,8 @@ from ui.interrogationRoom import InterrogationRoom
 from ui.connection_utils import Connection
 from ui.connectionDisplay import ConnectionDisplay
 
+from direct.task import Task
+
 class main(ShowBase):
     def __init__(self):
         super().__init__()
@@ -50,7 +52,7 @@ class main(ShowBase):
             self.roomLoaded = True   
             self.interrogationRoom.game.begin = True
             #Stars interrogation api calls on a separate thread once the game is started
-            self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation, daemon = True)
+            self.interrogationThread = Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
             self.interrogationThread.start()
 
         if self.menuManager.gameStart == True:

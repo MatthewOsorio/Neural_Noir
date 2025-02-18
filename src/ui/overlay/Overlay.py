@@ -57,6 +57,27 @@ class Overlay:
             pos = (0,-0.7,0)
         )
 
+        self.PTTButton = DirectButton(
+            text = "PTT",
+            scale = 0.15,
+            pos = (1.5, 0, -0.7),
+            parent = self.overlay,
+            command = None,
+            image = "../Assets/Images/button.png",
+            frameColor=(0, 0, 0, 0)
+        )
+
+        self.PTTButton.setTransparency(TransparencyAttrib.MAlpha)
+
+        self.subtitles = OnscreenText(
+            text = "Subtitles",
+            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            scale = 0.15,
+            parent = self.overlay,
+            fg = (1,1,1,1),
+            pos = (0,0,0)
+        )
+        
         taskMgr.doMethodLater(10, self.updateOverlay, "updateOverlayTask") 
     
     def show(self):
@@ -97,3 +118,21 @@ class Overlay:
             self.displayTemperature.setText("Temperature: 0")
 
         return task.again
+    
+    
+    def showPTTButton(self):
+        self.PTTButton.show()
+    
+    def hidePTTButton(self):   
+        self.PTTButton.hide()
+
+    #Updates the subtitles to the response from the detective 
+    #Will be moved into its own class
+    def updateSubtitles(self, text):
+        self.subtitles.setText(text)
+    
+    def showSubtitles(self):
+        self.subtitles.show()
+
+    def hideSubtitles(self):
+        self.subtitles.hide()
