@@ -19,9 +19,9 @@ class AI(ABC):
     def behavior(self, behavior: AIContext) -> None:
         self._behavior = behavior
 
-    @abstractmethod
-    def setInstructions(self) -> None:
-        pass
+    # @abstractmethod
+    # def setInstructions(self) -> None:
+    #     pass
 
     @abstractmethod
     def generateResponse(self) -> str:

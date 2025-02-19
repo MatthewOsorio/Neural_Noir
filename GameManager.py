@@ -8,11 +8,15 @@ ai = AIController.AIController(conversation)
 gameState.setAIReference(ai)
 gameState.updateState(1)
 
+finished_phase = False
 
-while(True):
+while(not finished_phase):
     ai_response = ai.generateResponse()
-    conversation.addAIResponse(ai_response)
-    print(ai_response)
-    user_statement = input('> ')
-    ai.processUserResponse(user_statement)
+    if ai_response == False:
+        finished_phase = True
+    else:
+        conversation.addAIResponse(ai_response)
+        print(ai_response)
+        user_statement = input('> ')
+        ai.processUserResponse(user_statement)
 
