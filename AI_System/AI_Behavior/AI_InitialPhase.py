@@ -41,7 +41,7 @@ class AIInitialPhase(AI):
                         - If the answer is sufficient with detail **respond with Correct**
                         - Once you respond with "Correct" **do not** ask another question 
                         - If the answer is vague or evasive, point out they are being evasive and ask the question again
-                        - **Do not ** move on to another question until you get an answer with sufficient detail
+                        - **Do not** move on to another question until you get an answer with sufficient detail
                 '''
         else:
             prompt = f'''

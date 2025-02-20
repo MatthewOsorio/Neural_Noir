@@ -19,7 +19,7 @@ class ConversationModel:
                         - He is 5'10" and 200 pounds
                         - He is a journalist at the Reno Times
                         - He is good at his job
-                        - No none altercations have take place between him and Vinh Davis
+                        - No known altercations have take place between him and Vinh Davis
                         - The day after the victim has been murdered he was working with a bruises on his knuckles, with a black eye, and seems to be hungover
 
                     **Instructions for interrogation**
