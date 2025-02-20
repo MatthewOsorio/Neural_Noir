@@ -1,4 +1,4 @@
-from GameState import GameState
+from backend.GameState import GameState
 
 class GameStateManager:
     def __init__(self):

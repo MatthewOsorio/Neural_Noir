@@ -1,6 +1,6 @@
 from AI_System import AIController
-from GameStateManager import GameStateManager
-from ConversationModel import ConversationModel
+from backend.GameState.GameStateManager import GameStateManager
+from backend.ConversationModel import ConversationModel
 
 gameState = GameStateManager()
 conversation = ConversationModel()
