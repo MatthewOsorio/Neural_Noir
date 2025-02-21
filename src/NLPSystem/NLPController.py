@@ -2,13 +2,11 @@ from openai import OpenAI
 from NLPSystem.InteractionModel import IneractionModel as im
 
 class NLPController:
-
     def __init__(self, style) -> None:
         self.gpt= OpenAI()
         self.style= style
         self.interaction= im()
         
-
         #Initalize the system role with the context of the interrogation
         self.context= {"role": "system", "content": self.interaction.getContext()}
         self.interaction.addToInteraction(self.context)

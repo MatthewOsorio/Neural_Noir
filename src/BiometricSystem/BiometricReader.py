@@ -17,7 +17,7 @@ class BiometricReader:
         self.setup()
         
 
-    def setup(self):
+    def setup(self) -> None:
         params= BrainFlowInputParams()
         #Can be run without specific address but it will take longer
         params.ip_address = '192.168.137.255'
@@ -26,7 +26,7 @@ class BiometricReader:
         self.activeBoards[BoardIds.EMOTIBIT_BOARD] = self.emotibit
         
     
-    def read(self):
+    def read(self) -> None:
         self.emotibit.prepare_session()
         start = datetime.now()
         self.startTime = start.strftime("%H:%M:%S")
@@ -40,7 +40,7 @@ class BiometricReader:
         self.emotibit.release_session()
         self.processData(auxData, ancData)
 
-    def processData(self, ppgData, edaData):
+    def processData(self, ppgData, edaData) -> None:
 
         filteredPpg= self.filterPPG(ppgData[1])
         heartRate= self.calculateHeartRate(filteredPpg)
