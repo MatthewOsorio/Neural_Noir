@@ -1,7 +1,7 @@
 # File for testing backend stuff
 from AI_System import AIController
-from backend.GameStateManager import GameStateManager
-from backend.ConversationModel import ConversationModel
+from GameStateSystem.GameStateManager import GameStateManager
+from ConversationModel import ConversationModel
 
 gameState = GameStateManager()
 conversation = ConversationModel()
@@ -20,4 +20,5 @@ while(not finished_phase):
         print(ai_response)
         user_statement = input('> ')
         ai.processUserResponse(user_statement)
+
 

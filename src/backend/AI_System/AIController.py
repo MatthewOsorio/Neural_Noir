@@ -24,4 +24,3 @@ class AIController:
     
     def processUserResponse(self, userResponse):
         self._ai.processUserResponse(userResponse)
-    # generete responses based on state

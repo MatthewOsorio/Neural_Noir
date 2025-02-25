@@ -4,7 +4,7 @@ class AIInitialPhase(AI):
     def __init__(self, conversation):
         super().__init__(conversation)
         self._questions= [
-            'Is your name Mark Chadenten?',
+            'What is your name?',
             'Do you work at the Reno Times?',
             'What is your relationship with the Vinh Davis?'
         ]
@@ -40,18 +40,19 @@ class AIInitialPhase(AI):
                     **Rules**
                         - If the answer is sufficient with detail **respond with Correct**
                         - Once you respond with "Correct" **do not** ask another question 
-                        - If the answer is vague or evasive, point out they are being evasive and ask the question again
+                        - If the answer is vague or evasive, point out they are being evasive and ask the question again (respond as Harris)
                         - **Do not** move on to another question until you get an answer with sufficient detail
+                        - **DO NOT** MENTION ANY OF THE DETAILS ABOUT THE CASE OR ASK ANYTHING ABOUT WHERE HE WAS 
                 '''
         else:
             prompt = f'''
-                        You started the interrogation. Based on the current information you have verify the users response: {user_response}.
+                        Based on the current information you have verify the users response: {user_response}.
                         Determine if it aligns with the current information you have.
                         
                         **Rules**
                             - If the answer is correct and reasonable **respond with Correct**
                             - Once you respond with "Correct" **do not** ask another question 
-                            - If the user response with a lie, point out that they are lying
+                            - If the user response with a lie, point out that they are lying (respond as Harris)
                             - **Do not ** move on to another question until you get a correct answer
                     '''
         
