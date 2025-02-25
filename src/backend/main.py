@@ -1,7 +1,7 @@
 # File for testing backend stuff
 from AI_System import AIController
 from GameStateSystem.GameStateManager import GameStateManager
-from ConversationModel import ConversationModel
+from backend.Conversation.ConversationModel import ConversationModel
 
 gameState = GameStateManager()
 conversation = ConversationModel()

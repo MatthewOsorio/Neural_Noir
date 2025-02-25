@@ -4,6 +4,7 @@ class AIController:
     def __init__(self, conversation):
         self._ai = None     
         self._conversation = conversation
+        self._userState = None
 
     def setAIBehavior(self, state):
         match state.value:
@@ -24,3 +25,6 @@ class AIController:
     
     def processUserResponse(self, userResponse):
         self._ai.processUserResponse(userResponse)
+
+    def updateNervous(self, isNervous):
+        self._userState = isNervous

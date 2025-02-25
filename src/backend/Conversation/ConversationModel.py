@@ -48,6 +48,7 @@ class ConversationModel:
     def __init__(self):
         ConversationModel.conversation.append(ConversationModel.context)
 
+    # We shoul not save the instructions made to gpt, we should only keep the conversation. The instructions should be given in the method
     def updateConversationInstruction(self, new_instruction):
         ConversationModel.conversation.append(new_instruction)
 

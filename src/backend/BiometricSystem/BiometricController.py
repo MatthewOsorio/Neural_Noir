@@ -1,12 +1,19 @@
 from BiometricSystem.BiometricReader import BiometricReader as br
 from threading import Thread
+from GameStateSystem import GameState
+
+
+# The Biometric Controller should behave differently based on the game states. If the game is in the inital state it should
+# read data and set the baselines
+# afterwards it should just compare the heart rate to the basline
+# TLDR some refactoring is needed to this class 
+
 
 class BiometricController:
-    def __init__(self, gameController, databaseController):
+    def __init__(self):
         self.nervous= False
+        self._aiReference = None
         self.biometricReader= br()
-        self.gc = gameController
-        self.db= databaseController
         self.inputThread = Thread(target= self.read, daemon= True)
         self.inputThread.start()
 
@@ -16,9 +23,9 @@ class BiometricController:
                 self.biometricReader.read()
                 self.isNervous(self.biometricReader.getHeartRate())
                 # print(type(self.biometricReader.getHeartRate()))
-                self.sendToDB()
             except Exception as e:
                 self.reconnect(e)
+
                 
     def reconnect(self, error):
         #Will attempt to reconnect to emotibit so long as the game session has begun
@@ -36,12 +43,9 @@ class BiometricController:
     def setNervous(self, isNervous):
         self.nervous= isNervous
         self.NotifyGC()
-
-    def NotifyGC(self):
-        self.gc.nervousUpdate()
         
     def getNervous(self):
         return self.nervous
     
-    def sendToDB(self):
-        self.db.insertBiometrics(self.biometricReader.getStartTime(), self.biometricReader.getEndTime(), self.biometricReader.getTemperature(), self.biometricReader.getHeartRate(), self.biometricReader.getEDA(), self.gc.session.getSessionID())
+    def getHeartRate(self):
+        return self.biometricReader.getHeartRate()
