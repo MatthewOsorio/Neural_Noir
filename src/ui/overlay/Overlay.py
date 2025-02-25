@@ -30,6 +30,15 @@ class Overlay:
         self.bioBackground.setColor(0, 0, 0, 0.5)
         self.bioBackground.setTransparency(TransparencyAttrib.MAlpha)
 
+        self.bioTitle = OnscreenText(
+            text = "Biometrics",
+            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            scale = 0.25,
+            parent = self.bioBackground,
+            fg = (1,1,1,1),
+            pos = (0,0.6,0)            
+        )
+
         self.displayHeartRate = OnscreenText(
             text = "Heart Rate: 0",
             font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),

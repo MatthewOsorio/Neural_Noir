@@ -46,6 +46,7 @@ class ScriptDisplay():
         title= DirectLabel(
                         parent=self.scriptDisplay,
                         text= titleText,
+                        text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
                         text_scale= (0.110, 0.110),
                         pos= (-1.355, 0, 0.767),
                         frameColor= (0, 0, 0, 0),
@@ -112,6 +113,7 @@ class ScriptDisplay():
 
         self.exitScriptButton = DirectButton(
             text="Back",
+            text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
             scale=0.1,
             pos=(-1.385, 0, -0.85),
             parent=self.scriptDisplay,
