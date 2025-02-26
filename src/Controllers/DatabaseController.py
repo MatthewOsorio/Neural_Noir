@@ -1,86 +1,108 @@
-from psycopg import connect
+import sqlite3
+import os
+import uuid
 
 class DatabaseController:
     def __init__(self):
-        #Please change these to fit your environment
-        self.dname= "NeuralNoir"
-        self.user = "postgres"
-        self.password = "password"
-        self.host= "localhost"
-        self.port = "5432"
-    
+        self.db_path = os.path.join(os.path.dirname(__file__), "neural_noir.db")
+        self.initialize_db()
+
     def getConnection(self):
         try:
-            conn= connect(f"dbname= {self.dname} user= {self.user} password={self.password} host={self.host} port={self.port}")
+            conn = sqlite3.connect(self.db_path)
             return conn
-        
-        except Exception as e:
-            raise("Error connecting to the database: ", e)
+        except sqlite3.Error as e:
+            raise Exception("Error connecting to the database: ", e)
+            
+    def initialize_db(self):
+        conn = self.getConnection()
+        with conn:
+            cur = conn.cursor()
+            cur.executeScript("""
+               CREATE TABLE IF NOT EXISTS GameSession(
+                    sessionID TEXT PRIMARY KEY,
+                    sessionStartTime TEXT
+                    sessionEndTime TEXT
+                );
 
+                CREATE TABLE IF NOT EXISTS Interaction(
+                    interactionID TEXT PRIMARY KEY,
+                    startTime TEXT,
+                    endTime TEXT,
+                    userInput TEXT,
+                    response TEXT,
+                    sessionID TEXT,
+                    feedbackID TEXT,
+                    FOREIGN KEY (sessionID, feedbackID) REFERENCES GameSession(sessionID, feedbackID)
+                );
+                              
+                CREATE TABLE IF NOT EXISTS BiometricFeedback(
+                    feedbackID TEXT PRIMARY KEY,
+                    startTime TEXT,
+                    endTime TEXT,
+                    stdDeviation REAL,
+                    temperature REAL,
+                    heartRate REAL,
+                    skinConductance REAL,
+                    sessionID TEXT,
+                    interactionID TEXT,
+                    FOREIGN KEY (sessionID, interactionID) REFERENCES GameSession(sessionID)
+                );
+            """   
+            )
+        conn.close()
+    
     def insertStartSession(self, uuid, startTime):
         try:
-            connection= self.getConnection()
-            with connection.cursor() as cur:
+            conn = self.getConnection()
+            with conn:
+                cur = conn.cursor()
                 cur.execute("""
-                                INSERT INTO GameSession(sessionID, sessionStartTime)
-                                VALUES (%s, %s)
-                            """, (uuid, startTime) 
-                            )
-                
-            connection.commit() 
+                    INSERT INTO GameSession(sessionID, sessionStartTime)
+                    VALUES(?, ?)
+                """, (uuid, startTime))
+        except sqlite3.Error as e:
+            raise Exception("Error executing insert statement: ", e)
 
-        except Exception as e:
-            raise("Error executing insert statement", e)
-        
-    def insertInteraction(self, start, end, userInput, response, sessionID):
+    def insertInteraction(self, start, end, userInput, response, sessionID, feedbackID):
         try:
-            print("Inserting Interaction")
-            connection= self.getConnection()
-            with connection.cursor() as cur:
-                cur.execute('''
-                                INSERT INTO Interaction(interactionID, startTime, endTime, userInput, generatedResponse, sessionID)
-                                VALUES(uuid_generate_v4(), %s, %s, %s, %s, %s)''', 
-                                (start, end, userInput, response, sessionID)
-                            )
-                
-            connection.commit()
-        
-        except Exception as e:
-            raise("Error executing insert statment", e)
+            interactionID = str(uuid.uuid4())
+            conn = self.getConnection()
+            with conn:
+                cur = conn.cursor()
+                cur.execute("""
+                    INSERT INTO Interaction (interactionID, startTime, endTime, userInput, response, sessionID, feedbackID)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, (interactionID, start, end, userInput, response, sessionID, feedbackID))
+        except sqlite3.Error as e:
+            raise Exception("Error executing insert statement", e)
         
     def fetchConversation(self, sessionID):
-        print(sessionID)
         try:
-            print("fetching convo")
-            connection = self.getConnection()
-            with connection.cursor() as cur:
-                cur.execute('''
-                                SELECT generatedResponse, userInput 
-                                FROM Interaction
-                                WHERE sessionID= %s''',
-                                (sessionID,)
-                            )
-                
-                conversation = cur.fetchall()
-                return conversation
-        except Exception as e:
-            raise("Error retrieving conversation", e)
+            conn = self.getConnection()
+            with conn:
+                cur = conn.cursor()
+                cur.execute("""
+                    SELECT userInput, response
+                    FROM Interaction
+                    WHERE sessionID = ?
+                """, (sessionID,))
+                return cur.fetchall()
+        except sqlite3.Error as e:
+            raise Exception("Error retrieving conversation", e)
         
-    def insertBiometrics(self, startTime, endTime, temperature, heartRate, skinConduction, sessionID):
+    def insertBiometrics(self, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID):
         try:
-            connection= self.getConnection()
-            with connection.cursor() as cur:
-                cur.execute('''
-                                INSERT INTO BiometricFeedback (feedbackID, startTime, endTime, temperature, heartRate, skinConduction, sessionID)
-                                VALUES (uuid_generate_v4(), %s, %s, %s, %s, %s, %s)
-                            ''', (startTime, endTime, temperature, heartRate, skinConduction, sessionID))
-                
-                connection.commit()
-
-        except Exception as e:
-            raise("Error inserting biometrics", e)
+            feedbackID = str(uuid.uuid4())
+            conn = self.getConnection()
+            with conn:
+                cur = conn.curcor()
+                cur.execute("""
+                    INSERT INTO BiometricFeedback (feedbackID, startTime, endTime, stdDeviation, temperature, hearRate, skinConductance, sessionID, interactionID)
+                """, (feedbackID, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID))
+        except sqlite3.Error as e:
+            raise Exception("Ereror inserting biometrics: ", e)
 
     def closeConnection(self):
-        self.conn = self.getConnection()
-        self.conn.close()
-        
+        conn = self.getConnection()
+        conn.close()
