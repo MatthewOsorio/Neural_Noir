@@ -96,8 +96,11 @@ class menuManager:
         self.titleImage.show()
     
     def showQuitPause(self):
-        self.pauseMenu.hide()
-        self.quitMenu.showFromPause()
+        if self.pauseMenu != None:
+            self.pauseMenu.hide()
+            self.quitMenu.showFromPause()
+        else:
+            print("No pause menu")
 
     def beginGame(self):
         self.gameStart = True

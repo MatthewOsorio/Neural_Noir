@@ -163,7 +163,8 @@ class audioSettings:
 
     def setVoiceVolumeV(self):
         if self.manager.gameStart == True:
-            self.base.interrogationRoom.game.tts.audio.setVolume(self.voiceVolumeSlider['value'])
+            #self.base.interrogationRoom.game.tts.audio.setVolume(self.voiceVolumeSlider['value'])
+            pass
 
     def turnSubtitlesOn(self, state):
         self.subTitlesOff["indicatorValue"] = False

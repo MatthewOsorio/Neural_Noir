@@ -56,3 +56,15 @@ class GameManager:
             raise Exception("Game is not ready, please invoke setupGame() first") 
         
         return self._bioController.getHeartRate()
+    
+    def getUserTemperature(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        
+        return self._bioController.getTemperature()
+    
+    def getUserEDA(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        
+        return self._bioController.getEDA()

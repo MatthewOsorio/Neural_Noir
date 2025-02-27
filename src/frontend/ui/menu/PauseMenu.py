@@ -23,11 +23,11 @@ class PauseMenu():
 
         self.scriptMenu = None
 
-        self.audioSettingsMenu = audioSettings(self.manager.base.menuManager, self.manager.base, self.manager.audio, back_callback=self.show)
+        self.audioSettingsMenu = audioSettings(self.manager, self.base, self.manager.audio, back_callback=self.show)
 
         self.titleImage = OnscreenImage(
-            image=self.manager.room, 
-            parent=self.manager.base.render2d
+            image= self.manager.room, 
+            parent=self.base.render2d
         )
 
         self.displayPauseMenu()
@@ -40,7 +40,14 @@ class PauseMenu():
             frameColor=(0, 0, 0, 0),
             frameSize=(-1.5, 1.5, -0.85, 0.85),
             pos=(0, 0, 0),
-            parent=self.manager.base.aspect2d
+            parent=self.base.aspect2d
+        )
+
+        self.backImageMain = OnscreenImage(
+            self.manager.room,
+            parent=self.pauseMenu,
+            scale=(1.5, 0.9, 0.9),
+            pos=(0, 0, 0)
         )
 
         self.backImage = OnscreenImage(
@@ -123,7 +130,7 @@ class PauseMenu():
         self.hideImage()
         self.room.gameState = 'gameplay'
         self.manager.gameState = 'gameplay'
-        self.game.tts.audio.resumeSpeech()
+        self.game._tts.audio.resumeSpeech()
         self.room.Overlay.show()
     
     def confirmQuitToMain(self):
