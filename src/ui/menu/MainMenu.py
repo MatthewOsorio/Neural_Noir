@@ -97,7 +97,6 @@ class mainMenu:
 
     def startGame(self):
         self.hide()
-        self.manager.hideImage()
         self.manager.beginGame()
 
     def moveToSettings(self):

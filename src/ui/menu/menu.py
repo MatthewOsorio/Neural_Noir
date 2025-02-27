@@ -22,7 +22,6 @@ class menuManager:
     def __init__(self, base, startFlag):
         self.base = base
         self.titleImage = None
-        self.initializeBackground()
         
         self.audio = audioManager(self.base)
         
@@ -41,15 +40,6 @@ class menuManager:
         self.quitMenu = confirmQuit(self, self.base)
 
         self.subtitles = False
-
-    def initializeBackground(self):
-        if self.titleImage is not None: 
-            self.titleImage.hide() # hide the background if the game has started
-        self.titleImage = OnscreenImage(
-            image='../images/Room_Backdrop_Blur.png',
-            parent=self.base.render2d
-        )
-        self.showImage()
         
     def showMain(self):
         self.mainMenu.show()
@@ -65,12 +55,6 @@ class menuManager:
     def showQuit(self):
         self.quitMenu.showParent()
 
-    def hideImage(self):
-        self.titleImage.hide()
-
-    def showImage(self):
-        self.titleImage.show()
-    
     def showQuitPause(self):
         self.pauseMenu.hide()
         self.quitMenu.showFromPause()
