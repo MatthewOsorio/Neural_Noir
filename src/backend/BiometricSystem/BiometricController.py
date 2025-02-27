@@ -1,13 +1,6 @@
-from BiometricSystem.BiometricReader import BiometricReader as br
+from .BiometricReader import BiometricReader as br
 from threading import Thread
-from GameStateSystem import GameState
-
-
-# The Biometric Controller should behave differently based on the game states. If the game is in the inital state it should
-# read data and set the baselines
-# afterwards it should just compare the heart rate to the basline
-# TLDR some refactoring is needed to this class 
-
+from ..GameStateSystem import GameState
 
 class BiometricController:
     def __init__(self):
@@ -16,6 +9,7 @@ class BiometricController:
         self.biometricReader= br()
         self.inputThread = Thread(target= self.read, daemon= True)
         self.inputThread.start()
+        self._gameState = None
 
     def read(self):
         while True:
@@ -26,7 +20,24 @@ class BiometricController:
             except Exception as e:
                 self.reconnect(e)
 
-                
+    # From Matt
+    # This method is called whenever the game state is updated in game state manager. 
+    # So whenever the game stat is updated this class will now automatically, this class
+    # has to know when the game state updates since the emotibit need to behave differently 
+    # at certain states. When the game is in the initial phase is when we should be getting the baseline
+    # and after that until the game finsihed is when the game should compare the hr to that basline as you already know.
+    # Ill add some more functionality to this class so we can pass the isNervous data to the AI.  
+    def update(self, state):
+        self._gameState = state
+
+    def setAIReferece(self, ai):
+        self._aiReference = ai
+
+    def notifiyAIIfUserNervous(self):
+        self._aiReference.updateNervous(self.isNervous)
+
+    # The three methods above and the game state and ai reference in the constructor is what I have added
+
     def reconnect(self, error):
         #Will attempt to reconnect to emotibit so long as the game session has begun
         if self.gc.begin == True:    
@@ -42,7 +53,7 @@ class BiometricController:
             
     def setNervous(self, isNervous):
         self.nervous= isNervous
-        self.NotifyGC()
+        self.notifiyAIIfUserNervous()
         
     def getNervous(self):
         return self.nervous

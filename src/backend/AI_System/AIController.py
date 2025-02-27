@@ -4,7 +4,7 @@ class AIController:
     def __init__(self, conversation):
         self._ai = None     
         self._conversation = conversation
-        self._userState = None
+        self._userNervous = None
 
     def setAIBehavior(self, state):
         match state.value:
@@ -18,7 +18,7 @@ class AIController:
                 self._ai = AIContext(AIFinalInterrogation(self._conversation))
 
     def update(self, state):
-        self.setAIBehavior(state.getCurrentState())
+        self.setAIBehavior(state)
 
     def generateResponse(self):
         return self._ai.generateResponse()

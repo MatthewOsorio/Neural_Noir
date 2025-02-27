@@ -10,6 +10,7 @@ class AI(ABC):
     def __init__(self, conversation):
         self.gpt = OpenAI()
         self.conversation = conversation
+        self.userNervous = None
 
     @property
     def behavior(self) -> AIContext:
@@ -19,10 +20,9 @@ class AI(ABC):
     def behavior(self, behavior: AIContext) -> None:
         self._behavior = behavior
 
-    # @abstractmethod
-    # def setInstructions(self) -> None:
-    #     pass
-
+    def updateNervous(self, nervousState):
+        self.userNervous = nervousState
+        
     @abstractmethod
     def generateResponse(self) -> str:
         pass

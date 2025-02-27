@@ -2,7 +2,7 @@ from openai import OpenAI
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from TTSSystem.AudioComponent import AudioController as ac
+from .AudioComponent import AudioController as ac
 
 class TextToSpeechController:
     def __init__(self):

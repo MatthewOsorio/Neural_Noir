@@ -43,6 +43,8 @@ class AIInitialPhase(AI):
                         - If the answer is vague or evasive, point out they are being evasive and ask the question again (respond as Harris)
                         - **Do not** move on to another question until you get an answer with sufficient detail
                         - **DO NOT** MENTION ANY OF THE DETAILS ABOUT THE CASE OR ASK ANYTHING ABOUT WHERE HE WAS 
+                        - **DO NOT ASK WHERE THE SUSPECT WAS THE NIGHT VIHN DAVIS WAS MURDRED**
+
                 '''
         else:
             prompt = f'''
@@ -72,27 +74,6 @@ class AIInitialPhase(AI):
     def askedAllQuestions(self):
         if not self._currentQuestion <  len(self._questions):
             self._finished = True
-
-    # def setInstructions(self) -> None:
-    #     print("initial")
-    #     self.conversation.updateConversationInstruction({
-    #         'role': 'assistant',
-    #         'content': """
-    #             You are now starting the interrogation.
-
-    #             Ask one question at a time in this order:
-    #             1. Confirm the suspect's name is Mark Chadenton.
-    #             2. Confirm the suspect works at the Reno Times.
-    #             3. Ask them about their relationship with the victim.
-
-    #             **Rules:**
-    #             - Ask only **one** question at a time and **wait** for the user's response.
-    #             - Do **not** ask the next question until the user provides a response.
-    #             - If the user contradicts themselves or lies, ask for clarification and do not proceed until the answer is clear.
-    #             - If the user refuses to answer, try rephrasing or applying light pressure, but do not stay on one question for too long.
-    #             - Once you have asked all three questions, respond with **"FINISHED"** and do not generate any more responses until further instructed.
-    #         """
-    #     })
         
     def generateResponse(self):
         if not self._finished:

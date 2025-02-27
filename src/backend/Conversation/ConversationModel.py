@@ -52,6 +52,9 @@ class ConversationModel:
     def updateConversationInstruction(self, new_instruction):
         ConversationModel.conversation.append(new_instruction)
 
+    def sendUserResponseToDB(self, start_time, end_time, response):
+        pass
+
     def addAIResponse(self, ai_response) -> None:
         ConversationModel.conversation.append({'role': 'assistant', 'content': ai_response})
 

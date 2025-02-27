@@ -20,5 +20,3 @@ while(not finished_phase):
         print(ai_response)
         user_statement = input('> ')
         ai.processUserResponse(user_statement)
-
-
