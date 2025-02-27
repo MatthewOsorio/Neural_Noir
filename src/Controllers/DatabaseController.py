@@ -18,10 +18,10 @@ class DatabaseController:
         conn = self.getConnection()
         with conn:
             cur = conn.cursor()
-            cur.executeScript("""
+            cur.executescript("""
                CREATE TABLE IF NOT EXISTS GameSession(
                     sessionID TEXT PRIMARY KEY,
-                    sessionStartTime TEXT
+                    sessionStartTime TEXT,
                     sessionEndTime TEXT
                 );
 
@@ -33,7 +33,8 @@ class DatabaseController:
                     response TEXT,
                     sessionID TEXT,
                     feedbackID TEXT,
-                    FOREIGN KEY (sessionID, feedbackID) REFERENCES GameSession(sessionID, feedbackID)
+                    FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
+                    FOREIGN KEY (feedbackID) REFERENCES BiometricFeedback(feedbackID)
                 );
                               
                 CREATE TABLE IF NOT EXISTS BiometricFeedback(
@@ -46,13 +47,14 @@ class DatabaseController:
                     skinConductance REAL,
                     sessionID TEXT,
                     interactionID TEXT,
-                    FOREIGN KEY (sessionID, interactionID) REFERENCES GameSession(sessionID)
+                    FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
+                    FOREIGN KEY (interactionID) REFERENCES Interaction(interactionID)
                 );
             """   
             )
         conn.close()
     
-    def insertStartSession(self, uuid, startTime):
+    def insertStartSession(self, sessionID, startTime):
         try:
             conn = self.getConnection()
             with conn:
@@ -60,7 +62,7 @@ class DatabaseController:
                 cur.execute("""
                     INSERT INTO GameSession(sessionID, sessionStartTime)
                     VALUES(?, ?)
-                """, (uuid, startTime))
+                """, (str(sessionID), startTime))
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement: ", e)
 
@@ -72,7 +74,7 @@ class DatabaseController:
                 cur = conn.cursor()
                 cur.execute("""
                     INSERT INTO Interaction (interactionID, startTime, endTime, userInput, response, sessionID, feedbackID)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 """, (interactionID, start, end, userInput, response, sessionID, feedbackID))
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
@@ -86,7 +88,7 @@ class DatabaseController:
                     SELECT userInput, response
                     FROM Interaction
                     WHERE sessionID = ?
-                """, (sessionID,))
+                """, (str(sessionID),))
                 return cur.fetchall()
         except sqlite3.Error as e:
             raise Exception("Error retrieving conversation", e)
@@ -96,9 +98,9 @@ class DatabaseController:
             feedbackID = str(uuid.uuid4())
             conn = self.getConnection()
             with conn:
-                cur = conn.curcor()
+                cur = conn.cursor()
                 cur.execute("""
-                    INSERT INTO BiometricFeedback (feedbackID, startTime, endTime, stdDeviation, temperature, hearRate, skinConductance, sessionID, interactionID)
+                    INSERT INTO BiometricFeedback (feedbackID, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID)
                 """, (feedbackID, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID))
         except sqlite3.Error as e:
             raise Exception("Ereror inserting biometrics: ", e)

@@ -1,0 +1,79 @@
+import pytest
+import uuid
+from Controllers import DatabaseController
+
+def db():
+    database = DatabaseController()
+    database.db_path = ":memory:"
+    database.initialize_db()
+    yield database
+    database.closeConnection()
+
+def test_insert_start_session(db):
+    session_id = str(uuid.uuid4())
+    db.insertStartSession(session_id, "2025-02-26 05:00:00")
+
+    conn = db.getConnection()
+    with conn:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM GameSessiond WHERE sessionID = ?", (session_id)
+        )
+        result = cur.fetchone()
+    
+    assert result is not None
+    assert result[0] == session_id
+    assert result[1] == "2025-02-26 05:00:00"
+
+def test_insert_interaction(db):
+    session_id = str(uuid.uuid4())
+    db.insertStartSession(session_id, "2025-02-26 05:00:00")
+
+    interaction_id = db.insertInteraction("2025-02-26 05:00:00", "2025-02-26 05:05:00", "Hi, my name is Jack", "Nice to meet you, Jack!", session_id, None)
+
+    conn = db.getConnection()
+    with conn:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM Interaction WHERE sessionID = ?", (session_id,)
+        )
+        result = cur.fetchone()
+
+    assert result is not None
+    assert result[3] == "Hi, my name is Jack"
+    assert result[4] == "Nice to meet you, Jack!"
+
+def test_fetch_conversation(db):
+    session_id = str(uuid.uuid4())
+    db.insertStartSession(session_id, "2025-02-26 10:00:00")
+
+    db.insertInteraction("2025-02-26 10:05:00", "2025-02-26 10:10:00", "Hello", "Hi", session_id, None)
+    db.insertInteraction("2025-02-26 10:15:00", "2025-02-26 10:20:00", "How are you?", "Good", session_id, None)
+
+    conversation = db.fetchConversation(session_id)
+
+    assert len(conversation) == 2
+    assert conversation[0] == ("Hello", "Hi")
+    assert conversation[1] == ("How are you?", "Good")
+
+def test_insert_biometrics(db):
+    session_id = str(uuid.uuid4())
+    db.insertStartSession(session_id, "2025-02-26 10:00:00")
+
+    interaction_id = str(uuid.uuid4())
+
+    db.insertBiometrics("2025-02-26 10:05:00", "2025-02-26 10:10:00", 0.5, 98.6, 72, 0.8, session_id, interaction_id)
+
+    conn = db.getConnection()
+    with conn:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM BiometricFeedback WHERE sessionID = ?", (session_id,)
+        )
+        result = cur.fetchone()
+
+    assert result is not None
+    assert result[3] == 0.5  # stdDeviation
+    assert result[4] == 98.6  # temperature
+    assert result[5] == 72  # heartRate
+    assert result[6] == 0.8
