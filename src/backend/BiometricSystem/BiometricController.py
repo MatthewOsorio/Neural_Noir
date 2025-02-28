@@ -69,3 +69,5 @@ class BiometricController:
     
     def clear(self):
         self.biometricReader.clear()
+
+    

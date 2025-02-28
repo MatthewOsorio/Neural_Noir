@@ -39,6 +39,8 @@ class InterrogationRoom:
         self.pausable = False
 
         self.current = None
+
+        self.testCount = 0 #testing average
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -63,6 +65,7 @@ class InterrogationRoom:
 
         #Updates the camera angle
         self.base.taskMgr.add(self.moveCamera, "Move Camera")
+
 
     #Allows users to rotate the camera slightly to "look around"
     def moveCamera(self, base):
@@ -141,11 +144,13 @@ class InterrogationRoom:
     #Speech input part 
     def processSpeech(self):
         self.Overlay.hideSubtitles()
+        self.pausable = False
         speech = self.game.listenToUser()
         taskMgr.add(lambda task: self.speechUI(speech), "UpdateSpeechTask")
 
     #Updates the overlay to show the PTT Button
     def speechUI(self, speech):
+        
         self.Overlay.showPTTButton()
         print(f"< {speech}")
         
@@ -154,6 +159,7 @@ class InterrogationRoom:
 
     #Response processing part
     def processResponse(self):
+        self.pausable = True
         self.Overlay.hidePTTButton()
         response = self.state.generateResponse()
 
@@ -180,6 +186,16 @@ class InterrogationRoom:
     #Hides subtitles
     def updateResponse(self):
         self.Overlay.hideSubtitles()
+
+        if self.testCount > 6:
+            print(self.state.getAverageHeartRate())
+            print(self.state.getAverageEDA())
+            print(self.state.getAverageTemperature())
+        else:
+            self.testCount += 1
+            print(self.state.heartRate[self.testCount-1])
+        
+        print(self.testCount)
 
         #If the game has not been quit, restart the process
         if self.ended == False:
