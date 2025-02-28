@@ -60,3 +60,12 @@ class BiometricController:
     
     def getHeartRate(self):
         return self.biometricReader.getHeartRate()
+    
+    def getTemperature(self):
+        return self.biometricReader.getTemperature()
+    
+    def getEDA(self):
+        return self.biometricReader.getEDA()
+    
+    def clear(self):
+        self.biometricReader.clear()
