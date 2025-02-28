@@ -1,3 +1,4 @@
+# Good-cop scenario
 from .AI import AI
 
 class AIMidInterrogation(AI):
