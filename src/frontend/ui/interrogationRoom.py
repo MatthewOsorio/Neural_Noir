@@ -1,6 +1,7 @@
 from frontend.ui.menu.PauseMenu import PauseMenu
 from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
+from frontend.stages.state1 import State1
 from direct.task import Task
 import threading
 
@@ -36,6 +37,8 @@ class InterrogationRoom:
         
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = False
+
+        self.current = None
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -123,7 +126,13 @@ class InterrogationRoom:
         self.pausable = True
         self.ended = False
         self.Overlay.hidePTTButton()  
-        self.game.startInterrogation()
+        
+        self.initialState = State1()
+        self.initialState.setGame(self.game)
+        response = self.initialState.begin()
+        self.initialState.convert()
+        self.state = self.initialState
+
         self.Overlay.showPTTButton()
 
         #Get the speech input
@@ -132,7 +141,7 @@ class InterrogationRoom:
     #Speech input part 
     def processSpeech(self):
         self.Overlay.hideSubtitles()
-        speech = self.game.speechInput()  
+        speech = self.game.listenToUser()
         taskMgr.add(lambda task: self.speechUI(speech), "UpdateSpeechTask")
 
     #Updates the overlay to show the PTT Button
@@ -146,7 +155,7 @@ class InterrogationRoom:
     #Response processing part
     def processResponse(self):
         self.Overlay.hidePTTButton()
-        response = self.game.createDetectiveResponse()  
+        response = self.state.generateResponse()
 
         #Update the overlay to show the response
         taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
@@ -163,7 +172,7 @@ class InterrogationRoom:
 
     #TTS process
     def responseToSpeech(self):
-        self.game.convertToSpeech()
+        self.state.convert()
         
         #Hide the subtitles
         taskMgr.add(lambda task: self.updateResponse(), "Update")

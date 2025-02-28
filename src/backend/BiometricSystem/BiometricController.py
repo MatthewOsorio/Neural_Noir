@@ -66,3 +66,6 @@ class BiometricController:
     
     def getEDA(self):
         return self.biometricReader.getEDA()
+    
+    def clear(self):
+        self.biometricReader.clear()

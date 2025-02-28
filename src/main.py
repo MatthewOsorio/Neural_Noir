@@ -1,7 +1,5 @@
 from backend.BackendInterface.GameManager import GameManager
 
-x = GameManager()
-
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 from panda3d.core import TextNode

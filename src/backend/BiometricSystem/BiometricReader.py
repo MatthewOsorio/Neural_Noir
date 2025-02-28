@@ -15,7 +15,6 @@ class BiometricReader:
         self.endTime= None
         self.activeBoards = {}
         self.setup()
-        
 
     def setup(self) -> None:
         params= BrainFlowInputParams()

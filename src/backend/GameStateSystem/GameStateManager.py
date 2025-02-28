@@ -8,6 +8,8 @@ class GameStateManager:
         self._aiReference= None
         self._biometricReference = None
 
+        self._gameState1 = GameState.initialPhase
+
     def setAIReference(self, ai_reference):
         self._aiReference = ai_reference
 
@@ -57,3 +59,4 @@ class GameStateManager:
             self._emotibitUsed = is_used
         else:
             raise TypeError("Invalid Type... emotibitUsed needs True or False")
+        
