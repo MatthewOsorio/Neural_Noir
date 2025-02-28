@@ -8,7 +8,8 @@ class GameStateManager:
         self._aiReference= None
         self._biometricReference = None
 
-        self._gameState1 = GameState.initialPhase
+        self.updateState(GameState.initialPhase)
+        # self._gameState1 = GameState.initialPh
 
     def setAIReference(self, ai_reference):
         self._aiReference = ai_reference
