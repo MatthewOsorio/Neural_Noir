@@ -200,6 +200,7 @@ class InterrogationRoom:
     def updateResponse(self):
         self.Overlay.hideSubtitles()
         print(self.game._bioController.biometricReader.state)
+        print(self.game._bioController.biometricReader.heartRate)
         print(self.game._bioController.biometricReader.heartRateBase)
 
         #If the game has not been quit, restart the process

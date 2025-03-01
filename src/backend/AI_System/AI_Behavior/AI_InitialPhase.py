@@ -6,6 +6,7 @@ class AIInitialPhase(AI):
         self._questions= [
             'What is your name?',
             'Do you work at the Reno Times?',
+            'Do you work as a journalist?',
             'Did you work for Vinh Davis?'
         ]
         self._finished = False
