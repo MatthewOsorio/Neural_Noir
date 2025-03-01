@@ -38,7 +38,7 @@ class AIInitialPhase(AI):
                     Determine if it aligns with the current information you have.
                     
                     **Rules**
-                        - Only respond as Harris
+                        - Only respond as Harris. Label dialogue like this: Detective Harris: [dialogue]
                         - If the answer clearly indicates the user worked for Vinh Davis, **respond with Correct**
                         - Once you respond with "Correct" **do not** ask another question 
                         - If the answer is no, ask the question again (respond as Harris)
@@ -52,13 +52,14 @@ class AIInitialPhase(AI):
                         Determine if it aligns with the current information you have.
                         
                         **Rules**
-                            - Only respond as Harris
+                            - Only respond as Harris. Label dialogue like this: Detective Harris: [dialogue]
                             - If the answer is correct and reasonable **respond with Correct**
                             - Once you respond with "Correct" **do not** ask another question 
                             - If the user response with a lie, point out that they are lying (respond as Harris)
                             - Ignore minor spelling differences in names. Treat "Marc" and "Mark" as the same
                             - If the user says their name is mark or marc, do not ask for their last name
                             - If the user responds with "Marc" or "Mark" as their name, **respond with Correct**
+                            
                     '''
         
         new_instruction = {'role': 'assistant', 'content': prompt}
