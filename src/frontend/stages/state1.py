@@ -36,6 +36,9 @@ class State1:
         self.response = self.game.generateAIResponse()
 
         if self.response == False:
+            self.getAverageHeartRate()
+            self.getAverageEDA()
+            self.getAverageTemperature()
             self.updateBaseValues()
             self.endPhase = True
 
@@ -54,7 +57,7 @@ class State1:
     def getAverageHeartRate(self):
         if len(self.heartRate) > 0:
             self.currentBaseH = self.doMath(self.heartRate)
-            print(self.currentBaseH)
+            #print(self.currentBaseH)
             return self.currentBaseH
         else:
             print("Error list length is 0.")
@@ -84,6 +87,6 @@ class State1:
         return (lower, upper)
     
     def updateBaseValues(self):
-        print(f"HR: {self.currentBaseH}")
+        #print(f"HR: {self.currentBaseH}")
         self.game.setRanges(self.currentBaseH, self.currentBaseE, self.currentBaseT)
 
