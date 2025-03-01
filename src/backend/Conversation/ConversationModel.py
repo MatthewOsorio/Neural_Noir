@@ -16,6 +16,7 @@ class ConversationModel:
 
                     **Information of Mark Chadenten**
                         - He works at Reno Times
+                        - He worked under Vinh Davis
                         - His birthday is on 12/22/1919
                         - He is 5'10" and 200 pounds
                         - He is a journalist at the Reno Times

@@ -12,6 +12,9 @@ class State1:
         self.temperature = []
         self.eda = []
 
+    def testPrint(self):
+        print("This is state 1")
+
     def setGame(self, game):
         self.game = game
         self.game._bioController.biometricReader.calculateBase()
@@ -62,3 +65,4 @@ class State1:
         upper = mean + (stdDiv + 5)
 
         return (lower, upper)
+

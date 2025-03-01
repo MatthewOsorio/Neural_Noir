@@ -2,6 +2,7 @@ from frontend.ui.menu.PauseMenu import PauseMenu
 from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
 from frontend.stages.state1 import State1
+from frontend.stages.state2 import State2
 from direct.task import Task
 from direct.task.TaskManagerGlobal import taskMgr 
 import threading
@@ -131,11 +132,17 @@ class InterrogationRoom:
         self.ended = False
         self.Overlay.hidePTTButton()  
         
-        self.initialState = State1()
-        self.initialState.setGame(self.game)
-        response = self.initialState.begin()
-        self.initialState.convert()
-        self.state = self.initialState
+        self.testStates = [State1(), State2()]
+
+        self.state = self.testStates[0]
+    
+        self.state.setGame(self.game)
+
+        self.state.testPrint()
+
+        response = self.state.begin()
+        self.state.convert()
+        self.current = 0
 
         self.Overlay.showPTTButton()
 
@@ -163,8 +170,14 @@ class InterrogationRoom:
         self.Overlay.hidePTTButton()
         response = self.state.generateResponse()
 
-        #Update the overlay to show the response
-        taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+        if response != False:
+            #Update the overlay to show the response
+            taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+        else:
+            self.state = self.testStates[self.current + 1]
+            self.state.setUp()
+            #response = self.state.generateResponse()
+            print("End")
 
     #Updates subtitles if applicable
     def responseUI(self, response):
