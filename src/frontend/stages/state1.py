@@ -78,13 +78,18 @@ class State1:
     
     def doMath(self, data):
         data = [d for d in data if d is not None]
-        mean = sum(data) / len(data)
-        stdDiv = np.std(data, ddof = 1)
 
-        lower = mean - (stdDiv + 5)
-        upper = mean + (stdDiv + 5)
+        if len(data) > 0:
+            mean = sum(data) / len(data)
+            stdDiv = np.std(data, ddof = 1)
 
-        return (lower, upper)
+            lower = mean - (stdDiv + 5)
+            upper = mean + (stdDiv + 5)
+
+            return (lower, upper)
+        
+        else:
+            return 0
     
     def updateBaseValues(self):
         #print(f"HR: {self.currentBaseH}")
