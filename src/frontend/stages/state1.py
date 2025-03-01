@@ -7,18 +7,22 @@ class State1:
         self.game = None
         self.state = None
         self.response = None
+        self.endPhase = False
 
         self.heartRate = []
         self.temperature = []
         self.eda = []
+
+        self.currentBaseH = 0
+        self.currentBaseE = 0
+        self.currentBaseT = 0
 
     def testPrint(self):
         print("This is state 1")
 
     def setGame(self, game):
         self.game = game
-        self.game._bioController.biometricReader.calculateBase()
-        #taskMgr.doMethodLater(10, self.updateData, "data") 
+        taskMgr.doMethodLater(10, self.updateData, "data") 
     
     def begin(self):
         self.game._gameState.updateState(1)
@@ -30,29 +34,42 @@ class State1:
     
     def generateResponse(self):
         self.response = self.game.generateAIResponse()
+
+        if self.response == False:
+            self.updateBaseValues()
+            self.endPhase = True
+
         return self.response
 
     def updateData(self, task):
         self.heartRate.append(self.game.getUserHeartRate())
         self.eda.append(self.game.getUserEDA())
         self.temperature.append(self.game.getUserTemperature())
-        return task.again
+
+        if self.endPhase == False:
+            return task.again
+        else:
+            return task.done
 
     def getAverageHeartRate(self):
         if len(self.heartRate) > 0:
-            return self.doMath(self.heartRate)
+            self.currentBaseH = self.doMath(self.heartRate)
+            print(self.currentBaseH)
+            return self.currentBaseH
         else:
             print("Error list length is 0.")
     
     def getAverageEDA(self):
         if len(self.eda) > 0:
-            return self.doMath(self.eda)
+            self.currentBaseE =  self.doMath(self.eda)
+            return self.currentBaseE
         else:
             print("Error list legnth is 0.")
 
     def getAverageTemperature(self):
         if len(self.temperature) > 0:
-            return self.doMath(self.temperature)
+            self.currentBaseT = self.doMath(self.temperature)
+            return self.currentBaseT
         else:
             print("Error list length is 0")
     
@@ -65,4 +82,8 @@ class State1:
         upper = mean + (stdDiv + 5)
 
         return (lower, upper)
+    
+    def updateBaseValues(self):
+        print(f"HR: {self.currentBaseH}")
+        self.game.setRanges(self.currentBaseH, self.currentBaseE, self.currentBaseT)
 

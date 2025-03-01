@@ -4,9 +4,6 @@ from numpy import mean
 from datetime import datetime
 import time
 from uuid import uuid4
-from direct.task import Task
-import numpy 
-
 
 class BiometricReader:
     def __init__(self):
@@ -21,10 +18,6 @@ class BiometricReader:
         self.heartRateBase = 0
         self.edaBase = 0
         self.temperatureBase = 0
-
-        self.hr = []
-        self.ed = []
-        self.temp = []
 
         self.setup()
 
@@ -115,31 +108,3 @@ class BiometricReader:
     def clear(self):
         if self.activeBoards[BoardIds.EMOTIBIT_BOARD]:
             self.emotibit.release_session()
-
-    def calculateBase(self):
-        taskMgr.doMethodLater(10, self.appendData, "data") 
-
-    def appendData(self, task):
-        self.hr.append(self.heartRate)
-        self.ed.append(self.eda)
-        self.temp.append(self.temperature)
-
-        self.heartRateBase = self.doMath(self.hr)
-        self.edaBase = self.doMath(self.ed)
-        self.temperatureBase = self.doMath(self.temp)
-
-        if self.state == 1:
-            return task.again
-        else:
-            return task.done
-
-    def doMath(self, data):
-        data = [d for d in data if d is not None]
-        if len(data) != 0:
-            mean = sum(data) / len(data)
-            stdDiv = numpy.std(data, ddof = 1)
-
-            lower = mean - (stdDiv + 5)
-            upper = mean + (stdDiv + 5)
-
-            return (lower, upper)

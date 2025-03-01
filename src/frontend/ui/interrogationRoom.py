@@ -175,8 +175,9 @@ class InterrogationRoom:
             taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
         else:
             self.state = self.testStates[self.current + 1]
-            self.state.setUp()
+            #self.state.setUp()
             #response = self.state.generateResponse()
+            print(self.game._bioController.biometricReader.heartRateBase)
             print("End")
 
     #Updates subtitles if applicable
