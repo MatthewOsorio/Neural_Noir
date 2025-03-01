@@ -29,6 +29,7 @@ class BiometricController:
     # Ill add some more functionality to this class so we can pass the isNervous data to the AI.  
     def update(self, state):
         self._gameState = state
+        self.biometricReader.state = self._gameState.value
 
     def setAIReferece(self, ai):
         self._aiReference = ai

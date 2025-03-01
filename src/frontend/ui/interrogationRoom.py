@@ -3,6 +3,7 @@ from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
 from frontend.stages.state1 import State1
 from direct.task import Task
+from direct.task.TaskManagerGlobal import taskMgr 
 import threading
 
 from panda3d.core import *
@@ -144,13 +145,12 @@ class InterrogationRoom:
     #Speech input part 
     def processSpeech(self):
         self.Overlay.hideSubtitles()
-        self.pausable = False
         speech = self.game.listenToUser()
         taskMgr.add(lambda task: self.speechUI(speech), "UpdateSpeechTask")
 
     #Updates the overlay to show the PTT Button
     def speechUI(self, speech):
-        
+        self.pausible = False
         self.Overlay.showPTTButton()
         print(f"< {speech}")
         
@@ -186,16 +186,8 @@ class InterrogationRoom:
     #Hides subtitles
     def updateResponse(self):
         self.Overlay.hideSubtitles()
-
-        if self.testCount > 6:
-            print(self.state.getAverageHeartRate())
-            print(self.state.getAverageEDA())
-            print(self.state.getAverageTemperature())
-        else:
-            self.testCount += 1
-            print(self.state.heartRate[self.testCount-1])
-        
-        print(self.testCount)
+        print(self.game._bioController.biometricReader.state)
+        print(self.game._bioController.biometricReader.heartRateBase)
 
         #If the game has not been quit, restart the process
         if self.ended == False:
