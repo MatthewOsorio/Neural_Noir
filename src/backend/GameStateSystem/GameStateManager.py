@@ -12,6 +12,11 @@ class GameStateManager:
         self._aiReference = ai_reference
 
     def setBiometricReference(self, biometric_reference):
+        if self._emotibitUsed == None:
+            raise Exception("Haven't set if emotibit is being used or not. Invoke setEmotibitUsed(T or F)")
+        if self._emotibitUsed == False:
+            raise Exception("We are not using the emotibit")
+        
         self._biometricReference = biometric_reference
 
     def notifyAIReference(self):
@@ -27,6 +32,9 @@ class GameStateManager:
             self._biometricReference.update(self._currentState)
 
     def updateState(self, state):
+        if self._emotibitUsed == None:
+            raise Exception("Need to know if emotibit is being used. invoke setEmotibitUsed(T or F)")
+        
         try:
             newState = GameState(state)
         except ValueError:
@@ -44,7 +52,9 @@ class GameStateManager:
                 self._currentState = newState
 
         self.notifyAIReference()
-        self.notifyBiometricReference()
+
+        if self._emotibitUsed:
+            self.notifyBiometricReference()
         
     def getCurrentState(self):
         return self._currentState

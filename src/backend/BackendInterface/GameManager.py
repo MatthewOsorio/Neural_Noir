@@ -14,20 +14,23 @@ class GameManager:
         self._sr = None
         self._tts = None
         self._gameIsReady = False
-
+            
     # instantiate all objects here
-    def setupGame(self):
+    def setupGame(self, emotibitUsed):
         self._conversation = ConversationModel()
         self._aiController = AIController(self._conversation)
-        self._bioController = BiometricController()
         self._gameState = GameStateManager()
         self._sr = SpeechToText()
         self._tts = TextToSpeechController()
-
         self._gameState.setAIReference(self._aiController)
-        self._gameState.setBiometricReference(self._bioController)
-        self._bioController.setAIReferece(self._aiController)
+    
+        if emotibitUsed:
+            self._gameState.setEmotibitUsed(True)
+            self._bioController = BiometricController()
+            self._gameState.setBiometricReference(self._bioController)
+            self._bioController.setAIReferece(self._aiController)
 
+        self._gameState.setEmotibitUsed(False)
         self._gameIsReady = True
 
     def generateAIResponse(self) -> str:
@@ -56,3 +59,6 @@ class GameManager:
             raise Exception("Game is not ready, please invoke setupGame() first") 
         
         return self._bioController.getHeartRate()
+    
+    def updateGameState(self, state):
+        self._gameState.updateState(state)
