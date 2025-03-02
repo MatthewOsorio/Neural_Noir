@@ -15,6 +15,8 @@ class GameManager:
         self._tts = None
         self._gameIsReady = False
             
+        self._response = None
+
     # instantiate all objects here
     def setupGame(self, emotibitUsed):
         self._conversation = ConversationModel()
@@ -36,7 +38,8 @@ class GameManager:
     def generateAIResponse(self) -> str:
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first")
-        return self._aiController.generateResponse()
+        self.response = self._aiController.generateResponse()
+        return self.response
     
     def listenToUser(self):
         if not self._gameIsReady:
@@ -48,6 +51,7 @@ class GameManager:
         #possibly spin another thread for the db
         self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(responseText)
+        return responseText
 
     def processUserResponse(self, userResponse):
         if not self._gameIsReady:
@@ -62,3 +66,24 @@ class GameManager:
     
     def updateGameState(self, state):
         self._gameState.updateState(state)
+    def getUserTemperature(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        
+        return self._bioController.getTemperature()
+    
+    def getUserEDA(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        
+        return self._bioController.getEDA()
+    
+    def clearEmotibit(self):
+        self._bioController.clear()
+    
+    def updateAI(self, state):
+        self._aiController.update(state)
+
+    def convertTTS(self, response):
+        self._tts.generateTTS(response)
+

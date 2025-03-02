@@ -1,10 +1,10 @@
-from ui.PauseMenu import PauseMenu
-import Controllers.GameController as gc
-from NLPSystem.NLPController import NLPController as nlp
-from NLPSystem.IntimidatingStyle import IntimidatingSytle
-from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
-from SRSystem.SpeechToText import SpeechToText as stt
-from Controllers.DatabaseController import DatabaseController as db
+from frontend.ui.menu.PauseMenu import PauseMenu
+from backend.BackendInterface.GameManager import GameManager
+from frontend.ui.overlay.Overlay import Overlay
+from frontend.stages.state1 import State1
+from direct.task import Task
+import threading
+
 from panda3d.core import *
 import time
 
@@ -21,26 +21,33 @@ class InterrogationRoom:
         #pause game if escape is pressed
         self.base.accept('escape', self.pauseGame)
 
-        intimidating = IntimidatingSytle()
-        nlpController = nlp(intimidating)
-        self.game = gc.GameController(stt(), nlpController, ttsc(), db())       
+        self.game = GameManager()  
+        self.game.setupGame()
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
-        self.pauseMenu = PauseMenu(self, self.menu)
-        self.pauseMenu.hide()
-        self.pauseMenu.hideImage()
+        self.menu.initializePauseMenu()
+        self.menu.pauseMenu.getGame(self.game)
+        self.menu.pauseMenu.getRoom(self)
+        self.menu.pauseMenu.hide()
+        self.menu.pauseMenu.hideImage()
+
+        self.Overlay = Overlay(self)      
+        self.Overlay.show()
         
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = False
+
+        self.current = None
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True):
-            self.pauseMenu.show()
-            self.pauseMenu.showImage()
+            self.menu.pauseMenu.show()
+            self.menu.pauseMenu.showImage()
             self.gameState = 'paused'
-            self.game.tts.audio.pauseSpeech()
+            self.game._tts.audio.pauseSpeech()
+            self.Overlay.hide()
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == False):
             self.base.menuManager.audio.playSound("errorSound")
         
@@ -113,23 +120,68 @@ class InterrogationRoom:
         self.ambientNP = self.base.render.attachNewNode(self.ambient)
         self.base.render.setLight(self.ambientNP)
 
-    #Run on separate thread
-    def runInterrogation(self):
-        
+   #Run on separate thread
+
+    def beginInterrogation(self):
         self.pausable = True
-        self.game.startInterrogation()
-        
-        self.end = False
-        while self.end==False:
-           
-            #print("Playing")
-            self.pausable = False
-            speech = self.game.speechInput()
-            print(f"< {speech}")
-            self.pausable = True
-            
-            response = self.game.createDetectiveResponse()
-            print(response)
-            #return response
-            
         self.ended = False
+        self.Overlay.hidePTTButton()  
+        
+        self.initialState = State1()
+        self.initialState.setGame(self.game)
+        response = self.initialState.begin()
+        self.initialState.convert()
+        self.state = self.initialState
+
+        self.Overlay.showPTTButton()
+
+        #Get the speech input
+        threading.Thread(target=self.processSpeech, daemon=True).start()
+
+    #Speech input part 
+    def processSpeech(self):
+        self.Overlay.hideSubtitles()
+        speech = self.game.listenToUser()
+        taskMgr.add(lambda task: self.speechUI(speech), "UpdateSpeechTask")
+
+    #Updates the overlay to show the PTT Button
+    def speechUI(self, speech):
+        self.Overlay.showPTTButton()
+        print(f"< {speech}")
+        
+        #Get the response
+        threading.Thread(target=self.processResponse, daemon=True).start()
+
+    #Response processing part
+    def processResponse(self):
+        self.Overlay.hidePTTButton()
+        response = self.state.generateResponse()
+
+        #Update the overlay to show the response
+        taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+
+    #Updates subtitles if applicable
+    def responseUI(self, response):
+        print(response)
+        if (self.menu.subtitles == True):
+            self.Overlay.updateSubtitles(response)
+            self.Overlay.showSubtitles()
+        
+        #Convert the response to speech
+        threading.Thread(target=self.responseToSpeech, daemon=True).start()
+
+    #TTS process
+    def responseToSpeech(self):
+        self.state.convert()
+        
+        #Hide the subtitles
+        taskMgr.add(lambda task: self.updateResponse(), "Update")
+    
+    #Hides subtitles
+    def updateResponse(self):
+        self.Overlay.hideSubtitles()
+
+        #If the game has not been quit, restart the process
+        if self.ended == False:
+            self.Overlay.showPTTButton()
+            threading.Thread(target=self.processSpeech, daemon=True).start()

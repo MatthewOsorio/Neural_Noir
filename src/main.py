@@ -1,3 +1,5 @@
+from backend.BackendInterface.GameManager import GameManager
+
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 from panda3d.core import TextNode
@@ -9,10 +11,10 @@ import sys
 from direct.stdpy.threading import Thread
 import time
 
-from ui.menu import menuManager
-from ui.interrogationRoom import InterrogationRoom
-from ui.connection_utils import Connection
-from ui.connectionDisplay import ConnectionDisplay
+from frontend.ui.menu.menu import menuManager
+from frontend.ui.interrogationRoom import InterrogationRoom
+from frontend.ui.connection_utils import Connection
+from frontend.ui.connectionDisplay import ConnectionDisplay
 
 class main(ShowBase):
     def __init__(self):
@@ -50,7 +52,7 @@ class main(ShowBase):
             self.roomLoaded = True   
             self.interrogationRoom.game.begin = True
             #Stars interrogation api calls on a separate thread once the game is started
-            self.interrogationThread = Thread(target=self.interrogationRoom.runInterrogation, daemon = True)
+            self.interrogationThread = Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
             self.interrogationThread.start()
 
         if self.menuManager.gameStart == True:

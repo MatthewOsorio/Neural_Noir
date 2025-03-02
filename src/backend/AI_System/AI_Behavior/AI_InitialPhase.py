@@ -1,3 +1,4 @@
+# Initial state - detectives ask the intro questions and EmotiBit baseline is taken
 from .AI import AI
 
 class AIInitialPhase(AI):
