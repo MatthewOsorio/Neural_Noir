@@ -8,16 +8,16 @@ class GameStateManager:
         self._aiReference= None
         self._biometricReference = None
 
-    def setAIReference(self, ai_reference):
-        self._aiReference = ai_reference
+    def setAIReference(self, aiReference):
+        self._aiReference = aiReference
 
-    def setBiometricReference(self, biometric_reference):
+    def setBiometricReference(self, biometricReference):
         if self._emotibitUsed == None:
             raise Exception("Haven't set if emotibit is being used or not. Invoke setEmotibitUsed(T or F)")
         if self._emotibitUsed == False:
             raise Exception("We are not using the emotibit")
         
-        self._biometricReference = biometric_reference
+        self._biometricReference = biometricReference
 
     def notifyAIReference(self):
         if self._aiReference == None:
@@ -62,8 +62,8 @@ class GameStateManager:
     def getEmotibitUsed(self):
         return self._emotibitUsed
     
-    def setEmotibitUsed(self, is_used):
-        if isinstance(is_used, bool):
-            self._emotibitUsed = is_used
+    def setEmotibitUsed(self, isUsed):
+        if isinstance(isUsed, bool):
+            self._emotibitUsed = isUsed
         else:
             raise TypeError("Invalid Type... emotibitUsed needs True or False")

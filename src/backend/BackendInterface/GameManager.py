@@ -49,10 +49,10 @@ class GameManager:
         self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(responseText)
 
-    def processUserResponse(self, user_response):
+    def processUserResponse(self, userResponse):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first")
-        self._aiController.processUserResponse(user_response)
+        self._aiController.processUserResponse(userResponse)
 
     def getUserHeartRate(self):
         if not self._gameIsReady:
