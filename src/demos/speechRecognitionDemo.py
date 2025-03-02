@@ -4,7 +4,7 @@ from NLPSystem.IntimidatingStyle import IntimidatingSytle
 from NLPSystem.InteractionModel import IneractionModel
 from TTSSystem.TextToSpeechController import TextToSpeechController as ttsc
 from SRSystem.SpeechToText import SpeechToText as stt
-from Controllers.DatabaseController import DatabaseController as db
+from Controllers.Database import Database as db
 
 newInteraction = IneractionModel()
 intimidating = IntimidatingSytle()
