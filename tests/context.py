@@ -10,4 +10,4 @@ from backend.BiometricSystem.BiometricController import BiometricController
 from backend.Conversation.ConversationModel import ConversationModel
 from backend.SRSystem.SpeechToText import SpeechToText
 from backend.TTSSystem import TextToSpeechController
-from backend.Database.Database import Database
+from backend.Database.DatabaseController import DatabaseController

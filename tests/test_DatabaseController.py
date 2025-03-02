@@ -2,15 +2,15 @@ import pytest
 import os
 import uuid
 import sqlite3
-from .context import Database
+from .context import DatabaseController
 
 TEST_DB_PATH = os.path.join(os.path.dirname(__file__), "test_neural_noir.db")
 
 @pytest.fixture
 def db():
-    database = Database()
+    database = DatabaseController()
     database.db_path = TEST_DB_PATH
-    database.initialize_db()
+    database.initializeDB()
 
     yield database
 
