@@ -14,8 +14,12 @@ class BiometricReader:
         self.startTime= None
         self.endTime= None
         self.activeBoards = {}
+
+        self.heartRateBase = 0
+        self.edaBase = 0
+        self.temperatureBase = 0
+
         self.setup()
-        
 
     def setup(self) -> None:
         params= BrainFlowInputParams()
@@ -39,6 +43,7 @@ class BiometricReader:
         self.startTime = end.strftime("%H:%M:%S")
         self.emotibit.release_session()
         self.processData(auxData, ancData)
+
 
     def processData(self, ppgData, edaData) -> None:
 
