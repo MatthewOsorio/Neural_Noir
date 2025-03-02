@@ -151,13 +151,14 @@ class InterrogationRoom:
 
     #Speech input part 
     def processSpeech(self):
+        self.pausible = False
         self.Overlay.hideSubtitles()
         speech = self.game.listenToUser()
         taskMgr.add(lambda task: self.speechUI(speech), "UpdateSpeechTask")
 
     #Updates the overlay to show the PTT Button
     def speechUI(self, speech):
-        self.pausible = False
+        
         self.Overlay.showPTTButton()
         print(f"< {speech}")
         
