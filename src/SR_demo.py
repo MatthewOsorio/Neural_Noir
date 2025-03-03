@@ -1,10 +1,10 @@
 # File for testing backend stuff
-#from AI_System.AIController import AIController
-from GameStateSystem.GameStateManager import GameStateManager
-from Conversation.ConversationModel import ConversationModel
-from Database.DatabaseController import DatabaseController
-from Database.SessionController import SessionController
-from BackendInterface.GameManager import GameManager
+from backend.AI_System.AIController import AIController
+from backend.GameStateSystem.GameStateManager import GameStateManager
+from backend.Conversation.ConversationModel import ConversationModel
+from backend.Database.DatabaseController import DatabaseController
+from backend.Database.SessionController import SessionController
+from backend.BackendInterface.GameManager import GameManager
 
 # Initialize the database and the session
 database = DatabaseController()
@@ -13,7 +13,7 @@ session.start()
 
 # Initialize the game state and AI system
 conversation = ConversationModel(database, session)
-ai = AIController.AIController(conversation)
+ai = AIController(conversation)
 
 # Initialize game state and AI reference
 gameState = GameStateManager()

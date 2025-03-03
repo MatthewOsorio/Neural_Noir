@@ -2,9 +2,10 @@ from .AI_Behavior import AIInitialPhase, AIEarlyInterrogation, AIMidInterrogatio
 
 class AIController:
     def __init__(self, conversation):
-        self._ai = None     
         self._conversation = conversation
         self._userNervous = None
+        #self._ai = AIContext(AIInitialPhase(self._conversation))
+        self._ai = None    
 
     def setAIBehavior(self, state):
         match state.value:
