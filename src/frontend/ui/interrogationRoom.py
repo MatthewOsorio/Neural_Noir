@@ -31,7 +31,7 @@ class InterrogationRoom:
         self.base.accept('escape', self.pauseGame)
 
         self.game = GameManager()  
-        self.game.setupGame(False)
+        self.game.setupGame(True)
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
@@ -137,15 +137,13 @@ class InterrogationRoom:
     def beginInterrogation(self):
         self.pausable = True
         self.ended = False
-        self.Overlay.hidePTTButton()  
-
+        
         self.Overlay.flashback.setImage(self.prompt)
         self.Overlay.flashback.show()
 
         flashback = self.Overlay.flashback.getActive()
         while flashback == True:
             flashback = self.Overlay.flashback.getActive()
-            print (f"Flashback {flashback}")
         
         self.testStates = [State1(), State2()]
 
@@ -159,7 +157,10 @@ class InterrogationRoom:
         self.state.convert()
         self.current = 0
 
-        self.Overlay.showPTTButton()
+        self.Overlay.ptt.showPTTButton()
+        pttPushed = self.Overlay.ptt.getPTTActive()
+        while pttPushed == True:
+            pttPushed = self.Overlay.ptt.getPTTActive()
 
         #Get the speech input
         threading.Thread(target=self.processSpeech, daemon=True).start()
@@ -173,8 +174,8 @@ class InterrogationRoom:
 
     #Updates the overlay to show the PTT Button
     def speechUI(self, speech):
-        
-        self.Overlay.showPTTButton()
+        self.Overlay.ptt.showPTTButton()
+
         print(f"< {speech}")
         
         #Get the response
@@ -183,7 +184,7 @@ class InterrogationRoom:
     #Response processing part
     def processResponse(self):
         self.pausable = True
-        self.Overlay.hidePTTButton()
+        self.Overlay.ptt.hidePTTButton()
         response = self.state.generateResponse()
 
         if response != False:
@@ -223,5 +224,5 @@ class InterrogationRoom:
 
         #If the game has not been quit, restart the process
         if self.ended == False:
-            self.Overlay.showPTTButton()
+            self.Overlay.ptt.showPTTButton()
             threading.Thread(target=self.processSpeech, daemon=True).start()

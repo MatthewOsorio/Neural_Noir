@@ -9,12 +9,15 @@ import time
 from direct.task import Task
 from panda3d.core import TransparencyAttrib
 from ..overlay.flashback import flashback
+from ..overlay.PTT import PTT
 
 class Overlay:
     def __init__(self, base):
         self.base = base
 
         self.flashback = flashback(self.base)
+
+        self.ptt = PTT(self.base)
 
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -90,6 +93,10 @@ class Overlay:
             pos = (0,0,0)
         )
         
+        self.ptt.setButton(self.PTTButton)
+        self.ptt.hidePTTButton()
+        self.setButtonCommand()
+
         taskMgr.doMethodLater(10, self.updateOverlay, "updateOverlayTask") 
     
     def show(self):
@@ -132,12 +139,6 @@ class Overlay:
         return task.again
     
     
-    def showPTTButton(self):
-        self.PTTButton.show()
-    
-    def hidePTTButton(self):   
-        self.PTTButton.hide()
-
     #Updates the subtitles to the response from the detective 
     #Will be moved into its own class
     def updateSubtitles(self, text):
@@ -148,5 +149,8 @@ class Overlay:
 
     def hideSubtitles(self):
         self.subtitles.hide()
+
+    def setButtonCommand(self):
+        self.PTTButton["command"] = self.ptt.hidePTTButton
 
     
