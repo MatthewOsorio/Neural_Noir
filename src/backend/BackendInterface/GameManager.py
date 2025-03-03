@@ -78,6 +78,11 @@ class GameManager:
         
         return self._bioController.getEDA()
     
+    def setRanges(self, rangeH, rangeE, rangeT):
+        self._bioController.biometricReader.heartRateBase = rangeH
+        self._bioController.biometricReader.edaBase = rangeE
+        self._bioController.biometricReader.temperatureBase = rangeT    
+    
     def clearEmotibit(self):
         self._bioController.clear()
     
