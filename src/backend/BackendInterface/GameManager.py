@@ -61,24 +61,33 @@ class GameManager:
     def getUserHeartRate(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        
+        elif not self._gameState.getEmotibitUsed():
+            return None
         return self._bioController.getHeartRate()
     
     def updateGameState(self, state):
         self._gameState.updateState(state)
+
     def getUserTemperature(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        
+        elif not self._gameState.getEmotibitUsed():
+            return None
         return self._bioController.getTemperature()
     
     def getUserEDA(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        
+        elif not self._gameState.getEmotibitUsed():
+            return None        
         return self._bioController.getEDA()
     
     def setRanges(self, rangeH, rangeE, rangeT):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._gameState.getEmotibitUsed():
+            return None
+        
         self._bioController.biometricReader.heartRateBase = rangeH
         self._bioController.biometricReader.edaBase = rangeE
         self._bioController.biometricReader.temperatureBase = rangeT    

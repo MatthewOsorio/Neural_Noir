@@ -31,7 +31,7 @@ class InterrogationRoom:
         self.base.accept('escape', self.pauseGame)
 
         self.game = GameManager()  
-        self.game.setupGame(True)
+        self.game.setupGame(False)
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
@@ -220,8 +220,6 @@ class InterrogationRoom:
     #Hides subtitles
     def updateResponse(self):
         self.Overlay.hideSubtitles()
-        print(self.game._bioController.biometricReader.heartRate)
-        print(self.game._bioController.biometricReader.heartRateBase)
 
         #If the game has not been quit, restart the process
         if self.ended == False:
