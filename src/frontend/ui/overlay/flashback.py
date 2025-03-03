@@ -34,8 +34,9 @@ class flashback:
             scale = 0.1,
             frameColor = (1, 1, 1, 1),
             parent = self.flashback,
-            pos = (1.5, 0, -0.8),
-            command = self.hide
+            pos = (1.5, 1, -0.8),
+            command = self.hide,
+            sortOrder=1
         )
 
         self.hide()

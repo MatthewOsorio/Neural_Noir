@@ -43,13 +43,6 @@ class PauseMenu():
             parent=self.base.aspect2d
         )
 
-        self.backImageMain = OnscreenImage(
-            self.manager.room,
-            parent=self.pauseMenu,
-            scale=(1.5, 0.9, 0.9),
-            pos=(0, 0, 0)
-        )
-
         self.backImage = OnscreenImage(
             self.manager.black,
             parent=self.pauseMenu,
