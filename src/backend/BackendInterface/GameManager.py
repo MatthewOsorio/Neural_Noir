@@ -94,6 +94,10 @@ class GameManager:
         self._bioController.biometricReader.temperatureBase = rangeT    
     
     def restartEmotibit(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._gameState.getEmotibitUsed():
+            return None
         self._bioController.restart()
     
     def updateAI(self, state):
