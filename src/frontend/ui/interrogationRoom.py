@@ -156,18 +156,19 @@ class InterrogationRoom:
         response = self.state.begin()
         self.state.convert()
         self.current = 0
-
+        self.Overlay.ptt.showPTTButton()
         #Get the speech input
         taskMgr.add(self.speechUI, "UpdateSpeechTask")
-        threading.Thread(target=self.processSpeech, daemon=True).start()
+        
        
     #Updates the overlay to show the PTT Button
     def speechUI(self, task):
-        self.Overlay.ptt.showPTTButton()
-
-        if not self.Overlay.ptt.getPTTActive(): 
+        
+        pttActive = self.Overlay.ptt.getPTTActive()
+        if pttActive == False: 
             self.Overlay.ptt.hidePTTButton()
             print("talk")
+            threading.Thread(target=self.processSpeech, daemon=True).start()
             return task.done 
 
         return task.cont
@@ -178,14 +179,14 @@ class InterrogationRoom:
         self.Overlay.hideSubtitles()
         speech = self.game.listenToUser()
         taskMgr.add(lambda task: self.speechUIPost(speech, task), "UpdateSpeechTask2")
-        #Get the response
-        threading.Thread(target=self.processResponse, daemon=True).start() 
-        
+
     def speechUIPost(self, speech, task):
 
         self.Overlay.ptt.hidePTTButton()
      
         print(f"{speech}")
+        #Get the response
+        threading.Thread(target=self.processResponse, daemon=True).start() 
         return task.done
               
     #Response processing part
@@ -197,8 +198,7 @@ class InterrogationRoom:
         if response != False:
             #Update the overlay to show the response
             taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
-            #Convert the response to speech
-            threading.Thread(target=self.responseToSpeech, daemon=True).start()
+            
         else:
             self.current = self.current + 1
             print(f"State {self.current}")
@@ -208,8 +208,7 @@ class InterrogationRoom:
             response = self.state.begin()
             print("New state response")
             taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
-            #Convert the response to speech
-            threading.Thread(target=self.responseToSpeech, daemon=True).start()
+
             print("End")
 
     #Updates subtitles if applicable
@@ -219,7 +218,8 @@ class InterrogationRoom:
             self.Overlay.updateSubtitles(response)
             self.Overlay.showSubtitles()
         
-
+        #Convert the response to speech
+        threading.Thread(target=self.responseToSpeech, daemon=True).start()
         return task.done
 
     #TTS process
@@ -241,5 +241,5 @@ class InterrogationRoom:
             return task.done
     
     def processNext(self):
+        self.Overlay.ptt.showPTTButton()
         taskMgr.add(self.speechUI, "Update")
-        threading.Thread(target=self.processSpeech, daemon=True).start()
