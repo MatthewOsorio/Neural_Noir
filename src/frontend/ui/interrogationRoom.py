@@ -176,7 +176,7 @@ class InterrogationRoom:
     #Speech input part 
     def processSpeech(self):
         self.pausible = False
-        self.Overlay.hideSubtitles()
+        self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
         taskMgr.add(lambda task: self.speechUIPost(speech, task), "UpdateSpeechTask2")
 
@@ -215,8 +215,9 @@ class InterrogationRoom:
     def responseUI(self, response, task):
         print(response)
         if (self.menu.subtitles == True):
-            self.Overlay.updateSubtitles(response)
-            self.Overlay.showSubtitles()
+            self.Overlay.subtitles.setResponse(response)
+            self.Overlay.subtitles.updateSubtitles()
+            self.Overlay.showSubtitlesBox()
         
         #Convert the response to speech
         threading.Thread(target=self.responseToSpeech, daemon=True).start()
@@ -231,7 +232,7 @@ class InterrogationRoom:
     
     #Hides subtitles
     def updateResponse(self, task):
-        self.Overlay.hideSubtitles()
+        self.Overlay.hideSubtitlesBox()
 
         #If the game has not been quit, restart the process
         if self.ended == False:

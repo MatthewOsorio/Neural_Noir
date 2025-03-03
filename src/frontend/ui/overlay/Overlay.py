@@ -10,6 +10,7 @@ from direct.task import Task
 from panda3d.core import TransparencyAttrib
 from ..overlay.flashback import flashback
 from ..overlay.PTT import PTT
+from ..overlay.subtitles import Subtitles
 
 class Overlay:
     def __init__(self, base):
@@ -18,6 +19,7 @@ class Overlay:
         self.flashback = flashback(self.base)
 
         self.ptt = PTT(self.base)
+        self.subtitles = Subtitles(self.base)
 
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -84,15 +86,19 @@ class Overlay:
 
         self.PTTButton.setTransparency(TransparencyAttrib.MAlpha)
 
-        self.subtitles = OnscreenText(
-            text = "Subtitles",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
-            scale = 0.15,
-            parent = self.overlay,
-            fg = (1,1,1,1),
-            pos = (0,0,0)
-        )
+        self.subtitlesBox = OnscreenImage(
+            self.base.base.menuManager.backGroundBlack,
+            parent=self.overlay,
+            scale=(1, 0.3, 0.3),
+            pos=(0 , 0, -0.6),
+        )        
         
+        self.subtitlesBox.setColor(0, 0, 0, 0.5)
+        self.subtitlesBox.setTransparency(TransparencyAttrib.MAlpha)
+
+        self.subtitles.setParent(self.subtitlesBox)
+        self.subtitlesBox.hide()
+
         self.ptt.setButton(self.PTTButton)
         self.ptt.hidePTTButton()
         self.setButtonCommand()
@@ -139,16 +145,11 @@ class Overlay:
         return task.again
     
     
-    #Updates the subtitles to the response from the detective 
-    #Will be moved into its own class
-    def updateSubtitles(self, text):
-        self.subtitles.setText(text)
-    
-    def showSubtitles(self):
-        self.subtitles.show()
+    def showSubtitlesBox(self):
+        self.subtitlesBox.show()
 
-    def hideSubtitles(self):
-        self.subtitles.hide()
+    def hideSubtitlesBox(self):
+        self.subtitlesBox.hide()
 
     def setButtonCommand(self):
         self.PTTButton["command"] = self.ptt.setInactive
