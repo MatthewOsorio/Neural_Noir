@@ -10,6 +10,13 @@ import threading
 from panda3d.core import *
 import time
 
+import os
+from panda3d.core import Filename
+current_dir = os.path.dirname(os.path.abspath(__file__))
+prompt = os.path.join(current_dir, "..", "..", "..", "Assets", "Images", "introPrompt.png")
+prompt = os.path.normpath(prompt)
+prompt = Filename.fromOsSpecific(prompt).getFullpath()
+
 #Code originally written by Christine 
 #Modified by Evie 
 class InterrogationRoom:
@@ -42,7 +49,7 @@ class InterrogationRoom:
 
         self.current = None
 
-        self.testCount = 0 #testing average
+        self.prompt = prompt
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -131,6 +138,14 @@ class InterrogationRoom:
         self.pausable = True
         self.ended = False
         self.Overlay.hidePTTButton()  
+
+        self.Overlay.flashback.setImage(self.prompt)
+        self.Overlay.flashback.show()
+
+        flashback = self.Overlay.flashback.getActive()
+        while flashback == True:
+            flashback = self.Overlay.flashback.getActive()
+            print (f"Flashback {flashback}")
         
         self.testStates = [State1(), State2()]
 

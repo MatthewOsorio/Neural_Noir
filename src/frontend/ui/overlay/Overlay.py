@@ -8,11 +8,14 @@ from direct.gui.DirectGui import *
 import time
 from direct.task import Task
 from panda3d.core import TransparencyAttrib
-
+from ..overlay.flashback import flashback
 
 class Overlay:
     def __init__(self, base):
         self.base = base
+
+        self.flashback = flashback(self.base)
+
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
@@ -145,3 +148,5 @@ class Overlay:
 
     def hideSubtitles(self):
         self.subtitles.hide()
+
+    
