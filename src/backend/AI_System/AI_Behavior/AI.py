@@ -30,6 +30,9 @@ class AI(ABC):
     @abstractmethod
     def processResponse(self, userResponse):
         pass
+    
+    def getNervous(self):
+        return self.userNervous
 
     def sendToGPT(self, prompt):
         response = self.gpt.chat.completions.create(

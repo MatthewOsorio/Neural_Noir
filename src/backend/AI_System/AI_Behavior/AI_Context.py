@@ -17,3 +17,6 @@ class AIContext():
          
     def generateResponse(self):
         return self._state.generateResponse()
+    
+    def updateNervous(self, isNervous):
+        self._state.updateNervous(isNervous)

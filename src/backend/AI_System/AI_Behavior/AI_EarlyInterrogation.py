@@ -35,10 +35,10 @@ class AIEarlyInterrogation(AI):
     def processResponse(self, userResponse):
         clean_user_response= 'Player: ' + userResponse
         self.conversation.addUserInput(userResponse)
-
         self.addToConvo(clean_user_response)
 
-        prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}
+        prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}.
+                    The user was {'nervous' if self.userNervous else 'not nervous'} when giving their response.
                     Respond to the users explanation according to the rules below.
                     
                     **RULES**
@@ -47,6 +47,7 @@ class AIEarlyInterrogation(AI):
                         - If the user is being evasive, tell them to stop evading. Respond as Harris and *do not* respond as Miller.
                         - If the user explanation is irrelevant or unrelated, tell them stop messing around. Respond as Harris and *do not* respond as Miller.
                         - If the user seems scared, reasure them. Respond as Miller and *do not* respond as Harris
+                        - If the user was nervous point out they were nervous as whoever was talking
                         - **ONLY TALK ABOUT THE EVIDENCE**
                         - **DO NOT ASK QUESTIONS UNRELATED TO THE EVIDENCE**
                         - **DO NOT MENTIONS MARKS BRUISES AND BLACK EYE**

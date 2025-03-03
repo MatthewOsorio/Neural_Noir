@@ -28,3 +28,4 @@ class AIController:
 
     def updateNervous(self, isNervous):
         self._userState = isNervous
+        self._ai.updateNervous(isNervous)
