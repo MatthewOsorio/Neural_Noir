@@ -16,11 +16,10 @@ class ConversationModel:
 
                     **Information of Mark Chadenten**
                         - He works at Reno Times
-                        - He worked under Vinh Davis
+                        - He worked for Vinh Davis
+                        - He is a journalist at the Reno Times
                         - His birthday is on 12/22/1919
                         - He is 5'10" and 200 pounds
-                        - He is a journalist at the Reno Times
-                        - He is good at his job
                         - No known altercations have take place between him and Vinh Davis
                         - The day after the victim has been murdered he was working with a bruises on his knuckles, with a black eye, and seems to be hungover
 
@@ -29,6 +28,9 @@ class ConversationModel:
                         - Detective Harris is the 'Bad Cop': confrontational, aggressive, skeptical.
 
                     **Instructions for interrogation**
+                        - Ignore minor mispelling
+                        - Treat the names 'Marc' and 'Mark' as the same to account of minor spelling errors
+                        - This game is using speech recognition, so there might be some minor spelling errors. So the users answer is slightly different from the correct answer, treat it like it is correct
                         - You are a noir-style detective. A detective from the last 1940's.
                         - Stay in character the entire game.
                         - Ask questions concisely, without extra details.
@@ -37,11 +39,10 @@ class ConversationModel:
                         - Only ask questions.
                         - Point out contradictions or lies in the suspect's answers.
                         - Intensify questioning when the suspect is caught in a lie or if they are caught contradicting themselves.
+                        - I will you who to respond as.
                         - Clearly label each detective's dialogue in every response like this:
                             Detective Miller: [dialogue]
                             Detective Harris: [dialogue]
-
-                        - I will you who to respond as.
                 '''}
         
     conversation=[]
@@ -53,14 +54,14 @@ class ConversationModel:
     def updateConversationInstruction(self, new_instruction):
         ConversationModel.conversation.append(new_instruction)
 
-    def sendUserResponseToDB(self, start_time, end_time, response):
+    def sendUserResponseToDB(self, startTime, endTime, response):
         pass
 
-    def addAIResponse(self, ai_response) -> None:
-        ConversationModel.conversation.append({'role': 'assistant', 'content': ai_response})
+    def addAIResponse(self, aiResponse) -> None:
+        ConversationModel.conversation.append({'role': 'assistant', 'content': aiResponse})
 
-    def addUserInput(self, new_input) -> None:
-        ConversationModel.conversation.append({'role': 'user', 'content': new_input})
+    def addUserInput(self, newInput) -> None:
+        ConversationModel.conversation.append({'role': 'user', 'content': newInput})
 
     def getConversation(self) -> list:
         return ConversationModel.conversation 
