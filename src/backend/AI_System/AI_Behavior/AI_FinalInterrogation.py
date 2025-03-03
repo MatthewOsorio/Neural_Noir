@@ -1,3 +1,4 @@
+# Bad-cop scenario
 from .AI import AI
 
 class AIFinalInterrogation(AI):

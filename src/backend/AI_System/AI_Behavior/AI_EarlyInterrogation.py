@@ -1,3 +1,4 @@
+# Good cop-Bad cop scenario
 from .AI import AI
 
 class AIEarlyInterrogation(AI):
