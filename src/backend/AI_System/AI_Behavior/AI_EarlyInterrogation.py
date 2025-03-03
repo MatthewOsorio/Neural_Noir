@@ -6,3 +6,5 @@ class AIEarlyInterrogation(AI):
         super().__init__(conversation)
         
 
+    def generateResponse(self) -> str:
+        pass
