@@ -29,6 +29,7 @@ class GameManager:
         if emotibitUsed:
             self._gameState.setEmotibitUsed(True)
             self._bioController = BiometricController()
+            self._bioController._gameIsReady = True
             self._gameState.setBiometricReference(self._bioController)
             self._bioController.setAIReferece(self._aiController)
 
@@ -92,8 +93,8 @@ class GameManager:
         self._bioController.biometricReader.edaBase = rangeE
         self._bioController.biometricReader.temperatureBase = rangeT    
     
-    def clearEmotibit(self):
-        self._bioController.clear()
+    def restartEmotibit(self):
+        self._bioController.restart()
     
     def updateAI(self, state):
         self._aiController.update(state)

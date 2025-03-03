@@ -152,7 +152,7 @@ class PauseMenu():
             self.manager.gameStart = False
             self.room.base.checkGameStartFlag()
             #self.game.database.closeConnection()
-            self.game.clearEmotibit()
+            self.game.restartEmotibit()
             self.game.begin = False
             self.ended = True
             self.room.base.returnToMenu()
