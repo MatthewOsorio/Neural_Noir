@@ -24,6 +24,8 @@ class InterrogationRoom:
         self.base = base
         self.menu = menu
 
+        self.useEmotibit = True
+
         self.base.disableMouse()
         self.gameState= 'gameplay'
 
@@ -31,7 +33,7 @@ class InterrogationRoom:
         self.base.accept('escape', self.pauseGame)
 
         self.game = GameManager()  
-        self.game.setupGame(True)
+        self.game.setupGame(self.useEmotibit)
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
@@ -144,6 +146,9 @@ class InterrogationRoom:
         flashback = self.Overlay.flashback.getActive()
         while flashback == True:
             flashback = self.Overlay.flashback.getActive()
+              
+        if self.useEmotibit == True:
+            self.Overlay.showBioData()
         
         self.testStates = [State1(), State2()]
 

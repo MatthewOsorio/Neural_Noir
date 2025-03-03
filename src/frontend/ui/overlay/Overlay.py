@@ -102,6 +102,8 @@ class Overlay:
         self.ptt.setButton(self.PTTButton)
         self.ptt.hidePTTButton()
         self.setButtonCommand()
+        
+        self.hideBioData()
 
         taskMgr.doMethodLater(10, self.updateOverlay, "updateOverlayTask") 
     
@@ -154,4 +156,9 @@ class Overlay:
     def setButtonCommand(self):
         self.PTTButton["command"] = self.ptt.setInactive
 
+    def hideBioData(self):
+        self.bioBackground.hide()
+    
+    def showBioData(self):
+        self.bioBackground.show()
     
