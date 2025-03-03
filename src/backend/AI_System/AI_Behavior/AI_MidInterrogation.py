@@ -1,3 +1,4 @@
+# Good-cop scenario
 from .AI import AI
 
 class AIMidInterrogation(AI):
@@ -16,3 +17,5 @@ class AIMidInterrogation(AI):
     # def generateResponse(self) -> str:
     #     if self._evidence == None:
             
+    def setInstructions(self):
+        print("mid")

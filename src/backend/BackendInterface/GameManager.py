@@ -19,6 +19,8 @@ class GameManager:
         self._database = None
         self._sessionController = None
             
+        self._response = None
+
     # instantiate all objects here
     def setupGame(self, emotibitUsed):
         self._database = DatabaseController()
@@ -44,7 +46,8 @@ class GameManager:
     def generateAIResponse(self) -> str:
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first")
-        return self._aiController.generateResponse()
+        self.response = self._aiController.generateResponse()
+        return self.response
     
     def listenToUser(self):
         if not self._gameIsReady:
@@ -56,6 +59,7 @@ class GameManager:
         #possibly spin another thread for the db
         self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(responseText)
+        return responseText
 
     def processUserResponse(self, userResponse):
         if not self._gameIsReady:
@@ -65,8 +69,43 @@ class GameManager:
     def getUserHeartRate(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        
+        elif not self._gameState.getEmotibitUsed():
+            return None
         return self._bioController.getHeartRate()
     
     def updateGameState(self, state):
         self._gameState.updateState(state)
+
+    def getUserTemperature(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._gameState.getEmotibitUsed():
+            return None
+        return self._bioController.getTemperature()
+    
+    def getUserEDA(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._gameState.getEmotibitUsed():
+            return None        
+        return self._bioController.getEDA()
+    
+    def setRanges(self, rangeH, rangeE, rangeT):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._gameState.getEmotibitUsed():
+            return None
+        
+        self._bioController.biometricReader.heartRateBase = rangeH
+        self._bioController.biometricReader.edaBase = rangeE
+        self._bioController.biometricReader.temperatureBase = rangeT    
+    
+    def clearEmotibit(self):
+        self._bioController.clear()
+    
+    def updateAI(self, state):
+        self._aiController.update(state)
+
+    def convertTTS(self, response):
+        self._tts.generateTTS(response)
+

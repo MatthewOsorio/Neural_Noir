@@ -10,6 +10,13 @@ import threading
 from panda3d.core import *
 import time
 
+import os
+from panda3d.core import Filename
+current_dir = os.path.dirname(os.path.abspath(__file__))
+prompt = os.path.join(current_dir, "..", "..", "..", "Assets", "Images", "introPrompt.png")
+prompt = os.path.normpath(prompt)
+prompt = Filename.fromOsSpecific(prompt).getFullpath()
+
 #Code originally written by Christine 
 #Modified by Evie 
 class InterrogationRoom:
@@ -24,7 +31,7 @@ class InterrogationRoom:
         self.base.accept('escape', self.pauseGame)
 
         self.game = GameManager()  
-        self.game.setupGame()
+        self.game.setupGame(False)
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
@@ -42,7 +49,7 @@ class InterrogationRoom:
 
         self.current = None
 
-        self.testCount = 0 #testing average
+        self.prompt = prompt
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -131,6 +138,14 @@ class InterrogationRoom:
         self.pausable = True
         self.ended = False
         self.Overlay.hidePTTButton()  
+
+        self.Overlay.flashback.setImage(self.prompt)
+        self.Overlay.flashback.show()
+
+        flashback = self.Overlay.flashback.getActive()
+        while flashback == True:
+            flashback = self.Overlay.flashback.getActive()
+            print (f"Flashback {flashback}")
         
         self.testStates = [State1(), State2()]
 
@@ -175,11 +190,14 @@ class InterrogationRoom:
             #Update the overlay to show the response
             taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
         else:
-            self.state = self.testStates[self.current + 1]
-            #Generate a new response in the next state
-            #self.state.setUp()
-            #response = self.state.generateResponse()
-            #taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+            self.current = self.current + 1
+            print(f"State {self.current}")
+            self.state = self.testStates[self.current]
+
+            self.state.setGame(self.game)
+            response = self.state.begin()
+            print("New state response")
+            taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
             print("End")
 
     #Updates subtitles if applicable
@@ -202,9 +220,6 @@ class InterrogationRoom:
     #Hides subtitles
     def updateResponse(self):
         self.Overlay.hideSubtitles()
-        print(self.game._bioController.biometricReader.state)
-        print(self.game._bioController.biometricReader.heartRate)
-        print(self.game._bioController.biometricReader.heartRateBase)
 
         #If the game has not been quit, restart the process
         if self.ended == False:

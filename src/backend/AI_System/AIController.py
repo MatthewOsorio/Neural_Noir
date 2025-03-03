@@ -28,3 +28,7 @@ class AIController:
 
     def updateNervous(self, isNervous):
         self._userState = isNervous
+    
+    #Added this to test something with switching states. Feel free to delete if its not needed.
+    def introduceEvidence(self):
+        self._ai.introduceEvidence()
