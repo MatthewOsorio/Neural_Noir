@@ -1,18 +1,22 @@
 # File for testing backend stuff
-from BackendInterface.GameManager import GameManager
+from AI_System import AIController
+from GameStateSystem.GameStateManager import GameStateManager
+from backend.Conversation.ConversationModel import ConversationModel
 
-gameState = GameManager()
-gameState.setupGame(False)
-gameState.updateGameState(1)
-finished_phase1 = False
-finished_phase2 = False
-while(not finished_phase1):
-    ai_response = gameState.generateAIResponse()
+gameState = GameStateManager()
+conversation = ConversationModel()
+ai = AIController.AIController(conversation)
+gameState.setAIReference(ai)
+gameState.updateState(1)
+
+finished_phase = False
+
+while(not finished_phase):
+    ai_response = ai.generateResponse()
     if ai_response == False:
-        gameState.updateGameState(2)
+        finished_phase = True
     else:
+        conversation.addAIResponse(ai_response)
         print(ai_response)
         user_statement = input('> ')
-        gameState.processUserResponse(user_statement)
-
-gameState.updateGameState(2)
+        ai.processUserResponse(user_statement)
