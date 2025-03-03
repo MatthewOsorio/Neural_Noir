@@ -151,6 +151,6 @@ class Overlay:
         self.subtitles.hide()
 
     def setButtonCommand(self):
-        self.PTTButton["command"] = self.ptt.hidePTTButton
+        self.PTTButton["command"] = self.ptt.setInactive
 
     

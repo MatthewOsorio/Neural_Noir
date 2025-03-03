@@ -13,7 +13,11 @@ class PTT:
     
     def hidePTTButton(self):
         self.button.hide()
+    
+    def setInactive(self):
         self.pttActive = False
+        self.hidePTTButton()
+        print("PTT Inactive")
 
     def getPTTActive(self):
         return self.pttActive

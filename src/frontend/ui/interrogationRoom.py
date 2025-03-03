@@ -157,39 +157,48 @@ class InterrogationRoom:
         self.state.convert()
         self.current = 0
 
-        self.Overlay.ptt.showPTTButton()
-        pttPushed = self.Overlay.ptt.getPTTActive()
-        while pttPushed == True:
-            pttPushed = self.Overlay.ptt.getPTTActive()
-
         #Get the speech input
+        taskMgr.add(self.speechUI, "UpdateSpeechTask")
         threading.Thread(target=self.processSpeech, daemon=True).start()
+       
+    #Updates the overlay to show the PTT Button
+    def speechUI(self, task):
+        self.Overlay.ptt.showPTTButton()
 
+        if not self.Overlay.ptt.getPTTActive(): 
+            self.Overlay.ptt.hidePTTButton()
+            print("talk")
+            return task.done 
+
+        return task.cont
+     
     #Speech input part 
     def processSpeech(self):
         self.pausible = False
         self.Overlay.hideSubtitles()
         speech = self.game.listenToUser()
-        taskMgr.add(lambda task: self.speechUI(speech), "UpdateSpeechTask")
-
-    #Updates the overlay to show the PTT Button
-    def speechUI(self, speech):
-        self.Overlay.ptt.showPTTButton()
-
-        print(f"< {speech}")
-        
+        taskMgr.add(lambda task: self.speechUIPost(speech, task), "UpdateSpeechTask2")
         #Get the response
-        threading.Thread(target=self.processResponse, daemon=True).start()
+        threading.Thread(target=self.processResponse, daemon=True).start() 
+        
+    def speechUIPost(self, speech, task):
 
+        self.Overlay.ptt.hidePTTButton()
+     
+        print(f"{speech}")
+        return task.done
+              
     #Response processing part
     def processResponse(self):
         self.pausable = True
-        self.Overlay.ptt.hidePTTButton()
+        
         response = self.state.generateResponse()
 
         if response != False:
             #Update the overlay to show the response
-            taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            #Convert the response to speech
+            threading.Thread(target=self.responseToSpeech, daemon=True).start()
         else:
             self.current = self.current + 1
             print(f"State {self.current}")
@@ -198,31 +207,39 @@ class InterrogationRoom:
             self.state.setGame(self.game)
             response = self.state.begin()
             print("New state response")
-            taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            #Convert the response to speech
+            threading.Thread(target=self.responseToSpeech, daemon=True).start()
             print("End")
 
     #Updates subtitles if applicable
-    def responseUI(self, response):
+    def responseUI(self, response, task):
         print(response)
         if (self.menu.subtitles == True):
             self.Overlay.updateSubtitles(response)
             self.Overlay.showSubtitles()
         
-        #Convert the response to speech
-        threading.Thread(target=self.responseToSpeech, daemon=True).start()
+
+        return task.done
 
     #TTS process
     def responseToSpeech(self):
         self.state.convert()
         
         #Hide the subtitles
-        taskMgr.add(lambda task: self.updateResponse(), "Update")
+        taskMgr.add(self.updateResponse, "Update")
     
     #Hides subtitles
-    def updateResponse(self):
+    def updateResponse(self, task):
         self.Overlay.hideSubtitles()
 
         #If the game has not been quit, restart the process
         if self.ended == False:
             self.Overlay.ptt.showPTTButton()
-            threading.Thread(target=self.processSpeech, daemon=True).start()
+            #threading.Thread(target=self.processSpeech, daemon=True).start()
+            self.processNext()
+            return task.done
+    
+    def processNext(self):
+        taskMgr.add(self.speechUI, "Update")
+        threading.Thread(target=self.processSpeech, daemon=True).start()
