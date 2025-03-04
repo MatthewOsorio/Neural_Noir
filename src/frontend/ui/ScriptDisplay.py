@@ -50,7 +50,8 @@ class ScriptDisplay():
                         text_scale= (0.110, 0.110),
                         pos= (-1.355, 0, 0.767),
                         frameColor= (0, 0, 0, 0),
-                        text_fg = (255, 255, 255, 1))
+                        text_fg = (255, 255, 255, 1),
+                        text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"))
 
         dialogue_texts = self.getScript()
         print("Dialogue texts for display:", dialogue_texts) # debug
@@ -113,6 +114,7 @@ class ScriptDisplay():
 
         self.exitScriptButton = DirectButton(
             text="Back",
+            text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
             scale=0.1,
             pos=(-1.385, 0, -0.85),
             parent=self.scriptDisplay,
