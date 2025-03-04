@@ -26,3 +26,20 @@ class AI(ABC):
     @abstractmethod
     def generateResponse(self) -> str:
         pass
+    
+    @abstractmethod
+    def processResponse(self, userResponse):
+        pass
+    
+    def getNervous(self):
+        return self.userNervous
+
+    def sendToGPT(self, prompt):
+        response = self.gpt.chat.completions.create(
+            model= 'gpt-4o-mini',
+            messages= prompt
+        )
+
+        clean_response = response.choices[0].message.content
+
+        return clean_response
