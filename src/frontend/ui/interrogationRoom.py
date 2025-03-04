@@ -53,6 +53,8 @@ class InterrogationRoom:
         self.current = None
 
         self.prompt = prompt
+
+        self.thread = None
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -174,7 +176,8 @@ class InterrogationRoom:
         if pttActive == False: 
             self.Overlay.ptt.hidePTTButton()
             print("talk")
-            threading.Thread(target=self.processSpeech, daemon=True).start()
+            self.thread = threading.Thread(target=self.processSpeech, daemon=True)
+            self.thread.start()
             return task.done 
 
         return task.cont
@@ -192,7 +195,8 @@ class InterrogationRoom:
      
         print(f"{speech}")
         #Get the response
-        threading.Thread(target=self.processResponse, daemon=True).start() 
+        self.thread = threading.Thread(target=self.processResponse, daemon=True)
+        self.thread.start()
         return task.done
               
     #Response processing part
@@ -226,7 +230,8 @@ class InterrogationRoom:
             self.Overlay.showSubtitlesBox()
         
         #Convert the response to speech
-        threading.Thread(target=self.responseToSpeech, daemon=True).start()
+        self.thread = threading.Thread(target=self.responseToSpeech, daemon=True)
+        self.thread.start()
         return task.done
 
     #TTS process

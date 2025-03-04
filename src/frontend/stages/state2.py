@@ -13,7 +13,7 @@ class State2:
 
     def begin(self):
         self.game._gameState.updateState(2)
-        self.response = self.introduceEvidence()
+        self.response = self.game.generateAIResponse()
         return self.response
         
     def convert(self):
