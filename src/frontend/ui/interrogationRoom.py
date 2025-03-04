@@ -187,6 +187,8 @@ class InterrogationRoom:
         self.pausible = False
         self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
+        self.game.insertInteractionInDB()
+
         taskMgr.add(lambda task: self.speechUIPost(speech, task), "UpdateSpeechTask2")
 
     def speechUIPost(self, speech, task):

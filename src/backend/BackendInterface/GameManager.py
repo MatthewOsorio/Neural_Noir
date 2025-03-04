@@ -19,7 +19,8 @@ class GameManager:
         self._database = None
         self._sessionController = None
             
-        self._response = None
+        self.response = None
+        self.userResponse = None
 
         self._useEmotibit = False
 
@@ -58,13 +59,14 @@ class GameManager:
         
         responseAudio = self._sr.listen()
         responseText = self._sr.transcribe(responseAudio)
+        self.userResponse = responseText
 
         if responseText is None:
             print("Warning: No speech detected. Asking player to repeat.")
             responseText = "I didn't hear that, can you repeat?"
         
         #possibly spin another thread for the db
-        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
+        #self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(responseText)
         return responseText
 
@@ -122,4 +124,7 @@ class GameManager:
 
     def setUseEmotibit(self, useEmotibit):
         self._useEmotibit = useEmotibit
+
+    def insertInteractionInDB(self):
+        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), self.userResponse, self.response)
 

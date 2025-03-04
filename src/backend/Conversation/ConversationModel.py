@@ -55,12 +55,12 @@ class ConversationModel:
     def updateConversationInstruction(self, new_instruction):
         ConversationModel.conversation.append(new_instruction)
 
-    def sendUserResponseToDB(self, startTime, endTime, response):
+    def sendUserResponseToDB(self, startTime, endTime, userResponse, npcResponse):
         sessionID = self._sessionController.getSessionID()
         feedback_ID = None
-        print(f"Logging to DB: SessionID={sessionID}, UserInput={response}")  # Debug
+        print(f"Logging to DB: SessionID={sessionID}, UserInput={userResponse}")  # Debug
         try:
-            self._database.insertInteraction(startTime, endTime, response, None, sessionID, feedback_ID)
+            self._database.insertInteraction(startTime, endTime, userResponse, npcResponse, sessionID, feedback_ID)
         except Exception as e:
             print(f"Cannot insert user response into DB: {e}")
 
