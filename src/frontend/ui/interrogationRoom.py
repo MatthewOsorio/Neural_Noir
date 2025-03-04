@@ -34,6 +34,7 @@ class InterrogationRoom:
 
         self.game = GameManager()  
         self.game.setupGame(self.useEmotibit)
+        self.game.setUseEmotibit(self.useEmotibit)
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially

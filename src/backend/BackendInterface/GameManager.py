@@ -17,6 +17,8 @@ class GameManager:
             
         self._response = None
 
+        self._useEmotibit = False
+
     # instantiate all objects here
     def setupGame(self, emotibitUsed):
         self._conversation = ConversationModel()
@@ -62,7 +64,7 @@ class GameManager:
     def getUserHeartRate(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None
         return self._bioController.getHeartRate()
     
@@ -72,21 +74,21 @@ class GameManager:
     def getUserTemperature(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None
         return self._bioController.getTemperature()
     
     def getUserEDA(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None        
         return self._bioController.getEDA()
     
     def setRanges(self, rangeH, rangeE, rangeT):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None
         
         self._bioController.biometricReader.heartRateBase = rangeH
@@ -96,7 +98,7 @@ class GameManager:
     def restartEmotibit(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None
         self._bioController.restart()
     
@@ -105,4 +107,7 @@ class GameManager:
 
     def convertTTS(self, response):
         self._tts.generateTTS(response)
+
+    def setUseEmotibit(self, useEmotibit):
+        self._useEmotibit = useEmotibit
 
