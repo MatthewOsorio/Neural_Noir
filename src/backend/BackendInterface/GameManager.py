@@ -4,6 +4,8 @@ from ..Conversation.ConversationModel import ConversationModel
 from ..GameStateSystem.GameStateManager import GameStateManager
 from ..SRSystem.SpeechToText import SpeechToText
 from ..TTSSystem.TextToSpeechController import TextToSpeechController
+from ..Database.DatabaseController import DatabaseController
+from ..Database.SessionController import SessionController
 
 class GameManager:
     def __init__(self):
@@ -14,6 +16,8 @@ class GameManager:
         self._sr = None
         self._tts = None
         self._gameIsReady = False
+        self._database = None
+        self._sessionController = None
             
         self._response = None
 
@@ -21,12 +25,16 @@ class GameManager:
 
     # instantiate all objects here
     def setupGame(self, emotibitUsed):
-        self._conversation = ConversationModel()
+        self._database = DatabaseController()
+        self._sessionController = SessionController(self._database)
+        self._conversation = ConversationModel(self._database, self._sessionController)
         self._aiController = AIController(self._conversation)
         self._gameState = GameStateManager()
         self._sr = SpeechToText()
         self._tts = TextToSpeechController()
         self._gameState.setAIReference(self._aiController)
+        
+        self._sessionController.start()
     
         if emotibitUsed:
             self._gameState.setEmotibitUsed(True)
@@ -50,6 +58,10 @@ class GameManager:
         
         responseAudio = self._sr.listen()
         responseText = self._sr.transcribe(responseAudio)
+
+        if responseText is None:
+            print("Warning: No speech detected. Asking player to repeat.")
+            responseText = "I didn't hear that, can you repeat?"
         
         #possibly spin another thread for the db
         self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)

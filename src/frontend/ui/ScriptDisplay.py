@@ -8,13 +8,12 @@ from direct.gui.DirectButton import DirectButton
 from panda3d.core import TextNode
 
 class ScriptDisplay():
-    def __init__(self, mangaer ,gameController, pauseMenu):
-        self.manager= mangaer
-        self.gameController= gameController
+    def __init__(self, manager, gameManager, pauseMenu):
+        self.manager = manager
+        self.gameManager = gameManager
         self.pauseMenu = pauseMenu
         self.generateDisplayBox()
         print("ScriptDisplay intialized") # debug
-
 
     def formatScript(self, conversation):
         script = []
@@ -26,11 +25,13 @@ class ScriptDisplay():
         return script
     
     def getScript(self):
-        print("Getting script") # debug
-        conversation= self.gameController.getConversationFromDB()
-        print("fetched conversation from db", conversation) # debug
+        print("Getting script")
+        sessionID = self.gameManager._sessionController.getSessionID()
+        conversation = self.gameManager._database.fetchConversation(sessionID)
+
+        print("Fetched conversation from DB: ", conversation) # debug
         script = self.formatScript(conversation)
-        print("formatted script:", script) # debug
+        print("Formatted: script, script") #debug
         return script
 
     def generateDisplayBox(self):

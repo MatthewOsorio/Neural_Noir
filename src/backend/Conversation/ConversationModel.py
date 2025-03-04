@@ -46,15 +46,23 @@ class ConversationModel:
         
     conversation=[]
 
-    def __init__(self):
+    def __init__(self, database, sessionController):
+        self._database = database
+        self._sessionController = sessionController
         ConversationModel.conversation.append(ConversationModel.context)
 
     # We shoul not save the instructions made to gpt, we should only keep the conversation. The instructions should be given in the method
     def updateConversationInstruction(self, new_instruction):
         ConversationModel.conversation.append(new_instruction)
 
-    def sendUserResponseToDB(self, start_time, end_time, response):
-        pass
+    def sendUserResponseToDB(self, startTime, endTime, response):
+        sessionID = self._sessionController.getSessionID()
+        feedback_ID = None
+        print(f"Logging to DB: SessionID={sessionID}, UserInput={response}")  # Debug
+        try:
+            self._database.insertInteraction(startTime, endTime, response, None, sessionID, feedback_ID)
+        except Exception as e:
+            print(f"Cannot insert user response into DB: {e}")
 
     def addAIResponse(self, ai_response) -> None:
         ConversationModel.conversation.append({'role': 'assistant', 'content': ai_response})
