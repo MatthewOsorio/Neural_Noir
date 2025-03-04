@@ -142,7 +142,7 @@ class InterrogationRoom:
     def beginInterrogation(self):
         self.pausable = True
         self.ended = False
-        
+        self.current = 0
         self.Overlay.flashback.setImage(self.prompt)
         self.Overlay.flashback.show()
 
@@ -163,7 +163,6 @@ class InterrogationRoom:
 
         response = self.state.begin()
         self.state.convert()
-        self.current = 0
         self.Overlay.ptt.showPTTButton()
         #Get the speech input
         taskMgr.add(self.speechUI, "UpdateSpeechTask")

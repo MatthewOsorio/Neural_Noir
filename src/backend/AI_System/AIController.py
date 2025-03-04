@@ -1,5 +1,5 @@
 from .AI_Behavior import AIInitialPhase, AIEarlyInterrogation, AIMidInterrogation, AIFinalInterrogation, AIContext
-from StoryTree.StoryTree import StoryTree
+from ..StoryTree.StoryTree import StoryTree
 
 class AIController:
     def __init__(self, conversation):

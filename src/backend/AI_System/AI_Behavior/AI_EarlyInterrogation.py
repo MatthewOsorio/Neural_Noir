@@ -56,7 +56,7 @@ class AIEarlyInterrogation(AI):
                     Respond to the users explanation according to the rules below.
                     
                     **RULES**
-                        - First make a comment about their response. Then ask **only one** question to get more details. Respond as Harris.
+                        - First make a comment about their response. Then ask **only one** question to get more details before moving on to the next evidence. Respond as Harris.
                         - If the user was nervous point out it out in your response.
                         - Be concise in your response
                         - If you catch the user in a lie. Point it out in your response.

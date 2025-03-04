@@ -129,18 +129,33 @@ class Overlay:
         self.heartRate = self.getHeartRate()  
         if self.heartRate is not None:
             self.displayHeartRate.setText("Heart Rate: " + str(round(self.heartRate, 2)))
+            if self.base.current > 0:
+                if self.heartRate > self.base.game.getHeartRateRange()[1]:
+                    self.displayHeartRate.setFg((1, 0, 0, 1))
+                else:
+                    self.displayHeartRate.setFg((1, 1, 1, 1))
         if self.heartRate is None:
             self.displayHeartRate.setText("Heart Rate: 0")
 
         self.eda = self.getEda()
         if self.eda is not None:
             self.displayEda.setText("EDA: " + str(round(self.eda, 2)))
+            if self.base.current > 0:
+                if self.eda > self.base.game.getEDARange()[1]:
+                    self.displayEda.setFg((1, 0, 0, 1))
+                else:
+                    self.displayEda.setFg((1, 1, 1, 1))
         if self.eda is None:
             self.displayEda.setText("EDA: 0")
 
         self.temperature = self.getTemperature()
         if self.temperature is not None:
             self.displayTemperature.setText("Temperature: " + str(round(self.temperature, 2)))
+            if self.base.current > 0:
+                if self.temperature > self.base.game.getTempRange()[1]:
+                    self.displayTemperature.setFg((1, 0, 0, 1))
+                else:
+                    self.displayTemperature.setFg((1, 1, 1, 1))
         if self.temperature is None:
             self.displayTemperature.setText("Temperature: 0")
 

@@ -118,6 +118,27 @@ class GameManager:
     
     def updateAI(self, state):
         self._aiController.update(state)
+    
+    def getHeartRateRange(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._useEmotibit:
+            return None    
+        return self._bioController.biometricReader.heartRateBase    
+    
+    def getEDARange(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._useEmotibit:
+            return None    
+        return self._bioController.biometricReader.edaBase   
+
+    def getTempRange(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._useEmotibit:
+            return None    
+        return self._bioController.biometricReader.temperatureBase 
 
     def convertTTS(self, response):
         self._tts.generateTTS(response)
