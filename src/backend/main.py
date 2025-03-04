@@ -3,13 +3,13 @@ from BackendInterface.GameManager import GameManager
 
 gameState = GameManager()
 gameState.setupGame(False)
-gameState.updateGameState(1)
-finished_phase1 = False
+gameState.updateGameState(2)
+finished = False
 
-while(not finished_phase1):
+while(not finished):
     ai_response = gameState.generateAIResponse()
     if ai_response == False:
-        gameState.updateGameState(2)
+        finished = True
     else:
         print(ai_response)
         user_statement = input('> ')

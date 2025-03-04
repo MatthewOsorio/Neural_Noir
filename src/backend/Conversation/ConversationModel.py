@@ -9,7 +9,7 @@ class ConversationModel:
                         The crime you two investigating is the murder of CEO of a popular newspaper called the Reno Times, his name is Vinh Davis.
                         He was murdered in his own home and the was beaten to death. There is no sign of forced entry so it was not a break in.
                         The crime was called in around 11:30 pm by the neighbor. The neighbor said there was an altercation with a man who was seemed drunk.
-                        The neighbor said they were fighting about some work dispute, however since the crime took place during the night the neighbor couldn't provide a description of a man.
+                        The neighbor said they were fighting about some work dispute, however since the crime took place during the night the neighbor couldn't provide a description of a man. When the police got there they found a gun with blood on it.
                         After some investigation, the detectives went to the Reno Times and they encountered a man called Mark Chadenten, Mark had bruises on his knuckles, a black eye, and seems to be hung over.
                         There is nothing to place Mark at the crime scence but considering his current state and the timing he is the primary suspect. As detectives you're job is to interrogate Mark, you must either
                         get a confession out of Mark Chadenten, catch him in enough lies, or catch him contradicting himself enough times to be able to convict him. 
@@ -65,3 +65,6 @@ class ConversationModel:
 
     def getConversation(self) -> list:
         return ConversationModel.conversation 
+    
+    def getContext(self):
+        return ConversationModel.context
