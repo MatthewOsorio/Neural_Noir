@@ -13,7 +13,7 @@ import time
 import os
 from panda3d.core import Filename
 current_dir = os.path.dirname(os.path.abspath(__file__))
-prompt = os.path.join(current_dir, "..", "..", "..", "Assets", "Images", "introPrompt.png")
+prompt = os.path.join(current_dir, "..", "..", "..", "Assets", "Images", "introPromptTest.png")
 prompt = os.path.normpath(prompt)
 prompt = Filename.fromOsSpecific(prompt).getFullpath()
 
@@ -32,10 +32,13 @@ class InterrogationRoom:
         #pause game if escape is pressed
         self.base.accept('escape', self.pauseGame)
 
+        self.voiceVolume = self.base.voiceVolume
+        self.sfxVolume = self.base.sfxVolume
+
         self.game = GameManager()  
         self.game.setupGame(self.useEmotibit)
         self.game.setUseEmotibit(self.useEmotibit)
-
+    
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
         self.menu.initializePauseMenu()
@@ -44,6 +47,7 @@ class InterrogationRoom:
         self.menu.pauseMenu.hide()
         self.menu.pauseMenu.hideImage()
 
+        
         self.Overlay = Overlay(self)      
         self.Overlay.show()
         
@@ -55,6 +59,8 @@ class InterrogationRoom:
         self.prompt = prompt
 
         self.thread = None
+
+        
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -140,6 +146,9 @@ class InterrogationRoom:
    #Run on separate thread
 
     def beginInterrogation(self):
+        self.menu.audioMenu.setVoiceVolumeSlider(self.voiceVolume)
+        self.menu.audioMenu.setSFXVolumeSlider(self.sfxVolume)
+
         self.pausable = True
         self.ended = False
         self.current = 0

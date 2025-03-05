@@ -35,7 +35,7 @@ class Overlay:
             pos=(-1.5 , 0, -0.6),
         )
 
-        self.bioBackground.setColor(0, 0, 0, 0.5)
+        self.bioBackground.setColor(0, 0, 0, 0.7)
         self.bioBackground.setTransparency(TransparencyAttrib.MAlpha)
 
         self.bioTitle = OnscreenText(
@@ -93,7 +93,7 @@ class Overlay:
             pos=(0 , 0, -0.6),
         )        
         
-        self.subtitlesBox.setColor(0, 0, 0, 0.5)
+        self.subtitlesBox.setColor(0, 0, 0, 0.7)
         self.subtitlesBox.setTransparency(TransparencyAttrib.MAlpha)
 
         self.subtitles.setParent(self.subtitlesBox)
