@@ -32,6 +32,7 @@ class main(ShowBase):
         self.connections()
 
         self.voiceVolume = 1
+        self.sfxVolume = 1
         self.interrogationThread = None
    
     def checkGameStartFlag(self):
