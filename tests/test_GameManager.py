@@ -6,7 +6,7 @@ def game_manager():
     return GameManager()
 
 def test_set_up(game_manager):
-    game_manager.setupGame()
+    game_manager.setupGame(False)
     
     assert game_manager._aiController != None
     assert game_manager._bioController != None
