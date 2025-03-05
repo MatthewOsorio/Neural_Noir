@@ -1,18 +1,19 @@
 from .AI_Behavior import AIInitialPhase, AIEarlyInterrogation, AIMidInterrogation, AIFinalInterrogation, AIContext
+from ..StoryTree.StoryTree import StoryTree
 
 class AIController:
     def __init__(self, conversation):
+        self._ai = None     
         self._conversation = conversation
         self._userNervous = None
-        #self._ai = AIContext(AIInitialPhase(self._conversation))
-        self._ai = None    
+        self._storyTree = StoryTree()
 
     def setAIBehavior(self, state):
         match state.value:
             case 1:
                 self._ai = AIContext(AIInitialPhase(self._conversation))
             case 2:
-                self._ai = AIContext(AIEarlyInterrogation(self._conversation))
+                self._ai = AIContext(AIEarlyInterrogation(self._conversation, self._storyTree))
             case 3:
                 self._ai = AIContext(AIMidInterrogation(self._conversation))
             case 4:
@@ -29,7 +30,4 @@ class AIController:
 
     def updateNervous(self, isNervous):
         self._userState = isNervous
-    
-    #Added this to test something with switching states. Feel free to delete if its not needed.
-    def introduceEvidence(self):
-        self._ai.introduceEvidence()
+        self._ai.updateNervous(isNervous)

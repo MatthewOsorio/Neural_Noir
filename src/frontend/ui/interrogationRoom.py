@@ -24,6 +24,8 @@ class InterrogationRoom:
         self.base = base
         self.menu = menu
 
+        self.useEmotibit = True
+
         self.base.disableMouse()
         self.gameState= 'gameplay'
 
@@ -31,7 +33,8 @@ class InterrogationRoom:
         self.base.accept('escape', self.pauseGame)
 
         self.game = GameManager()  
-        self.game.setupGame(False)
+        self.game.setupGame(self.useEmotibit)
+        self.game.setUseEmotibit(self.useEmotibit)
 
         #Matt wrote lines 19 - 33
         #Create pause menu but hide it initially
@@ -50,6 +53,8 @@ class InterrogationRoom:
         self.current = None
 
         self.prompt = prompt
+
+        self.thread = None
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -137,15 +142,16 @@ class InterrogationRoom:
     def beginInterrogation(self):
         self.pausable = True
         self.ended = False
-        self.Overlay.hidePTTButton()  
-
+        self.current = 0
         self.Overlay.flashback.setImage(self.prompt)
         self.Overlay.flashback.show()
 
         flashback = self.Overlay.flashback.getActive()
         while flashback == True:
             flashback = self.Overlay.flashback.getActive()
-            print (f"Flashback {flashback}")
+              
+        if self.useEmotibit == True:
+            self.Overlay.showBioData()
         
         self.testStates = [State1(), State2()]
 
@@ -157,38 +163,53 @@ class InterrogationRoom:
 
         response = self.state.begin()
         self.state.convert()
-        self.current = 0
-
-        self.Overlay.showPTTButton()
-
+        self.Overlay.ptt.showPTTButton()
         #Get the speech input
-        threading.Thread(target=self.processSpeech, daemon=True).start()
+        taskMgr.add(self.speechUI, "UpdateSpeechTask")
+        
+       
+    #Updates the overlay to show the PTT Button
+    def speechUI(self, task):
+        
+        pttActive = self.Overlay.ptt.getPTTActive()
+        if pttActive == False: 
+            self.Overlay.ptt.hidePTTButton()
+            print("talk")
+            self.thread = threading.Thread(target=self.processSpeech, daemon=True)
+            self.thread.start()
+            return task.done 
 
+        return task.cont
+     
     #Speech input part 
     def processSpeech(self):
         self.pausible = False
-        self.Overlay.hideSubtitles()
+        self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
-        taskMgr.add(lambda task: self.speechUI(speech), "UpdateSpeechTask")
+        self.game.insertInteractionInDB()
 
-    #Updates the overlay to show the PTT Button
-    def speechUI(self, speech):
-        
-        self.Overlay.showPTTButton()
-        print(f"< {speech}")
-        
+        taskMgr.add(lambda task: self.speechUIPost(speech, task), "UpdateSpeechTask2")
+
+    def speechUIPost(self, speech, task):
+
+        self.Overlay.ptt.hidePTTButton()
+     
+        print(f"{speech}")
         #Get the response
-        threading.Thread(target=self.processResponse, daemon=True).start()
-
+        self.thread = threading.Thread(target=self.processResponse, daemon=True)
+        self.thread.start()
+        return task.done
+              
     #Response processing part
     def processResponse(self):
         self.pausable = True
-        self.Overlay.hidePTTButton()
+        
         response = self.state.generateResponse()
 
         if response != False:
             #Update the overlay to show the response
-            taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            
         else:
             self.current = self.current + 1
             print(f"State {self.current}")
@@ -197,31 +218,41 @@ class InterrogationRoom:
             self.state.setGame(self.game)
             response = self.state.begin()
             print("New state response")
-            taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+
             print("End")
 
     #Updates subtitles if applicable
-    def responseUI(self, response):
+    def responseUI(self, response, task):
         print(response)
         if (self.menu.subtitles == True):
-            self.Overlay.updateSubtitles(response)
-            self.Overlay.showSubtitles()
+            self.Overlay.subtitles.setResponse(response)
+            self.Overlay.subtitles.updateSubtitles()
+            self.Overlay.showSubtitlesBox()
         
         #Convert the response to speech
-        threading.Thread(target=self.responseToSpeech, daemon=True).start()
+        self.thread = threading.Thread(target=self.responseToSpeech, daemon=True)
+        self.thread.start()
+        return task.done
 
     #TTS process
     def responseToSpeech(self):
         self.state.convert()
         
         #Hide the subtitles
-        taskMgr.add(lambda task: self.updateResponse(), "Update")
+        taskMgr.add(self.updateResponse, "Update")
     
     #Hides subtitles
-    def updateResponse(self):
-        self.Overlay.hideSubtitles()
+    def updateResponse(self, task):
+        self.Overlay.hideSubtitlesBox()
 
         #If the game has not been quit, restart the process
         if self.ended == False:
-            self.Overlay.showPTTButton()
-            threading.Thread(target=self.processSpeech, daemon=True).start()
+            self.Overlay.ptt.showPTTButton()
+            #threading.Thread(target=self.processSpeech, daemon=True).start()
+            self.processNext()
+            return task.done
+    
+    def processNext(self):
+        self.Overlay.ptt.showPTTButton()
+        taskMgr.add(self.speechUI, "Update")

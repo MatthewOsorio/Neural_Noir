@@ -18,6 +18,5 @@ class AIContext():
     def generateResponse(self):
         return self._state.generateResponse()
     
-    #Added this to test something with switching states. Feel free to delete if its not needed.
-    def introduceEvidence(self):
-        return self._state.introduceEvidence()
+    def updateNervous(self, isNervous):
+        self._state.updateNervous(isNervous)

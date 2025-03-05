@@ -21,12 +21,6 @@ class audioSettings:
             parent=self.base.aspect2d
         )
 
-        self.backImageMain = OnscreenImage(
-            self.manager.room,
-            parent=self.audioMenu,
-            pos=(0, 0, 0)
-        )
-
         self.backImage = OnscreenImage(
             self.manager.black,
             parent=self.audioMenu,

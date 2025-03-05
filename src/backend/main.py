@@ -1,46 +1,16 @@
 # File for testing backend stuff
-#from AI_System.AIController import AIController
-from GameStateSystem.GameStateManager import GameStateManager
-from Conversation.ConversationModel import ConversationModel
-from Database.DatabaseController import DatabaseController
-from Database.SessionController import SessionController
 from BackendInterface.GameManager import GameManager
 
-# Initialize the database and the session
-database = DatabaseController()
-session = SessionController(database)
-session.start()
+gameState = GameManager()
+gameState.setupGame(False)
+gameState.updateGameState(2)
+finished = False
 
-# Initialize the game state and AI system
-conversation = ConversationModel(database, session)
-ai = AIController.AIController(conversation)
-
-# Initialize game state and AI reference
-gameState = GameStateManager()
-gameState.setEmotibitUsed(False)
-gameState.setAIReference(ai)
-gameState.updateState(1)
-
-# Intialize GameManager
-gameManager = GameManager()
-gameManager.setupGame(False)
-
-finished_phase = False
-
-while not finished_phase:
-    ai_response = ai.generateResponse()
+while(not finished):
+    ai_response = gameState.generateAIResponse()
     if ai_response == False:
-        finished_phase = True
+        finished = True
     else:
-        conversation.addAIResponse(ai_response)
         print(ai_response)
-        # user_statement = input('> ') # In the final main.py, this is listenToUser() from GameManager
-        user_statement = gameManager.listenToUser()
-        ai.processUserResponse(user_statement)
-        conversation.sendUserResponseToDB(session.startTime, None, user_statement)
-        ai.processUserResponse(user_statement)
-
-conversation_history = database.fetchConversation(session.getSessionID())
-for user_input, response in conversation_history:
-    print(f"User: {user_input}")
-    print(f"AI: {response}")
+        user_statement = input('> ')
+        gameState.processUserResponse(user_statement)

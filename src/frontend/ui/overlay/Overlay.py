@@ -9,12 +9,17 @@ import time
 from direct.task import Task
 from panda3d.core import TransparencyAttrib
 from ..overlay.flashback import flashback
+from ..overlay.PTT import PTT
+from ..overlay.subtitles import Subtitles
 
 class Overlay:
     def __init__(self, base):
         self.base = base
 
         self.flashback = flashback(self.base)
+
+        self.ptt = PTT(self.base)
+        self.subtitles = Subtitles(self.base)
 
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -81,15 +86,25 @@ class Overlay:
 
         self.PTTButton.setTransparency(TransparencyAttrib.MAlpha)
 
-        self.subtitles = OnscreenText(
-            text = "Subtitles",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
-            scale = 0.15,
-            parent = self.overlay,
-            fg = (1,1,1,1),
-            pos = (0,0,0)
-        )
+        self.subtitlesBox = OnscreenImage(
+            self.base.base.menuManager.backGroundBlack,
+            parent=self.overlay,
+            scale=(1, 0.3, 0.3),
+            pos=(0 , 0, -0.6),
+        )        
         
+        self.subtitlesBox.setColor(0, 0, 0, 0.5)
+        self.subtitlesBox.setTransparency(TransparencyAttrib.MAlpha)
+
+        self.subtitles.setParent(self.subtitlesBox)
+        self.subtitlesBox.hide()
+
+        self.ptt.setButton(self.PTTButton)
+        self.ptt.hidePTTButton()
+        self.setButtonCommand()
+        
+        self.hideBioData()
+
         taskMgr.doMethodLater(10, self.updateOverlay, "updateOverlayTask") 
     
     def show(self):
@@ -114,39 +129,51 @@ class Overlay:
         self.heartRate = self.getHeartRate()  
         if self.heartRate is not None:
             self.displayHeartRate.setText("Heart Rate: " + str(round(self.heartRate, 2)))
+            if self.base.current > 0:
+                if self.heartRate > self.base.game.getHeartRateRange()[1]:
+                    self.displayHeartRate.setFg((1, 0, 0, 1))
+                else:
+                    self.displayHeartRate.setFg((1, 1, 1, 1))
         if self.heartRate is None:
             self.displayHeartRate.setText("Heart Rate: 0")
 
         self.eda = self.getEda()
         if self.eda is not None:
             self.displayEda.setText("EDA: " + str(round(self.eda, 2)))
+            if self.base.current > 0:
+                if self.eda > self.base.game.getEDARange()[1]:
+                    self.displayEda.setFg((1, 0, 0, 1))
+                else:
+                    self.displayEda.setFg((1, 1, 1, 1))
         if self.eda is None:
             self.displayEda.setText("EDA: 0")
 
         self.temperature = self.getTemperature()
         if self.temperature is not None:
             self.displayTemperature.setText("Temperature: " + str(round(self.temperature, 2)))
+            if self.base.current > 0:
+                if self.temperature > self.base.game.getTempRange()[1]:
+                    self.displayTemperature.setFg((1, 0, 0, 1))
+                else:
+                    self.displayTemperature.setFg((1, 1, 1, 1))
         if self.temperature is None:
             self.displayTemperature.setText("Temperature: 0")
 
         return task.again
     
     
-    def showPTTButton(self):
-        self.PTTButton.show()
+    def showSubtitlesBox(self):
+        self.subtitlesBox.show()
+
+    def hideSubtitlesBox(self):
+        self.subtitlesBox.hide()
+
+    def setButtonCommand(self):
+        self.PTTButton["command"] = self.ptt.setInactive
+
+    def hideBioData(self):
+        self.bioBackground.hide()
     
-    def hidePTTButton(self):   
-        self.PTTButton.hide()
-
-    #Updates the subtitles to the response from the detective 
-    #Will be moved into its own class
-    def updateSubtitles(self, text):
-        self.subtitles.setText(text)
-    
-    def showSubtitles(self):
-        self.subtitles.show()
-
-    def hideSubtitles(self):
-        self.subtitles.hide()
-
+    def showBioData(self):
+        self.bioBackground.show()
     

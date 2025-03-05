@@ -1,76 +1,95 @@
 from .AI import AI
 
-#Written by Matt
 class AIEarlyInterrogation(AI):
-    def __init__(self, conversation):
+    def __init__(self, conversation, storyTree):
         super().__init__(conversation)
-        self._currentEvidence = 'Gun with blood on it'
-        self._storyTree = "temp"
+        self._currentEvidence = None
+        self._storyTree = storyTree
         self._introducedEvidence = False
         self._aiResponse= None
         self._evidenceConversation= []
+        self._counter= 0
+        self._finish = False
 
-    def setStoryTreeReference(self, storyTree):
-        self._storyTree = storyTree
+        self.setupConvo()
 
-    def recieveEvidence(self, newEvidence):
-        self._currentEvidence = newEvidence
+    def recieveEvidence(self):
+        if self._storyTree == None:
+            raise Exception("Story Tree refernce has not been set")
+
+        self._currentEvidence = self._storyTree.sendEvidenceToAI(self)
+        if self._currentEvidence == False:
+            self._finish = True
 
     def sendConversationToStoryTree(self):
-        pass
+        if self._storyTree == None:
+            raise Exception("Story Tree refernce has not been set")
+
+        self._storyTree.recieveConversation(self._evidenceConversation)
+        self._evidenceConversation.clear()
+        self.setupConvo()
 
     ## This method just returns whatever is stored in the aiResponse attribute. That attributes gets set when we introduce the evidence or the ai response to the user input
-    def generateResponse(self) -> str:
+    def generateResponse(self) -> str:    
         if self._currentEvidence == None:
-            raise Exception("The evidence has not been set yet. Invoke receiveEvidence(evidence) method in the story tree")
+            self.recieveEvidence()
         
-        if self._storyTree == None:
-            raise Exception("The story tree reference has not been set yet. Invoke the setStoryTreeReference(storyTree) method in AI Controller")
-        
-        if not self._introducedEvidence:
-            self.introduceEvidence()
-            self._introducedEvidence= True
+        if self._finish:
+            return False
 
+        if not self._introducedEvidence:
+            self._introducedEvidence= True
+            self.introduceEvidence()
+        
+        if self._counter == 3:
+            self.sendConversationToStoryTree()
+            self.moveOnToNextTopic()
+        
         return self._aiResponse
         
     def processResponse(self, userResponse):
-        clean_user_response= 'Player: ' + userResponse
         self.conversation.addUserInput(userResponse)
-        self.addToConvo(clean_user_response)
+        self.addUserStatementToConvo(userResponse)
 
         prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}.
                     The user was {'nervous' if self.userNervous else 'not nervous'} when giving their response.
                     Respond to the users explanation according to the rules below.
                     
                     **RULES**
-                        - If the users explanation is vague tell them to be more specific. Respond as both Harris and Miller but make it natural.
-                        - If the users explanation is reasonable ask them for details in about explanation. Respond as both Harris and Miller but make it natural.
-                        - If the user is being evasive, tell them to stop evading. Respond as Harris and *do not* respond as Miller.
-                        - If the user explanation is irrelevant or unrelated, tell them stop messing around. Respond as Harris and *do not* respond as Miller.
-                        - If the user seems scared, reasure them. Respond as Miller and *do not* respond as Harris
-                        - If the user was nervous point out they were nervous as whoever was talking
+                        - First make a comment about their response. Then ask **only one** question to get more details before moving on to the next evidence. Respond as Harris.
+                        - If the user was nervous point out it out in your response.
+                        - Be concise in your response
+                        - If you catch the user in a lie. Point it out in your response.
+                        - Respond as if are Detective Harris
                         - **ONLY TALK ABOUT THE EVIDENCE**
                         - **DO NOT ASK QUESTIONS UNRELATED TO THE EVIDENCE**
                         - **DO NOT MENTIONS MARKS BRUISES AND BLACK EYE**
                     ''' 
-        
         gpt_prompt= self.conversation.getConversation()[:]
         instruction = {'role':  'assistant', 'content': prompt}
         gpt_prompt.append(instruction)
 
         gpt_response = self.sendToGPT(gpt_prompt)
-        
+        self.addAIResponseToConvo(gpt_response)
         self._aiResponse = gpt_response
+        self._counter += 1
 
     def introduceEvidence(self):
         gpt_prompt= self.conversation.getConversation()[:]
-        prompt= f'You are going to introduce this peice of evidence: {self._currentEvidence}, It was found at a crime scence. Then ask the suspect what they know about the piece of evidence. Respond as Harris and **do not** respond as Miller.'
+
+        prompt= f'''You are going to introduce this peice of evidence: {self._currentEvidence}. Follow the rules below:
+
+                    **RULES**
+                        -Then ask the suspect what they know about the piece of evidence. 
+                        - If the evidence was found at the crime scence mention that. 
+                        - **ONLY** respond as Harris.
+                        - **ONLY MENTION THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
         instruction = {'role': 'assistant', 'content': prompt}
         gpt_prompt.append(instruction)
 
         gpt_response = self.sendToGPT(gpt_prompt)
 
-        self.addToConvo(gpt_response)
+        self.addAIResponseToConvo(gpt_response)
         self._aiResponse = gpt_response
     
     def reset(self):
@@ -78,5 +97,19 @@ class AIEarlyInterrogation(AI):
         self._introducedEvidence = False
         self._evidenceConversation.clear()
 
-    def addToConvo(self, statement):
-        self._evidenceConversation.append(statement)
+    def addUserStatementToConvo(self, statement):
+        temp = {'role': 'user', 'content': statement}
+        self._evidenceConversation.append(temp)
+
+    def addAIResponseToConvo(self, statement):
+        temp = {'role': 'assistant', 'content': statement}
+        self._evidenceConversation.append(temp)
+
+    def setupConvo(self):
+        context = self.conversation.getContext()
+        self._evidenceConversation.append(context)
+
+    def moveOnToNextTopic(self):
+        self._currentEvidence = None
+        self._counter = 0
+        self._introducedEvidence = False

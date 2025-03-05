@@ -19,7 +19,10 @@ class GameManager:
         self._database = None
         self._sessionController = None
             
-        self._response = None
+        self.response = None
+        self.userResponse = None
+
+        self._useEmotibit = False
 
     # instantiate all objects here
     def setupGame(self, emotibitUsed):
@@ -37,6 +40,7 @@ class GameManager:
         if emotibitUsed:
             self._gameState.setEmotibitUsed(True)
             self._bioController = BiometricController()
+            self._bioController._gameIsReady = True
             self._gameState.setBiometricReference(self._bioController)
             self._bioController.setAIReferece(self._aiController)
 
@@ -55,13 +59,14 @@ class GameManager:
         
         responseAudio = self._sr.listen()
         responseText = self._sr.transcribe(responseAudio)
+        self.userResponse = responseText
 
         if responseText is None:
             print("Warning: No speech detected. Asking player to repeat.")
             responseText = "I didn't hear that, can you repeat?"
         
         #possibly spin another thread for the db
-        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
+        #self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(responseText)
         return responseText
 
@@ -73,7 +78,7 @@ class GameManager:
     def getUserHeartRate(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None
         return self._bioController.getHeartRate()
     
@@ -83,33 +88,64 @@ class GameManager:
     def getUserTemperature(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None
         return self._bioController.getTemperature()
     
     def getUserEDA(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None        
         return self._bioController.getEDA()
     
     def setRanges(self, rangeH, rangeE, rangeT):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
-        elif not self._gameState.getEmotibitUsed():
+        elif not self._useEmotibit:
             return None
         
         self._bioController.biometricReader.heartRateBase = rangeH
         self._bioController.biometricReader.edaBase = rangeE
         self._bioController.biometricReader.temperatureBase = rangeT    
     
-    def clearEmotibit(self):
-        self._bioController.clear()
+    def restartEmotibit(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._useEmotibit:
+            return None
+        self._bioController.restart()
     
     def updateAI(self, state):
         self._aiController.update(state)
+    
+    def getHeartRateRange(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._useEmotibit:
+            return None    
+        return self._bioController.biometricReader.heartRateBase    
+    
+    def getEDARange(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._useEmotibit:
+            return None    
+        return self._bioController.biometricReader.edaBase   
+
+    def getTempRange(self):
+        if not self._gameIsReady:
+            raise Exception("Game is not ready, please invoke setupGame() first") 
+        elif not self._useEmotibit:
+            return None    
+        return self._bioController.biometricReader.temperatureBase 
 
     def convertTTS(self, response):
         self._tts.generateTTS(response)
+
+    def setUseEmotibit(self, useEmotibit):
+        self._useEmotibit = useEmotibit
+
+    def insertInteractionInDB(self):
+        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), self.userResponse, self.response)
 
