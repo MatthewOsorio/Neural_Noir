@@ -1,9 +1,9 @@
-from ..AI_System.AIController import AIController
-from ..BiometricSystem.BiometricController import BiometricController
-from ..Conversation.ConversationModel import ConversationModel
-from ..GameStateSystem.GameStateManager import GameStateManager
-from ..SRSystem.SpeechToText import SpeechToText
-from ..TTSSystem.TextToSpeechController import TextToSpeechController
+from AI_System.AIController import AIController
+from BiometricSystem.BiometricController import BiometricController
+from Conversation.ConversationModel import ConversationModel
+from GameStateSystem.GameStateManager import GameStateManager
+from SRSystem.SpeechToText import SpeechToText
+from TTSSystem.TextToSpeechController import TextToSpeechController
 
 class GameManager:
     def __init__(self):
@@ -15,8 +15,6 @@ class GameManager:
         self._tts = None
         self._gameIsReady = False
             
-        self._response = None
-
     # instantiate all objects here
     def setupGame(self, emotibitUsed):
         self._conversation = ConversationModel()
@@ -38,8 +36,7 @@ class GameManager:
     def generateAIResponse(self) -> str:
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first")
-        self.response = self._aiController.generateResponse()
-        return self.response
+        return self._aiController.generateResponse()
     
     def listenToUser(self):
         if not self._gameIsReady:
@@ -51,7 +48,6 @@ class GameManager:
         #possibly spin another thread for the db
         self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(responseText)
-        return responseText
 
     def processUserResponse(self, userResponse):
         if not self._gameIsReady:
@@ -66,6 +62,7 @@ class GameManager:
     
     def updateGameState(self, state):
         self._gameState.updateState(state)
+
     def getUserTemperature(self):
         if not self._gameIsReady:
             raise Exception("Game is not ready, please invoke setupGame() first") 
@@ -80,10 +77,6 @@ class GameManager:
     
     def clearEmotibit(self):
         self._bioController.clear()
-    
-    def updateAI(self, state):
-        self._aiController.update(state)
 
     def convertTTS(self, response):
         self._tts.generateTTS(response)
-

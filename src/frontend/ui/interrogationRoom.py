@@ -2,7 +2,9 @@ from frontend.ui.menu.PauseMenu import PauseMenu
 from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
 from frontend.stages.state1 import State1
+from frontend.stages.state2 import State2
 from direct.task import Task
+from direct.task.TaskManagerGlobal import taskMgr 
 import threading
 
 from panda3d.core import *
@@ -39,6 +41,8 @@ class InterrogationRoom:
         self.pausable = False
 
         self.current = None
+
+        self.testCount = 0 #testing average
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -63,6 +67,7 @@ class InterrogationRoom:
 
         #Updates the camera angle
         self.base.taskMgr.add(self.moveCamera, "Move Camera")
+
 
     #Allows users to rotate the camera slightly to "look around"
     def moveCamera(self, base):
@@ -127,11 +132,17 @@ class InterrogationRoom:
         self.ended = False
         self.Overlay.hidePTTButton()  
         
-        self.initialState = State1()
-        self.initialState.setGame(self.game)
-        response = self.initialState.begin()
-        self.initialState.convert()
-        self.state = self.initialState
+        self.testStates = [State1(), State2()]
+
+        self.state = self.testStates[0]
+    
+        self.state.setGame(self.game)
+
+        self.state.testPrint()
+
+        response = self.state.begin()
+        self.state.convert()
+        self.current = 0
 
         self.Overlay.showPTTButton()
 
@@ -146,6 +157,7 @@ class InterrogationRoom:
 
     #Updates the overlay to show the PTT Button
     def speechUI(self, speech):
+        self.pausible = False
         self.Overlay.showPTTButton()
         print(f"< {speech}")
         
@@ -154,11 +166,20 @@ class InterrogationRoom:
 
     #Response processing part
     def processResponse(self):
+        self.pausable = True
         self.Overlay.hidePTTButton()
         response = self.state.generateResponse()
 
-        #Update the overlay to show the response
-        taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+        if response != False:
+            #Update the overlay to show the response
+            taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+        else:
+            self.state = self.testStates[self.current + 1]
+            #Generate a new response in the next state
+            #self.state.setUp()
+            #response = self.state.generateResponse()
+            #taskMgr.add(lambda task: self.responseUI(response), "UpdateResponseTask")
+            print("End")
 
     #Updates subtitles if applicable
     def responseUI(self, response):
@@ -180,6 +201,9 @@ class InterrogationRoom:
     #Hides subtitles
     def updateResponse(self):
         self.Overlay.hideSubtitles()
+        print(self.game._bioController.biometricReader.state)
+        print(self.game._bioController.biometricReader.heartRate)
+        print(self.game._bioController.biometricReader.heartRateBase)
 
         #If the game has not been quit, restart the process
         if self.ended == False:

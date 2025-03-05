@@ -1,6 +1,6 @@
 from .BiometricReader import BiometricReader as br
 from threading import Thread
-from ..GameStateSystem import GameState
+from GameStateSystem.GameState import GameState
 
 class BiometricController:
     def __init__(self):
@@ -29,6 +29,7 @@ class BiometricController:
     # Ill add some more functionality to this class so we can pass the isNervous data to the AI.  
     def update(self, state):
         self._gameState = state
+        self.biometricReader.state = self._gameState.value
 
     def setAIReferece(self, ai):
         self._aiReference = ai
