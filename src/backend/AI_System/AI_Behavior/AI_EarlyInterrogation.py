@@ -61,6 +61,7 @@ class AIEarlyInterrogation(AI):
                     
                     **RULES**
                         - First make a comment about their response. Then ask **only one** question to get more details before moving on to the next evidence. Respond as Harris.
+                        - 
                         - If the user was nervous point out it out in your response.
                         - Be concise in your response
                         - If you catch the user in a lie. Point it out in your response.
@@ -84,8 +85,8 @@ class AIEarlyInterrogation(AI):
         prompt= f'''You are going to introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
 
                     **RULES**
-                        -Then ask the suspect what they know about the piece of evidence. 
-                        - If the evidence was found at the crime scence mention that. 
+                        - Ask the suspect what they know about the piece of evidence. 
+                        - If the evidence was found at the crime scene mention that. 
                         - **ONLY** respond as Harris.
                         - **ONLY MENTION THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
         instruction = {'role': 'assistant', 'content': prompt}
