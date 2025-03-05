@@ -1,19 +1,19 @@
 from .AI_Behavior import AIInitialPhase, AIEarlyInterrogation, AIMidInterrogation, AIFinalInterrogation, AIContext
-from ..StoryTree.StoryTree import StoryTree
+from ..StoryGraph.StoryGraph import StoryGraph
 
 class AIController:
     def __init__(self, conversation):
         self._ai = None     
         self._conversation = conversation
         self._userNervous = None
-        self._storyTree = StoryTree()
+        self._storyGraph = StoryGraph()
 
     def setAIBehavior(self, state):
         match state.value:
             case 1:
                 self._ai = AIContext(AIInitialPhase(self._conversation))
             case 2:
-                self._ai = AIContext(AIEarlyInterrogation(self._conversation, self._storyTree))
+                self._ai = AIContext(AIEarlyInterrogation(self._conversation, self._storyGraph))
             case 3:
                 self._ai = AIContext(AIMidInterrogation(self._conversation))
             case 4:

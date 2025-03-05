@@ -1,38 +1,42 @@
+import random
 from .AI import AI
 
 class AIEarlyInterrogation(AI):
-    def __init__(self, conversation, storyTree):
+    def __init__(self, conversation, storyGraph):
         super().__init__(conversation)
         self._currentEvidence = None
-        self._storyTree = storyTree
+        self._storyGraph = storyGraph
         self._introducedEvidence = False
         self._aiResponse= None
         self._evidenceConversation= []
         self._counter= 0
         self._finish = False
 
+        self._evidenceQueue = []
+        self._playerResponses = {}
+
         self.setupConvo()
 
-    def recieveEvidence(self):
-        if self._storyTree == None:
-            raise Exception("Story Tree refernce has not been set")
+    def receiveEvidence(self):
+        if self._storyGraph == None:
+            raise Exception("Story Graph reference has not been set")
 
-        self._currentEvidence = self._storyTree.sendEvidenceToAI(self)
+        self._currentEvidence = self._storyGraph.sendEvidenceToAI(self)
         if self._currentEvidence == False:
             self._finish = True
 
-    def sendConversationToStoryTree(self):
-        if self._storyTree == None:
-            raise Exception("Story Tree refernce has not been set")
+    def sendConversationToStoryGraph(self):
+        if self._storyGraph == None:
+            raise Exception("Story Graph reference has not been set")
 
-        self._storyTree.recieveConversation(self._evidenceConversation)
+        self._storyGraph.receiveConversation(self._evidenceConversation)
         self._evidenceConversation.clear()
         self.setupConvo()
 
     ## This method just returns whatever is stored in the aiResponse attribute. That attributes gets set when we introduce the evidence or the ai response to the user input
     def generateResponse(self) -> str:    
         if self._currentEvidence == None:
-            self.recieveEvidence()
+            self.receiveEvidence()
         
         if self._finish:
             return False
@@ -42,7 +46,7 @@ class AIEarlyInterrogation(AI):
             self.introduceEvidence()
         
         if self._counter == 3:
-            self.sendConversationToStoryTree()
+            self.sendConversationToStoryGraph()
             self.moveOnToNextTopic()
         
         return self._aiResponse
@@ -63,7 +67,7 @@ class AIEarlyInterrogation(AI):
                         - Respond as if are Detective Harris
                         - **ONLY TALK ABOUT THE EVIDENCE**
                         - **DO NOT ASK QUESTIONS UNRELATED TO THE EVIDENCE**
-                        - **DO NOT MENTIONS MARKS BRUISES AND BLACK EYE**
+                        - **DO NOT MENTION MARKS, BRUISES, AND BLACK EYE**
                     ''' 
         gpt_prompt= self.conversation.getConversation()[:]
         instruction = {'role':  'assistant', 'content': prompt}
@@ -77,7 +81,7 @@ class AIEarlyInterrogation(AI):
     def introduceEvidence(self):
         gpt_prompt= self.conversation.getConversation()[:]
 
-        prompt= f'''You are going to introduce this peice of evidence: {self._currentEvidence}. Follow the rules below:
+        prompt= f'''You are going to introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
 
                     **RULES**
                         -Then ask the suspect what they know about the piece of evidence. 
