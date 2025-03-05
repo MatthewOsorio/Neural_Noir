@@ -56,7 +56,7 @@ class State1:
 
     def getAverageHeartRate(self):
         if len(self.heartRate) > 0:
-            self.currentBaseH = self.doMath(self.heartRate, 1)
+            self.currentBaseH = self.doMath(self.heartRate, 0.8)
             print(self.currentBaseH)
             return self.currentBaseH
         else:
@@ -64,14 +64,14 @@ class State1:
     
     def getAverageEDA(self):
         if len(self.eda) > 0:
-            self.currentBaseE =  self.doMath(self.eda, 0)
+            self.currentBaseE =  self.doMath(self.eda, 0.1)
             return self.currentBaseE
         else:
             print("Error list legnth is 0.")
 
     def getAverageTemperature(self):
         if len(self.temperature) > 0:
-            self.currentBaseT = self.doMath(self.temperature, 0.1)
+            self.currentBaseT = self.doMath(self.temperature, 0.5)
             return self.currentBaseT
         else:
             print("Error list length is 0")

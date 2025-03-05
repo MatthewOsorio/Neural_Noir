@@ -182,6 +182,7 @@ class InterrogationRoom:
         
         pttActive = self.Overlay.ptt.getPTTActive()
         if pttActive == False: 
+            self.pausible = False
             self.Overlay.ptt.hidePTTButton()
             print("talk")
             self.thread = threading.Thread(target=self.processSpeech, daemon=True)
@@ -192,7 +193,7 @@ class InterrogationRoom:
      
     #Speech input part 
     def processSpeech(self):
-        self.pausible = False
+        
         self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
         self.game.insertInteractionInDB()
@@ -225,6 +226,8 @@ class InterrogationRoom:
             self.state = self.testStates[self.current]
 
             self.state.setGame(self.game)
+            self.state.setOverlay(self.Overlay)
+            self.state.setUseEmotibit(self.useEmotibit)
             response = self.state.begin()
             print("New state response")
             taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
