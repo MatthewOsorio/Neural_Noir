@@ -24,7 +24,7 @@ class InterrogationRoom:
         self.base = base
         self.menu = menu
 
-        self.useEmotibit = True
+        self.useEmotibit = self.menu.settingsMenu.getUseEmotibit()
 
         self.base.disableMouse()
         self.gameState= 'gameplay'
@@ -268,3 +268,4 @@ class InterrogationRoom:
     def processNext(self):
         self.Overlay.ptt.showPTTButton()
         taskMgr.add(self.speechUI, "Update")
+
