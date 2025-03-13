@@ -146,6 +146,8 @@ class PauseMenu():
             self.room.base.checkGameStartFlag()
             #self.game.database.closeConnection()
             self.game.restartEmotibit()
+            if self.room.useEmotibit:
+                self.game._bioController._gameIsReady = False
             self.game.begin = False
             self.ended = True
             self.room.base.returnToMenu()
