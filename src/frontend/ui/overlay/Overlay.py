@@ -105,7 +105,7 @@ class Overlay:
         
         self.hideBioData()
 
-        taskMgr.doMethodLater(10, self.updateOverlay, "updateOverlayTask") 
+        taskMgr.doMethodLater(5, self.updateOverlay, "updateOverlayTask") 
     
     def show(self):
         self.overlay.show()

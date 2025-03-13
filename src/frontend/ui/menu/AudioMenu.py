@@ -6,6 +6,7 @@ from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 from panda3d.core import TransparencyAttrib
+import json
 
 class audioSettings:
     def __init__(self, manager, base, audio, back_callback=None):    
@@ -132,6 +133,11 @@ class audioSettings:
             command = self.audio.testAudioOutput
         )
 
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            self.settings = json.load(file)
+
+        self.setInitialValues()
+
         self.hide()
 
     def handleBack(self):
@@ -162,12 +168,20 @@ class audioSettings:
         else:
             self.base.sfxVolume = self.volumeSlider['value']
 
+        self.settings["sfxVolume"] = self.volumeSlider['value']
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(self.settings, file)
+
     def setVoiceVolumeV(self):
         if self.manager.gameStart == True:
             self.base.interrogationRoom.game._tts.audio.setVolume(self.voiceVolumeSlider['value'])
             self.base.interrogationRoom.voiceVolume = self.voiceVolumeSlider['value']
         else:
             self.base.voiceVolume = self.voiceVolumeSlider['value']
+        
+        self.settings["voiceVolume"] = self.voiceVolumeSlider['value']
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(self.settings, file)
             
     def turnSubtitlesOn(self, state):
         self.subTitlesOff["indicatorValue"] = False
@@ -188,3 +202,13 @@ class audioSettings:
         self.volumeSlider["value"] = value 
         self.volumeSlider.setValue(value)
         self.audio.setVolumeValue(value)
+    
+    def setInitialValues(self):
+        self.audio.setVolumeValue(self.settings.get("sfxVolume", 0.5))
+        self.base.sfxVolume = self.settings.get("sfxVolume", 0.5)
+        self.base.voiceVolume = self.settings.get("voiceVolume", 0.5)
+        self.voiceVolumeSlider["value"] = self.settings.get("voiceVolume", 0.5) 
+        self.voiceVolumeSlider.setValue(self.settings.get("voiceVolume", 0.5))
+        self.volumeSlider["value"] = self.settings.get("sfxVolume", 0.5)
+        self.volumeSlider.setValue(self.settings.get("sfxVolume", 0.5))
+

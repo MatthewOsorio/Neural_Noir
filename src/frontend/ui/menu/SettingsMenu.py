@@ -5,6 +5,7 @@ from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
+import json
 
 class settingsMenu:
     def __init__(self, manager, base):
@@ -97,7 +98,13 @@ class settingsMenu:
         self.audioButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.audioButton))  # Mouse enters
         self.audioButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.audioButton)) 
 
-        self.setEmotibitOn(True)
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            self.settings = json.load(file)
+
+        if self.settings["emotibit"] == True:
+            self.setEmotibitOn(True)
+        elif self.settings["emotibit"] == False:
+            self.setEmotibitOff(True)
 
     def moveToMain(self):
         self.hide()
@@ -123,11 +130,17 @@ class settingsMenu:
         self.useEmotibit = True
         self.emotibitOn.setIndicatorValue
         self.emotibitOff["indicatorValue"] = False
+        self.settings["emotibit"] = True
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(self.settings, file)
     
     def setEmotibitOff(self, state):
         self.useEmotibit = False
         self.emotibitOn["indicatorValue"] = False
         self.emotibitOff.setIndicatorValue
+        self.settings["emotibit"] = False
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(self.settings, file)
 
     def getUseEmotibit(self):
         return self.useEmotibit

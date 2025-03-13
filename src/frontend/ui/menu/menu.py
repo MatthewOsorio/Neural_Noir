@@ -15,6 +15,7 @@ from frontend.ui.menu.QuitMenu import confirmQuit
 
 from frontend.ui.audio import audioManager
 import frontend.ui.ScriptDisplay as ScriptDisplay
+import json
 
 import os
 from panda3d.core import Filename
@@ -52,6 +53,7 @@ class menuManager:
         self.black = base.loader.loadTexture(Black)
         self.room = base.loader.loadTexture(Room)
         self.font = base.loader.loadFont(Limelight)
+        self.userSettings = os.path.join(current_dir, "..", "userSettings.json")
 
         self.limeLight = "../Assets/Fonts/Limelight/Limelight-Regular.ttf"
         self.mainBackGround = "../Assets/Images/NeuralNoir_Background_Image.jpg"
