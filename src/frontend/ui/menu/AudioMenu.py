@@ -134,9 +134,14 @@ class audioSettings:
         )
 
         with open(self.manager.userSettings, "r", encoding="utf-8") as file:
-            self.settings = json.load(file)
+            settings = json.load(file)
 
-        self.setInitialValues()
+        if settings["subtitles"] == True:
+            self.turnSubtitlesOn(True)
+        else:
+            self.turnSubtitlesOff(True)
+
+        self.setInitialValues(settings)
 
         self.hide()
 
@@ -168,9 +173,11 @@ class audioSettings:
         else:
             self.base.sfxVolume = self.volumeSlider['value']
 
-        self.settings["sfxVolume"] = self.volumeSlider['value']
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["sfxVolume"] = self.volumeSlider['value']
         with open(self.manager.userSettings, "w", encoding="utf-8") as file:
-            json.dump(self.settings, file)
+            json.dump(settings, file)
 
     def setVoiceVolumeV(self):
         if self.manager.gameStart == True:
@@ -179,19 +186,34 @@ class audioSettings:
         else:
             self.base.voiceVolume = self.voiceVolumeSlider['value']
         
-        self.settings["voiceVolume"] = self.voiceVolumeSlider['value']
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["voiceVolume"] = self.voiceVolumeSlider['value']
         with open(self.manager.userSettings, "w", encoding="utf-8") as file:
-            json.dump(self.settings, file)
+            json.dump(settings, file)
             
     def turnSubtitlesOn(self, state):
         self.subTitlesOff["indicatorValue"] = False
         self.subTitlesOff.setIndicatorValue
         self.manager.subtitles = True
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["subtitles"] = True
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(settings, file)
     
     def turnSubtitlesOff(self, state):
         self.subTitlesOn["indicatorValue"] = False
         self.subTitlesOn.setIndicatorValue
         self.manager.subtitles = False
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["subtitles"] = False
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(settings, file)
 
     def setVoiceVolumeSlider(self, value):
         self.voiceVolumeSlider["value"] = value 
@@ -203,7 +225,8 @@ class audioSettings:
         self.volumeSlider.setValue(value)
         self.audio.setVolumeValue(value)
     
-    def setInitialValues(self):
+    def setInitialValues(self, settings):
+        self.settings = settings
         self.audio.setVolumeValue(self.settings.get("sfxVolume", 0.5))
         self.base.sfxVolume = self.settings.get("sfxVolume", 0.5)
         self.base.voiceVolume = self.settings.get("voiceVolume", 0.5)

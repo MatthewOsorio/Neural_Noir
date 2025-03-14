@@ -48,7 +48,7 @@ class main(ShowBase):
             self.interrogationRoom = InterrogationRoom(self, self.menuManager)
             #print("Main - True")
             self.interrogationRoom.cameraSetUp()
-            self.interrogationRoom.loadModels()    
+            self.interrogationRoom.loadModels()
             self.interrogationRoom.loadLighting()
             self.roomLoaded = True   
             self.interrogationRoom.game.begin = True

@@ -99,12 +99,9 @@ class settingsMenu:
         self.audioButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.audioButton)) 
 
         with open(self.manager.userSettings, "r", encoding="utf-8") as file:
-            self.settings = json.load(file)
+            settings = json.load(file)
 
-        if self.settings["emotibit"] == True:
-            self.setEmotibitOn(True)
-        elif self.settings["emotibit"] == False:
-            self.setEmotibitOff(True)
+        self.setUserSettingsValues(settings)
 
     def moveToMain(self):
         self.hide()
@@ -130,17 +127,30 @@ class settingsMenu:
         self.useEmotibit = True
         self.emotibitOn.setIndicatorValue
         self.emotibitOff["indicatorValue"] = False
-        self.settings["emotibit"] = True
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["emotibit"] = True
         with open(self.manager.userSettings, 'w') as file:
-            json.dump(self.settings, file)
+            json.dump(settings, file)
     
     def setEmotibitOff(self, state):
         self.useEmotibit = False
         self.emotibitOn["indicatorValue"] = False
         self.emotibitOff.setIndicatorValue
-        self.settings["emotibit"] = False
+        
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["emotibit"] = False
         with open(self.manager.userSettings, 'w') as file:
-            json.dump(self.settings, file)
+            json.dump(settings, file)
 
     def getUseEmotibit(self):
         return self.useEmotibit
+
+    def setUserSettingsValues(self, settings):
+        self.settings = settings
+        if self.settings["emotibit"] == True:
+            self.setEmotibitOn(True)
+        elif self.settings["emotibit"] == False:
+            self.setEmotibitOff(True)

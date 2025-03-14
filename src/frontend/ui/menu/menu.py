@@ -49,11 +49,25 @@ class menuManager:
         self.gameStart = startFlag
         self.gameState = 'menu'
 
+        self.defaultValues = {
+            "emotibit": True,
+            "sfxVolume": 0.5,
+            "voiceVolume": 0.5,
+            "subtitles": False
+        }
+
         self.mainBackground = base.loader.loadTexture(Background)
         self.black = base.loader.loadTexture(Black)
         self.room = base.loader.loadTexture(Room)
         self.font = base.loader.loadFont(Limelight)
         self.userSettings = os.path.join(current_dir, "..", "userSettings.json")
+
+        if os.path.exists(self.userSettings) == False:
+            print("Creating user settings file")
+            with open(self.userSettings, "w", encoding="utf-8") as file:
+                json.dump(self.defaultValues, file)
+        else:
+            print("User settings file found")
 
         self.limeLight = "../Assets/Fonts/Limelight/Limelight-Regular.ttf"
         self.mainBackGround = "../Assets/Images/NeuralNoir_Background_Image.jpg"
