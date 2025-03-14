@@ -195,7 +195,9 @@ class audioSettings:
             
     def turnSubtitlesOn(self, state):
         self.subTitlesOff["indicatorValue"] = False
+        self.subTitlesOn["indicatorValue"] = True
         self.subTitlesOff.setIndicatorValue
+        self.subTitlesOn.setIndicatorValue
         self.manager.subtitles = True
 
         with open(self.manager.userSettings, "r", encoding="utf-8") as file:
@@ -206,7 +208,9 @@ class audioSettings:
     
     def turnSubtitlesOff(self, state):
         self.subTitlesOn["indicatorValue"] = False
+        self.subTitlesOff["indicatorValue"] = True
         self.subTitlesOn.setIndicatorValue
+        self.subTitlesOff.setIndicatorValue
         self.manager.subtitles = False
 
         with open(self.manager.userSettings, "r", encoding="utf-8") as file:

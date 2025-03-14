@@ -125,8 +125,10 @@ class settingsMenu:
 
     def setEmotibitOn(self, state):
         self.useEmotibit = True
-        self.emotibitOn.setIndicatorValue
         self.emotibitOff["indicatorValue"] = False
+        self.emotibitOn["indicatorValue"] = True
+        self.emotibitOff.setIndicatorValue
+        self.emotibitOn.setIndicatorValue
 
         with open(self.manager.userSettings, "r", encoding="utf-8") as file:
             settings = json.load(file)
@@ -137,6 +139,8 @@ class settingsMenu:
     def setEmotibitOff(self, state):
         self.useEmotibit = False
         self.emotibitOn["indicatorValue"] = False
+        self.emotibitOff["indicatorValue"] = True
+        self.emotibitOn.setIndicatorValue
         self.emotibitOff.setIndicatorValue
         
         with open(self.manager.userSettings, "r", encoding="utf-8") as file:
