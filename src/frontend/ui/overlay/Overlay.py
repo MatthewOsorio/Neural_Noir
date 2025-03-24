@@ -24,6 +24,8 @@ class Overlay:
 
         self.errorScreen = ErrorScreen(self.base)
 
+        self.connectionError = False
+
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
             frameSize=(-1, 1, -1, 1),
@@ -187,8 +189,15 @@ class Overlay:
 
     def checkInternetConnection(self, task):
         self.connection = self.base.base.connection
-        if self.connection.checkInternet() is False:
+        self.connectionStatus = self.connection.checkInternet()
+        if self.connectionStatus is False:
             self.errorScreen.showConnectionError()
+            self.connectionError = True
+            return task.done
+        
+        #if  self.connectionStatus is True and self.connectionError is True:
+            #self.errorScreen.hideConnectionError()
+            #self.connectionError = False
             
         return task.again
         

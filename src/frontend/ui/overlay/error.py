@@ -5,6 +5,7 @@ from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
+import sys
 
 
 class ErrorScreen:
@@ -49,7 +50,7 @@ class ErrorScreen:
             frameColor = (1, 1, 1, 1),
             parent = self.connectionError,
             pos = (0, 0, 0),
-            command = None,
+            command = self.closeGame,
             sortOrder=1
         )
 
@@ -106,3 +107,6 @@ class ErrorScreen:
     
     def hideOpenAIError(self):
         self.openAIError.hide()
+
+    def closeGame(self):
+        sys.exit()
