@@ -11,6 +11,7 @@ from panda3d.core import TransparencyAttrib
 from ..overlay.flashback import flashback
 from ..overlay.PTT import PTT
 from ..overlay.subtitles import Subtitles
+from ..overlay.error import ErrorScreen
 
 class Overlay:
     def __init__(self, base):
@@ -20,6 +21,8 @@ class Overlay:
 
         self.ptt = PTT(self.base)
         self.subtitles = Subtitles(self.base)
+
+        self.errorScreen = ErrorScreen(self.base)
 
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -105,7 +108,12 @@ class Overlay:
         
         self.hideBioData()
 
+        self.errorScreen.hideConnectionError()
+        self.errorScreen.hideOpenAIError()
+
         taskMgr.doMethodLater(5, self.updateOverlay, "updateOverlayTask") 
+        taskMgr.doMethodLater(5, self.checkInternetConnection, "checkConnectionTask") 
+
     
     def show(self):
         self.overlay.show()
@@ -176,4 +184,13 @@ class Overlay:
     
     def showBioData(self):
         self.bioBackground.show()
-    
+
+    def checkInternetConnection(self, task):
+        self.connection = self.base.base.connection
+        if self.connection.checkInternet() is False:
+            self.errorScreen.showConnectionError()
+            
+        return task.again
+        
+    def success(self):
+        pass
