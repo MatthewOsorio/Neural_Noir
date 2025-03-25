@@ -21,5 +21,10 @@ class PTT:
 
     def getPTTActive(self):
         return self.pttActive
+    
+    def pttCountdown(self):
+        countdown = 10
+        if countdown == 0:
+            return False
 
     

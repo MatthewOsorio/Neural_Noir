@@ -197,6 +197,8 @@ class InterrogationRoom:
         self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
         self.game.insertInteractionInDB()
+        self.Overlay.userSpeech.active = True
+        self.Overlay.userSpeech.redo = False
 
         taskMgr.add(lambda task: self.speechUIPost(speech, task), "UpdateSpeechTask2")
 
@@ -204,11 +206,25 @@ class InterrogationRoom:
 
         self.Overlay.ptt.hidePTTButton()
      
-        print(f"{speech}")
+        #print(f"{speech}")
         #Get the response
-        self.thread = threading.Thread(target=self.processResponse, daemon=True)
-        self.thread.start()
-        return task.done
+        self.Overlay.userSpeech.setSpeech(speech)
+        self.Overlay.showUserInputBox()
+
+        userInputActive = self.Overlay.userSpeech.getActive()
+        if userInputActive == False and self.Overlay.userSpeech.redo == False:
+            self.Overlay.hideUserInputBox()
+
+            self.thread = threading.Thread(target=self.processResponse, daemon=True)
+            self.thread.start()
+            return task.done
+        elif userInputActive == False and self.Overlay.userSpeech.redo == True:
+            self.Overlay.hideUserInputBox()
+            self.Overlay.ptt.showPTTButton()
+            taskMgr.add(self.speechUI, "UpdateSpeechTask")
+            return task.done
+        
+        return task.cont
               
     #Response processing part
     def processResponse(self):

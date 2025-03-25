@@ -44,7 +44,7 @@ class ErrorScreen:
         )
 
         self.connectionErrorButton = DirectButton(
-            text = "Continue",
+            text = "Quit Game",
             text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
             scale = 0.1,
             frameColor = (1, 1, 1, 1),
