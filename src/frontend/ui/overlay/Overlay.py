@@ -133,6 +133,8 @@ class Overlay:
         self.subtitles.setParent(self.subtitlesBox)
         self.subtitlesBox.hide()
 
+        self.userInputBox.setColor(0, 0, 0, 0.7)
+        self.userInputBox.setTransparency(TransparencyAttrib.MAlpha)
         self.userSpeech.setParent(self.userInputBox)
         self.userInputBox.hide()
 

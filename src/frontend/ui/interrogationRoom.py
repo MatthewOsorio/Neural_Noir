@@ -60,6 +60,8 @@ class InterrogationRoom:
 
         self.thread = None
 
+        self.redoable = False
+
         
         
     def pauseGame(self):
@@ -173,6 +175,7 @@ class InterrogationRoom:
         response = self.state.begin()
         self.state.convert()
         self.Overlay.ptt.showPTTButton()
+        self.redoable = True
         #Get the speech input
         taskMgr.add(self.speechUI, "UpdateSpeechTask")
         
@@ -211,14 +214,21 @@ class InterrogationRoom:
         self.Overlay.userSpeech.setSpeech(speech)
         self.Overlay.showUserInputBox()
 
+        if self.redoable is True:
+            self.Overlay.acceptSpeechButton.show()
+            self.Overlay.redoSpeechButton.show()
+            
+        elif self.redoable is False:
+            self.Overlay.redoSpeechButton.hide()
+
         userInputActive = self.Overlay.userSpeech.getActive()
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
             self.Overlay.hideUserInputBox()
-
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
             self.thread.start()
             return task.done
-        elif userInputActive == False and self.Overlay.userSpeech.redo == True:
+        elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
+            self.redoable = False
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
             taskMgr.add(self.speechUI, "UpdateSpeechTask")
@@ -283,5 +293,7 @@ class InterrogationRoom:
     
     def processNext(self):
         self.Overlay.ptt.showPTTButton()
+        self.redoable = True
         taskMgr.add(self.speechUI, "Update")
+        
 
