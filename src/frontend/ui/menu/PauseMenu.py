@@ -141,6 +141,7 @@ class PauseMenu():
             self.game.gameState = 'gameplay'
             self.room.unloadModels()
             self.room.cleanUpTasks()
+            self.room.cleanUpThreads()
             self.manager.showMain()
             self.manager.showImage()
             self.manager.gameStart = False

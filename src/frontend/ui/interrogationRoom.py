@@ -62,6 +62,8 @@ class InterrogationRoom:
 
         self.redoable = False
 
+        self.threadEvent = threading.Event()
+
         
         
     def pauseGame(self):
@@ -303,5 +305,13 @@ class InterrogationRoom:
         taskMgr.remove("UpdateSpeechTask")
         taskMgr.remove("UpdateSpeechTask2")
         self.Overlay.cleanUpTasks()
+
+    def cleanUpThreads(self):
+        self.threadEvent.set()
+        if self.thread is not None and self.thread.is_alive():
+            print("Joining game thread")
+            self.thread.join(timeout = 2)
+        self.Overlay.cleanUpThreads()
+        self.base.cleanUpThreads()
         
 

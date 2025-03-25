@@ -19,6 +19,9 @@ class Overlay:
     def __init__(self, base):
         self.base = base
 
+        self.threadEvent = threading.Event()
+        self.internetThread = None
+
         self.flashback = flashback(self.base)
 
         self.ptt = PTT(self.base)
@@ -244,7 +247,8 @@ class Overlay:
         self.bioBackground.show()
 
     def checkInternetConnection(self, task):
-        threading.Thread(target=self.checkInternetThread, daemon=True).start()
+        self.internetThread = threading.Thread(target=self.checkInternetThread, daemon=True)
+        self.internetThread.start()
         return task.again
 
     def checkInternetThread(self):
@@ -266,3 +270,10 @@ class Overlay:
         taskMgr.remove("updateOverlayTask")
         taskMgr.remove("checkConnectionTask")
         taskMgr.remove("showConnectionErrorTask")
+
+    def cleanUpThreads(self):
+        self.threadEvent.set()
+        print("Internt thread clean up function")
+        if self.internetThread is not None:
+            print("Joining internet check thread")
+            self.internetThread.join()
