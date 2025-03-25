@@ -13,6 +13,7 @@ from ..overlay.PTT import PTT
 from ..overlay.subtitles import Subtitles
 from ..overlay.error import ErrorScreen
 from ..overlay.userSpeech import UserSpeech
+import threading
 
 class Overlay:
     def __init__(self, base):
@@ -243,18 +244,20 @@ class Overlay:
         self.bioBackground.show()
 
     def checkInternetConnection(self, task):
-        self.connection = self.base.base.connection
-        self.connectionStatus = self.connection.checkInternet()
-        if self.connectionStatus is False:
-            self.errorScreen.showConnectionError()
-            self.connectionError = True
-            return task.done
-        
-        #if  self.connectionStatus is True and self.connectionError is True:
-            #self.errorScreen.hideConnectionError()
-            #self.connectionError = False
-            
+        threading.Thread(target=self.checkInternetThread, daemon=True).start()
         return task.again
+
+    def checkInternetThread(self):
+        print("check (background thread)")
+        self.connection = self.base.base.connection
+        status = self.connection.checkInternet()
+
+        if not status and not self.connectionError:
+            self.connectionError = True
+
+            # Show error on the main thread
+            taskMgr.add(lambda task: self.handleConnectionError(task), "showConnectionErrorTask")
         
-    def success(self):
-        pass
+    def handleConnectionError(self, task):
+        self.errorScreen.showConnectionError()
+        return task.done       

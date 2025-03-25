@@ -77,7 +77,7 @@ class main(ShowBase):
         
     def connections(self):
         self.connection = Connection()
-        self.connectionDisplay = ConnectionDisplay(self, self.connection)       
+        self.connectionDisplay = ConnectionDisplay(self, self.connection)
         
 app = main()
 app.run()
