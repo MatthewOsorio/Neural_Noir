@@ -261,3 +261,8 @@ class Overlay:
     def handleConnectionError(self, task):
         self.errorScreen.showConnectionError()
         return task.done       
+
+    def cleanUpTasks(self):
+        taskMgr.remove("updateOverlayTask")
+        taskMgr.remove("checkConnectionTask")
+        taskMgr.remove("showConnectionErrorTask")

@@ -95,3 +95,6 @@ class State1:
         #print(f"HR: {self.currentBaseH}")
         self.game.setRanges(self.currentBaseH, self.currentBaseE, self.currentBaseT)
 
+    def cleanUpTasks(self):
+        tskMgr.remove("data")
+

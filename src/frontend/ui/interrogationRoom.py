@@ -294,6 +294,14 @@ class InterrogationRoom:
     def processNext(self):
         self.Overlay.ptt.showPTTButton()
         self.redoable = True
-        taskMgr.add(self.speechUI, "Update")
+        taskMgr.add(self.speechUI, "UpdateSpeech")
+
+    def cleanUpTasks(self):
+        taskMgr.remove("Update")
+        taskMgr.remove("UpdateResponseTask")
+        taskMgr.remove("UpdateSpeech")
+        taskMgr.remove("UpdateSpeechTask")
+        taskMgr.remove("UpdateSpeechTask2")
+        self.Overlay.cleanUpTasks()
         
 
