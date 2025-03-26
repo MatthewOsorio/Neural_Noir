@@ -15,6 +15,7 @@ from frontend.ui.menu.menu import menuManager
 from frontend.ui.interrogationRoom import InterrogationRoom
 from frontend.ui.connection_utils import Connection
 from frontend.ui.connectionDisplay import ConnectionDisplay
+from frontend.ui.tutorialRoom import TutorialRoom
 
 import threading
 
@@ -59,12 +60,34 @@ class main(ShowBase):
             self.interrogationThread = threading.Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
             self.interrogationThread.start()
 
-        if self.menuManager.gameStart == True:
+        def on_successTutorial():
+            self.connectionDisplay.destroyConnectionStatus()
+            
+            self.interrogationRoom = TutorialRoom(self, self.menuManager)
+            #print("Main - True")
+            self.interrogationRoom.cameraSetUp()
+            self.interrogationRoom.loadModels()
+            self.interrogationRoom.loadLighting()
+            self.roomLoaded = True   
+            self.interrogationRoom.game.begin = True
+            #Stars interrogation api calls on a separate thread once the game is started
+            self.interrogationThread = threading.Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
+            self.interrogationThread.start()
+
+        if self.menuManager.gameStart == True and self.menuManager.tutorialStart == False:
             self.connectionDisplay.checkInternetAndDisplay(
                 on_success=on_success,
                 on_failure=sys.exit
             )
             return task.done
+    
+        if self.menuManager.tutorialStart == True and self.menuManager.gameStart == False:
+            self.connectionDisplay.checkInternetAndDisplay(
+                on_success=on_successTutorial,
+                on_failure=sys.exit
+            )
+            return task.done
+        
         
         return task.cont
     

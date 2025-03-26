@@ -13,6 +13,7 @@ from ..overlay.PTT import PTT
 from ..overlay.subtitles import Subtitles
 from ..overlay.error import ErrorScreen
 from ..overlay.userSpeech import UserSpeech
+from ..overlay.tutorials import Tutorial
 import threading
 
 class Overlay:
@@ -29,6 +30,7 @@ class Overlay:
         self.userSpeech = UserSpeech(self.base)
 
         self.errorScreen = ErrorScreen(self.base)
+        self.tutorials = Tutorial(self.base)
 
         self.connectionError = False
 

@@ -13,6 +13,8 @@ from frontend.ui.menu.AudioMenu import audioSettings
 from frontend.ui.menu.PauseMenu import PauseMenu
 from frontend.ui.menu.QuitMenu import confirmQuit
 
+from frontend.ui.menu.TutorialsMenu import TutorialsMenu
+
 from frontend.ui.audio import audioManager
 import frontend.ui.ScriptDisplay as ScriptDisplay
 import json
@@ -48,6 +50,7 @@ class menuManager:
         
         self.gameStart = startFlag
         self.gameState = 'menu'
+        self.tutorialStart = startFlag
 
         self.defaultValues = {
             "emotibit": True,
@@ -79,6 +82,7 @@ class menuManager:
         self.audioMenu = audioSettings(self, self.base, self.audio)
         self.pauseMenu = None
         self.quitMenu = confirmQuit(self, self.base)
+        self.tutorialsMenu = TutorialsMenu(self, self.base)
 
         self.subtitles = False
 
@@ -119,8 +123,14 @@ class menuManager:
             print("No pause menu")
 
     def beginGame(self):
+        self.tutorialStart = False
         self.gameStart = True
         #print("Menu -", self.gameStart)
+        self.gameState = 'gameplay'
+
+    def beginTutorial(self):
+        self.gameStart = False
+        self.tutorialStart = True
         self.gameState = 'gameplay'
 
     def initializePauseMenu(self):
@@ -130,5 +140,7 @@ class menuManager:
         self.quitMenu.hide()
         self.pauseMenu.displayPauseMenu()
     
+    def showTutorials(self):
+        self.tutorialsMenu.show()
         
         

@@ -145,6 +145,7 @@ class PauseMenu():
             self.manager.showMain()
             self.manager.showImage()
             self.manager.gameStart = False
+            self.manager.tutorialStart = False
             self.room.base.checkGameStartFlag()
             #self.game.database.closeConnection()
             self.game.restartEmotibit()
