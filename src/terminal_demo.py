@@ -34,13 +34,12 @@ while not finished_phase:
     else:
         conversation.addAIResponse(ai_response)
         print(ai_response)
-        # user_statement = input('> ') # In the final main.py, this is listenToUser() from GameManager
-        user_statement = gameManager.listenToUser()
+        user_statement = input('> ')
+        #user_statement = gameManager.listenToUser()
         ai.processUserResponse(user_statement)
-        conversation.sendUserResponseToDB(session.startTime, None, user_statement)
-        ai.processUserResponse(user_statement)
+        #conversation.sendUserResponseToDB(session.startTime, user_statement, ai_response)
 
-conversation_history = database.fetchConversation(session.getSessionID())
-for user_input, response in conversation_history:
-    print(f"User: {user_input}")
-    print(f"AI: {response}")
+# conversation_history = database.fetchConversation(session.getSessionID())
+# for user_input, response in conversation_history:
+#     print(f"User: {user_input}")
+#     print(f"AI: {response}")

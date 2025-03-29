@@ -2,22 +2,31 @@ import random
 
 class StoryGraph:
     def __init__(self):
-        self._evidenceList = [
-            "Crime Scene Photo of Vinh Davis – A police photograph of Vin Davis’ body with a gunshot wound.",
-            "Witness Testimonies – Several written statements from bar patrons who saw MC and the CEO drinking together, with some recalling an argument.",
-            "Bar Receipt – A receipt from the bar, proving that MC and the CEO were drinking heavily on the night of the murder.",
-            "Blood-Stained Clothing – The police found MC’s shirt and jacket with blood stains. They ask if he remembers how it got there.",
-            "Gun Matching the Bullet Wound – The murder weapon is found near the crime scene, and detectives claim it matches MC’s fingerprints.",
-            "Photo of the Alleyway – A police photograph of the alleyway where MC was seen walking home, looking disoriented and covered in blood.",
-            "Neighbors’ Statements – People living near MC’s apartment reported seeing him return home in a confused and unstable state.",
-            "Johnny’s Last Notes – A notebook belonging to Johnny, containing scribbled messages about Vin Davis’s crimes, mentioning MC’s name.",
-            "MC’s Own Camera Film – The detectives show a developed film roll from MC’s camera found at the crime scene.",
+        self._earlyEvidence = [
+            "Crime Scene Photo of Vinh Davis – A police photograph of Vinh Davis’ body with a gunshot wound.",
+            "Witness Testimonies – Several written statements from bar patrons who saw the employee and the CEO drinking together, with some recalling an argument.",
+            "Bar Receipt – A receipt from the bar, proving that the employee and the CEO were drinking heavily on the night of the murder."
+        ]
+        self._midEvidence = [
+            "Blood-Stained Clothing – The police found the employee’s shirt and jacket with blood stains. They ask if he remembers how it got there.",
+            "Photo of the Alleyway – A police photograph of the alleyway where the employee was seen walking home, looking disoriented and covered in blood.",
+            "Neighbors’ Statements – People living near the employee’s apartment reported seeing them return home in a confused and unstable state."
+        ]
+        self._finalEvidence = [
+            "Gun Matching the Bullet Wound – The murder weapon is found near the crime scene, and detectives claim it matches employee’s fingerprints.",
+            "Johnny’s Last Notes – A notebook belonging to Johnny, containing scribbled messages about Vinh Davis’s crimes. It also mentions the employee’s name, suggesting Johnny trusted the employee to help him.",
+            "the employee’s Own Camera Film – The detectives show a developed film roll from the employee’s camera found at the crime scene, possibly containing a blurred or distorted photo from the altercation.",
             "Police Ballistics Report – The gunshot report confirms that the weapon was fired at close range, suggesting a struggle before the CEO was shot."
         ]
-        self._criticalEvidenceSet = {1, 4, 5, 9, 10}
-        random.shuffle(self._evidenceList)
 
-        self._currentEvidence = 0
+        self._evidencePhase = {
+            "EARLY": 0,
+            "MID": 0,
+            "FINAL": 0 
+        }
+
+        self._criticalEvidenceSet = {1, 4, 5, 9, 10}
+
         self._convoAboutEvidence = []
         self._verdictsByEvidence = {}
         self._finalVerdict = None
@@ -30,19 +39,27 @@ class StoryGraph:
     def setAIReference(self, ai):
         self._aiReference = ai
 
-    def sendEvidenceToAI(self, ai):
+    def sendEvidenceToAI(self, ai, phase):
         if self._aiReference == None:
             self.setAIReference(ai)
-
-        if self._aiReference == None:
-            raise Exception("The AI reference has not been set yet in the Story Graph")
         
-        if self._currentEvidence < len(self._evidenceList):
-            evidence = self._evidenceList[self._currentEvidence]
-            self._currentEvidence += 1
+        evidenceList = self.getEvidenceListByPhase(phase)
+        index = self._evidencePhase[phase]
+        
+        if index < len(evidenceList):
+            evidence = evidenceList[index]
+            self._evidencePhase[phase] += 1
             return evidence
         else:
             return False
+        
+    def getEvidenceListByPhase(self, phase):
+        if phase == "EARLY":
+            return self._earlyEvidence
+        elif phase == "MID":
+            return self._midEvidence
+        elif phase == "FINAL":
+            return self._finalEvidence
 
     def receiveConversation(self, convo):
         self._convoAboutEvidence.append(convo)

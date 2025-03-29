@@ -2,14 +2,16 @@ import random
 from .AI import AI
 
 class AIEarlyInterrogation(AI):
-    def __init__(self, conversation, storyGraph):
+    def __init__(self, conversation, storyGraph, phase="EARLY"):
         super().__init__(conversation)
-        self._currentEvidence = None
         self._storyGraph = storyGraph
+        self._phase = phase
+
+        self._currentEvidence = None
         self._introducedEvidence = False
-        self._aiResponse= None
-        self._evidenceConversation= []
-        self._counter= 0
+        self._aiResponse = None
+        self._evidenceConversation = []
+        self._counter = 0
         self._finish = False
 
         self._evidenceQueue = []
@@ -21,7 +23,7 @@ class AIEarlyInterrogation(AI):
         if self._storyGraph == None:
             raise Exception("Story Graph reference has not been set")
 
-        self._currentEvidence = self._storyGraph.sendEvidenceToAI(self)
+        self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
         if self._currentEvidence == False:
             self._finish = True
 
@@ -61,7 +63,6 @@ class AIEarlyInterrogation(AI):
                     
                     **RULES**
                         - First make a comment about their response. Then ask **only one** question to get more details before moving on to the next evidence. Respond as Harris.
-                        - 
                         - If the user was nervous point out it out in your response.
                         - Be concise in your response
                         - If you catch the user in a lie. Point it out in your response.
@@ -83,7 +84,6 @@ class AIEarlyInterrogation(AI):
         gpt_prompt= self.conversation.getConversation()[:]
 
         prompt= f'''You are going to introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
-
                     **RULES**
                         - Ask the suspect what they know about the piece of evidence. 
                         - If the evidence was found at the crime scene mention that. 
