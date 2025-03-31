@@ -1,3 +1,4 @@
+# Bad cop scenario
 import random
 from .AI import AI
 
@@ -35,7 +36,8 @@ class AIEarlyInterrogation(AI):
         self._evidenceConversation.clear()
         self.setupConvo()
 
-    ## This method just returns whatever is stored in the aiResponse attribute. That attributes gets set when we introduce the evidence or the ai response to the user input
+    ## This method just returns whatever is stored in the aiResponse attribute.
+    # That attribute gets set when we introduce the evidence or the ai response to the user input
     def generateResponse(self) -> str:    
         if self._currentEvidence == None:
             self.receiveEvidence()
@@ -57,12 +59,14 @@ class AIEarlyInterrogation(AI):
         self.conversation.addUserInput(userResponse)
         self.addUserStatementToConvo(userResponse)
 
+        # Need to change prompt according to plot rules - bad cop scenario
         prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}.
                     The user was {'nervous' if self.userNervous else 'not nervous'} when giving their response.
                     Respond to the users explanation according to the rules below.
                     
                     **RULES**
-                        - First make a comment about their response. Then ask **only one** question to get more details before moving on to the next evidence. Respond as Harris.
+                        - Respond as Detective Harris.
+                        - First make a comment about their response. Then ask **only one** question to get more details before moving on to the next evidence.
                         - If the user was nervous point out it out in your response.
                         - Be concise in your response
                         - If you catch the user in a lie. Point it out in your response.

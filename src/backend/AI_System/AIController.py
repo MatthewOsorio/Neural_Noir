@@ -15,9 +15,9 @@ class AIController:
             case 2:
                 self._ai = AIContext(AIEarlyInterrogation(self._conversation, self._storyGraph))
             case 3:
-                self._ai = AIContext(AIMidInterrogation(self._conversation))
+                self._ai = AIContext(AIMidInterrogation(self._conversation, self._storyGraph))
             case 4:
-                self._ai = AIContext(AIFinalInterrogation(self._conversation))
+                self._ai = AIContext(AIFinalInterrogation(self._conversation, self._storyGraph))
 
     def update(self, state):
         self.setAIBehavior(state)

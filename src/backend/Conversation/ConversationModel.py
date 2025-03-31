@@ -18,7 +18,6 @@ class ConversationModel:
                     **Information about the suspect**
                         - They work at the Reno Times
                         - They worked under Vinh Davis
-                        - Their birthday is on 12/22/1919
                         - They are a photographer at the Reno Times
                         - They are good at their job
                         - No previously known altercations had taken place between the suspect and Vinh Davis
