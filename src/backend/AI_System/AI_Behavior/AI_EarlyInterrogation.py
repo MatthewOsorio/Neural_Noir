@@ -1,5 +1,5 @@
 # Bad cop scenario
-import random
+import re
 from .AI import AI
 
 class AIEarlyInterrogation(AI):
@@ -18,6 +18,9 @@ class AIEarlyInterrogation(AI):
         self._evidenceQueue = []
         self._playerResponses = {}
 
+        self._verdictKeyword = None
+        self._verdict = {}
+
         self.setupConvo()
 
     def receiveEvidence(self):
@@ -27,6 +30,23 @@ class AIEarlyInterrogation(AI):
         self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
         if self._currentEvidence == False:
             self._finish = True
+
+    def introduceEvidence(self):
+        gpt_prompt= self.conversation.getConversation()[:]
+
+        prompt= f'''You are going to introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
+                    **RULES**
+                        - Ask the suspect what they know about the piece of evidence. 
+                        - If the evidence was found at the crime scene mention that. 
+                        - **ONLY** respond as Harris.
+                        - **ONLY MENTION THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
+        instruction = {'role': 'assistant', 'content': prompt}
+        gpt_prompt.append(instruction)
+
+        gpt_response = self.sendToGPT(gpt_prompt)
+
+        self.addAIResponseToConvo(gpt_response)
+        self._aiResponse = gpt_response
 
     def sendConversationToStoryGraph(self):
         if self._storyGraph == None:
@@ -46,12 +66,13 @@ class AIEarlyInterrogation(AI):
             return False
 
         if not self._introducedEvidence:
-            self._introducedEvidence= True
+            self._introducedEvidence = True
             self.introduceEvidence()
         
         if self._counter == 3:
             self.sendConversationToStoryGraph()
             self.moveOnToNextTopic()
+            print(f"\n Verdicts so far: {self._verdict}\n")
         
         return self._aiResponse
         
@@ -59,7 +80,6 @@ class AIEarlyInterrogation(AI):
         self.conversation.addUserInput(userResponse)
         self.addUserStatementToConvo(userResponse)
 
-        # Need to change prompt according to plot rules - bad cop scenario
         prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}.
                     The user was {'nervous' if self.userNervous else 'not nervous'} when giving their response.
                     Respond to the users explanation according to the rules below.
@@ -70,7 +90,7 @@ class AIEarlyInterrogation(AI):
                         - If the user was nervous point out it out in your response.
                         - Be concise in your response
                         - If you catch the user in a lie. Point it out in your response.
-                        - Respond as if are Detective Harris
+                        - Respond as if are Detective Harris.
                         - **ONLY TALK ABOUT THE EVIDENCE**
                         - **DO NOT ASK QUESTIONS UNRELATED TO THE EVIDENCE**
                         - **DO NOT MENTION MARKS, BRUISES, AND BLACK EYE**
@@ -82,25 +102,42 @@ class AIEarlyInterrogation(AI):
         gpt_response = self.sendToGPT(gpt_prompt)
         self.addAIResponseToConvo(gpt_response)
         self._aiResponse = gpt_response
+
+        if self._counter == 2:
+            verdict = self.getVerdictFromConvo()
+            self._verdictKeyword = verdict
+
+            evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
+            curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
+            self.recordVerdict(curEvidenceIndex, verdict)
+
         self._counter += 1
 
-    def introduceEvidence(self):
-        gpt_prompt= self.conversation.getConversation()[:]
+    def getVerdictFromConvo(self):
+        convo = self._evidenceConversation[:]
 
-        prompt= f'''You are going to introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
-                    **RULES**
-                        - Ask the suspect what they know about the piece of evidence. 
-                        - If the evidence was found at the crime scene mention that. 
-                        - **ONLY** respond as Harris.
-                        - **ONLY MENTION THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
-        instruction = {'role': 'assistant', 'content': prompt}
-        gpt_prompt.append(instruction)
+        prompt = f'''You are going to analyze the conversation between the detective and the suspect.
+                    At the end, return only ONE word verdict (truthful, untruthful, or inconclusive) based on the suspect's answers.
 
-        gpt_response = self.sendToGPT(gpt_prompt)
+                    **Return Format (MUST be one of):**
+                    [[verdict: truthful]]
+                    [[verdict: untruthful]]
+                    [[verdict: inconclusive]]
 
-        self.addAIResponseToConvo(gpt_response)
-        self._aiResponse = gpt_response
-    
+                    Do NOT explain. Do NOT roleplay. Just output the tag above.
+                    '''
+        convo.append({'role': 'assistant', 'content': prompt})
+        verdictResponse = self.sendToGPT(convo)
+
+        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', verdictResponse.lower())
+        if match:
+            return match.group(1)
+        else:
+            return "inconclusive"
+
+    def recordVerdict(self, index, verdict):
+        self._verdict[index] = verdict
+
     def reset(self):
         self._currentEvidence = None
         self._introducedEvidence = False

@@ -22,7 +22,7 @@ class StoryGraph:
         self._evidencePhase = {
             "EARLY": 0,
             "MID": 0,
-            "FINAL": 0 
+            "FINAL": 0
         }
 
         self._criticalEvidenceSet = {1, 4, 5, 9, 10}

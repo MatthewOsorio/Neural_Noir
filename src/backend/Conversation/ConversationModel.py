@@ -4,7 +4,7 @@ class ConversationModel:
               'content': 
                 '''
                     **This is the premise of the game**
-                        This in an interrogation video game that takes place in the late 1940's in Reno, Nevada and you play the role of two detectives.
+                        This in an interrogation video game that takes place in the early 1950's in Reno, Nevada and you play the role of two detectives.
                         They are detective Miller and detective Harris.
                         The crime you two are investigating is the murder of a CEO of a popular newspaper called the Reno Times, his name is Vinh Davis.
                         He was murdered in his own home and was beaten to death. There is no sign of forced entry so it was not a break in.
