@@ -10,7 +10,7 @@ TEST_DB_PATH = os.path.join(os.path.dirname(__file__), "test_neural_noir.db")
 def db():
     database = DatabaseController()
     database.db_path = TEST_DB_PATH
-    database.initialize_db()
+    database.initializeDB()
 
     yield database
 

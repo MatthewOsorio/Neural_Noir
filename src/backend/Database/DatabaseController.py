@@ -5,7 +5,7 @@ import uuid
 class DatabaseController:
     def __init__(self):
         self.db_path = os.path.join(os.path.dirname(__file__), "neural_noir.db")
-        self.initialize_db()
+        self.initializeDB()
 
     def getConnection(self):
         try:
@@ -14,7 +14,7 @@ class DatabaseController:
         except sqlite3.Error as e:
             raise Exception("Error connecting to the database: ", e)
             
-    def initialize_db(self):
+    def initializeDB(self):
         conn = self.getConnection()
         with conn:
             cur = conn.cursor()
@@ -62,7 +62,8 @@ class DatabaseController:
                 cur.execute("""
                     INSERT INTO GameSession(sessionID, sessionStartTime)
                     VALUES(?, ?)
-                """, (str(sessionID), startTime))
+                """, (sessionID, startTime))
+                conn.commit()
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement: ", e)
 
@@ -76,6 +77,7 @@ class DatabaseController:
                     INSERT INTO Interaction (interactionID, startTime, endTime, userInput, response, sessionID, feedbackID)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 """, (interactionID, start, end, userInput, response, sessionID, feedbackID))
+                conn.commit()
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
         
@@ -85,7 +87,7 @@ class DatabaseController:
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    SELECT userInput, response
+                    SELECT response, userInput
                     FROM Interaction
                     WHERE sessionID = ?
                 """, (str(sessionID),))
@@ -103,6 +105,7 @@ class DatabaseController:
                     INSERT INTO BiometricFeedback (feedbackID, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (feedbackID, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID))
+                conn.commit()
         except sqlite3.Error as e:
             raise Exception("Ereror inserting biometrics: ", e)
 

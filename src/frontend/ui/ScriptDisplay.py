@@ -8,13 +8,12 @@ from direct.gui.DirectButton import DirectButton
 from panda3d.core import TextNode
 
 class ScriptDisplay():
-    def __init__(self, mangaer ,gameController, pauseMenu):
-        self.manager= mangaer
-        self.gameController= gameController
+    def __init__(self, manager, gameManager, pauseMenu):
+        self.manager = manager
+        self.gameManager = gameManager
         self.pauseMenu = pauseMenu
         self.generateDisplayBox()
         print("ScriptDisplay intialized") # debug
-
 
     def formatScript(self, conversation):
         script = []
@@ -26,11 +25,13 @@ class ScriptDisplay():
         return script
     
     def getScript(self):
-        print("Getting script") # debug
-        conversation= self.gameController.getConversationFromDB()
-        print("fetched conversation from db", conversation) # debug
+        print("Getting script")
+        sessionID = self.gameManager._sessionController.getSessionID()
+        conversation = self.gameManager._database.fetchConversation(sessionID)
+
+        print("Fetched conversation from DB: ", conversation) # debug
         script = self.formatScript(conversation)
-        print("formatted script:", script) # debug
+        print("Formatted: script, script") #debug
         return script
 
     def generateDisplayBox(self):
@@ -41,14 +42,16 @@ class ScriptDisplay():
                         pos=(0, 0, 0))
         
         titleText = 'Script'
-    
+
+
         title= DirectLabel(
                         parent=self.scriptDisplay,
                         text= titleText,
                         text_scale= (0.110, 0.110),
                         pos= (-1.355, 0, 0.767),
                         frameColor= (0, 0, 0, 0),
-                        text_fg = (255, 255, 255, 1))
+                        text_fg = (255, 255, 255, 1),
+                        text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"))
 
         dialogue_texts = self.getScript()
         print("Dialogue texts for display:", dialogue_texts) # debug
@@ -73,14 +76,26 @@ class ScriptDisplay():
         canvasHeight= max(0.70, num_lines * line_height)
         canvasHeight += margin
 
+        self.scriptBackground = OnscreenImage(
+            "../Assets/Images/paper.jpg",
+            pos = (0, 0, 0),
+            scale = (1.5,0,0.7),
+            parent = self.scriptDisplay
+        )
+
+
         scrollableFrame = DirectScrolledFrame(
                                             parent= self.scriptDisplay,
                                             frameSize= (-1.5, 1.5, -0.70, 0.70),
-                                            frameColor= (0, 0, 0, 0.7),
+                                            frameColor= (0, 0, 0, 0),
                                             pos= (0, 0, 0),
                                             scrollBarWidth= 0.05,
-                                            canvasSize=(-canvasWidth/2, canvasWidth/2, -canvasHeight, margin)    
+                                            canvasSize=(-canvasWidth/2, canvasWidth/2, -canvasHeight, margin)    ,
+                                            horizontalScroll_decButton_relief=None,
+                                            horizontalScroll_incButton_relief=None,
+                                            horizontalScroll_frameSize=(0, 0, 0, 0),
                                         )
+        
 
         for i, text in enumerate(dialogue_texts):
             textYPos= margin - (i * line_height) - 0.1
@@ -91,11 +106,15 @@ class ScriptDisplay():
                 text_scale= textScale,
                 pos=(-canvasWidth/2 + line_height, 0, textYPos),
                 frameColor=(0, 0, 0, 0),
-                text_fg=(1, 1, 1, 1)
+                text_fg=(0, 0, 0, 1),
+                text_wordwrap= 55
             )
+
+        self.scriptBackground.setBin("fixed", 0)
 
         self.exitScriptButton = DirectButton(
             text="Back",
+            text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
             scale=0.1,
             pos=(-1.385, 0, -0.85),
             parent=self.scriptDisplay,
@@ -103,6 +122,7 @@ class ScriptDisplay():
         )
 
         # self.getConversation() 
+
 
     def show(self):
         print("Displaying ScriptDisplay") # debug

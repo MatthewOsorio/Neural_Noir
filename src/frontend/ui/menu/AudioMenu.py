@@ -21,12 +21,6 @@ class audioSettings:
             parent=self.base.aspect2d
         )
 
-        self.backImageMain = OnscreenImage(
-            self.manager.room,
-            parent=self.audioMenu,
-            pos=(0, 0, 0)
-        )
-
         self.backImage = OnscreenImage(
             self.manager.black,
             parent=self.audioMenu,
@@ -154,18 +148,27 @@ class audioSettings:
 
     def show(self):
         self.audioMenu.show()
+        if self.base.interrogationRoom != None:
+            self.setVoiceVolumeSlider(self.base.interrogationRoom.voiceVolume)
+            self.setSFXVolumeSlider(self.base.interrogationRoom.sfxVolume)
 
     def hide(self):
         self.audioMenu.hide()
 
     def setVolumeV(self):
         self.audio.setVolumeValue(self.volumeSlider['value'])
+        if self.manager.gameStart == True:
+            self.base.interrogationRoom.sfxVolume = self.volumeSlider['value']
+        else:
+            self.base.sfxVolume = self.volumeSlider['value']
 
     def setVoiceVolumeV(self):
         if self.manager.gameStart == True:
-            #self.base.interrogationRoom.game.tts.audio.setVolume(self.voiceVolumeSlider['value'])
-            pass
-
+            self.base.interrogationRoom.game._tts.audio.setVolume(self.voiceVolumeSlider['value'])
+            self.base.interrogationRoom.voiceVolume = self.voiceVolumeSlider['value']
+        else:
+            self.base.voiceVolume = self.voiceVolumeSlider['value']
+            
     def turnSubtitlesOn(self, state):
         self.subTitlesOff["indicatorValue"] = False
         self.subTitlesOff.setIndicatorValue
@@ -175,3 +178,13 @@ class audioSettings:
         self.subTitlesOn["indicatorValue"] = False
         self.subTitlesOn.setIndicatorValue
         self.manager.subtitles = False
+
+    def setVoiceVolumeSlider(self, value):
+        self.voiceVolumeSlider["value"] = value 
+        self.voiceVolumeSlider.setValue(value)
+        self.base.interrogationRoom.game._tts.audio.setVolume(value)
+    
+    def setSFXVolumeSlider(self, value):
+        self.volumeSlider["value"] = value 
+        self.volumeSlider.setValue(value)
+        self.audio.setVolumeValue(value)

@@ -1,6 +1,6 @@
 from .BiometricReader import BiometricReader as br
 from threading import Thread
-from GameStateSystem.GameState import GameState
+from ..GameStateSystem import GameState
 
 class BiometricController:
     def __init__(self):
@@ -10,6 +10,7 @@ class BiometricController:
         self.inputThread = Thread(target= self.read, daemon= True)
         self.inputThread.start()
         self._gameState = None
+        self._gameIsReady = False
 
     def read(self):
         while True:
@@ -41,7 +42,7 @@ class BiometricController:
 
     def reconnect(self, error):
         #Will attempt to reconnect to emotibit so long as the game session has begun
-        if self.gc.begin == True:    
+        if self._gameIsReady == True:    
             print("Error - Attempting to reconnect to Emotibit")
             #self.biometricReader.clear()
             self.biometricReader.setup()
@@ -70,3 +71,8 @@ class BiometricController:
     
     def clear(self):
         self.biometricReader.clear()
+
+    def restart(self):
+        self.biometricReader.restartBoard()
+
+    
