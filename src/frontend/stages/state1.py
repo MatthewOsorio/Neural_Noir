@@ -22,7 +22,7 @@ class State1:
 
     def setGame(self, game):
         self.game = game
-        taskMgr.doMethodLater(10, self.updateData, "data") 
+        taskMgr.doMethodLater(5, self.updateData, "data") 
     
     def begin(self):
         self.game._gameState.updateState(1)
@@ -94,4 +94,7 @@ class State1:
     def updateBaseValues(self):
         #print(f"HR: {self.currentBaseH}")
         self.game.setRanges(self.currentBaseH, self.currentBaseE, self.currentBaseT)
+
+    def cleanUpTasks(self):
+        tskMgr.remove("data")
 

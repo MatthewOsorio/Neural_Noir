@@ -35,7 +35,7 @@ class BiometricReader:
         start = datetime.now()
         self.startTime = start.strftime("%H:%M:%S")
         self.emotibit.start_stream()
-        time.sleep(10)
+        time.sleep(5)
         auxData= self.emotibit.get_board_data(preset=BrainFlowPresets.AUXILIARY_PRESET.value)
         ancData= self.emotibit.get_board_data(preset=BrainFlowPresets.ANCILLARY_PRESET.value)
         self.emotibit.stop_stream()

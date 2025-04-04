@@ -1,9 +1,9 @@
-import pytest
-from .context import GameManager
+# import pytest
+# from .context import GameManager
 
-@pytest.fixture
-def game_manager():
-    return GameManager()
+# @pytest.fixture
+# def game_manager():
+#     return GameManager()
 
 # def test_set_up(game_manager):
 #     game_manager.setupGame(False)
@@ -18,5 +18,5 @@ def game_manager():
 #     assert game_manager._gameState._aiReference == game_manager._aiController
 #     assert game_manager._gameState._biometricReference == game_manager._bioController
     
-# def test_generateAIResponse(game_manager):
-#     game_manager.
+# # def test_generateAIResponse(game_manager):
+# #     game_manager.

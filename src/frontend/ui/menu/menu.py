@@ -13,8 +13,11 @@ from frontend.ui.menu.AudioMenu import audioSettings
 from frontend.ui.menu.PauseMenu import PauseMenu
 from frontend.ui.menu.QuitMenu import confirmQuit
 
+from frontend.ui.menu.TutorialsMenu import TutorialsMenu
+
 from frontend.ui.audio import audioManager
 import frontend.ui.ScriptDisplay as ScriptDisplay
+import json
 
 import os
 from panda3d.core import Filename
@@ -47,11 +50,27 @@ class menuManager:
         
         self.gameStart = startFlag
         self.gameState = 'menu'
+        self.tutorialStart = startFlag
+
+        self.defaultValues = {
+            "emotibit": True,
+            "sfxVolume": 0.5,
+            "voiceVolume": 0.5,
+            "subtitles": False
+        }
 
         self.mainBackground = base.loader.loadTexture(Background)
         self.black = base.loader.loadTexture(Black)
         self.room = base.loader.loadTexture(Room)
         self.font = base.loader.loadFont(Limelight)
+        self.userSettings = os.path.join(current_dir, "..", "userSettings.json")
+
+        if os.path.exists(self.userSettings) == False:
+            print("Creating user settings file")
+            with open(self.userSettings, "w", encoding="utf-8") as file:
+                json.dump(self.defaultValues, file)
+        else:
+            print("User settings file found")
 
         self.limeLight = "../Assets/Fonts/Limelight/Limelight-Regular.ttf"
         self.mainBackGround = "../Assets/Images/NeuralNoir_Background_Image.jpg"
@@ -63,6 +82,7 @@ class menuManager:
         self.audioMenu = audioSettings(self, self.base, self.audio)
         self.pauseMenu = None
         self.quitMenu = confirmQuit(self, self.base)
+        self.tutorialsMenu = TutorialsMenu(self, self.base)
 
         self.subtitles = False
 
@@ -103,8 +123,14 @@ class menuManager:
             print("No pause menu")
 
     def beginGame(self):
+        self.tutorialStart = False
         self.gameStart = True
         #print("Menu -", self.gameStart)
+        self.gameState = 'gameplay'
+
+    def beginTutorial(self):
+        self.gameStart = False
+        self.tutorialStart = True
         self.gameState = 'gameplay'
 
     def initializePauseMenu(self):
@@ -114,5 +140,7 @@ class menuManager:
         self.quitMenu.hide()
         self.pauseMenu.displayPauseMenu()
     
+    def showTutorials(self):
+        self.tutorialsMenu.show()
         
         
