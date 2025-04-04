@@ -6,15 +6,18 @@ from panda3d.core import TextNode
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
-from direct.stdpy.threading import BoundedSemaphore, Condition, Event, ExternalThread, Lock, MainThread, RLock, Semaphore, Thread, ThreadBase, Timer, active_count, current_thread, enumerate, main_thread, setprofile, settrace, stack_size
+#from direct.stdpy.threading import BoundedSemaphore, Condition, Event, ExternalThread, Lock, MainThread, RLock, Semaphore, Thread, ThreadBase, Timer, active_count, current_thread, enumerate, main_thread, setprofile, settrace, stack_size
 import sys
-from direct.stdpy.threading import Thread
+#from direct.stdpy.threading import Thread
 import time
 
 from frontend.ui.menu.menu import menuManager
 from frontend.ui.interrogationRoom import InterrogationRoom
 from frontend.ui.connection_utils import Connection
 from frontend.ui.connectionDisplay import ConnectionDisplay
+from frontend.ui.tutorialRoom import TutorialRoom
+
+import threading
 
 class main(ShowBase):
     def __init__(self):
@@ -33,6 +36,7 @@ class main(ShowBase):
 
         self.voiceVolume = 1
         self.sfxVolume = 1
+        self.threadEvent = threading.Event()
         self.interrogationThread = None
    
     def checkGameStartFlag(self):
@@ -48,20 +52,42 @@ class main(ShowBase):
             self.interrogationRoom = InterrogationRoom(self, self.menuManager)
             #print("Main - True")
             self.interrogationRoom.cameraSetUp()
-            self.interrogationRoom.loadModels()    
+            self.interrogationRoom.loadModels()
             self.interrogationRoom.loadLighting()
             self.roomLoaded = True   
             self.interrogationRoom.game.begin = True
             #Stars interrogation api calls on a separate thread once the game is started
-            self.interrogationThread = Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
+            self.interrogationThread = threading.Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
             self.interrogationThread.start()
 
-        if self.menuManager.gameStart == True:
+        def on_successTutorial():
+            self.connectionDisplay.destroyConnectionStatus()
+            
+            self.interrogationRoom = TutorialRoom(self, self.menuManager)
+            #print("Main - True")
+            self.interrogationRoom.cameraSetUp()
+            self.interrogationRoom.loadModels()
+            self.interrogationRoom.loadLighting()
+            self.roomLoaded = True   
+            self.interrogationRoom.game.begin = True
+            #Stars interrogation api calls on a separate thread once the game is started
+            self.interrogationThread = threading.Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
+            self.interrogationThread.start()
+
+        if self.menuManager.gameStart == True and self.menuManager.tutorialStart == False:
             self.connectionDisplay.checkInternetAndDisplay(
                 on_success=on_success,
                 on_failure=sys.exit
             )
             return task.done
+    
+        if self.menuManager.tutorialStart == True and self.menuManager.gameStart == False:
+            self.connectionDisplay.checkInternetAndDisplay(
+                on_success=on_successTutorial,
+                on_failure=sys.exit
+            )
+            return task.done
+        
         
         return task.cont
     
@@ -77,7 +103,14 @@ class main(ShowBase):
         
     def connections(self):
         self.connection = Connection()
-        self.connectionDisplay = ConnectionDisplay(self, self.connection)        
+        self.connectionDisplay = ConnectionDisplay(self, self.connection)
+
+    def cleanUpThreads(self):
+        self.threadEvent.set()
+        print("Initial thread clean up function")
+        if self.interrogationThread is not None:
+            print("Joining initial thread")
+            self.interrogationThread.join(timeout = 2)
         
 app = main()
 app.run()

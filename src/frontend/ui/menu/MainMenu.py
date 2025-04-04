@@ -72,6 +72,18 @@ class mainMenu:
             frameColor = (0,0,0,0)
         )
 
+
+        self.tutorialsButton = DirectButton(
+            text="Tutorials",
+            text_font = self.manager.font,
+            text_fg = (1,1,1,1),
+            scale=0.1,
+            pos=(-1, 0, -0.6),
+            parent=self.mainMenu,
+            command=self.moveToTutorials,
+            frameColor = (0,0,0,0)
+        )
+
         self.bottomText = TextNode('BottomText')
         self.bottomText.setText("Created by CS425 T25")
         self.bottomText_np = self.mainMenu.attachNewNode(self.bottomText)  
@@ -92,6 +104,8 @@ class mainMenu:
         self.quitButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.quitButton))  # Mouse enters
         self.quitButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.quitButton)) 
         
+        self.tutorialsButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.tutorialsButton))  # Mouse enters
+        self.tutorialsButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.tutorialsButton)) 
 
     def startGame(self):
         self.hide()
@@ -105,6 +119,11 @@ class mainMenu:
     def moveToQuit(self):
         self.hide()
         self.manager.showQuit()
+
+    def moveToTutorials(self):
+        self.hide()
+        self.manager.hideImage()
+        self.manager.showTutorials()
         
     def show(self):
         self.mainMenu.show()

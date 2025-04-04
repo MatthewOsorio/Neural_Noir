@@ -140,12 +140,17 @@ class PauseMenu():
             self.hideImage()
             self.game.gameState = 'gameplay'
             self.room.unloadModels()
+            self.room.cleanUpTasks()
+            self.room.cleanUpThreads()
             self.manager.showMain()
             self.manager.showImage()
             self.manager.gameStart = False
+            self.manager.tutorialStart = False
             self.room.base.checkGameStartFlag()
             #self.game.database.closeConnection()
             self.game.restartEmotibit()
+            if self.room.useEmotibit:
+                self.game._bioController._gameIsReady = False
             self.game.begin = False
             self.ended = True
             self.room.base.returnToMenu()

@@ -25,7 +25,7 @@ def cleanup_test_database():
     except PermissionError as e:
         print(f"Warning: Could not delete {TEST_DB_PATH}. It may still be in use. Error: {e}")
 
-def test_insert_start_session(db):
+def test_insertStartSession(db):
     session_id = str(uuid.uuid4())
     db.insertStartSession(session_id, "2025-02-26 05:00:00")
 
@@ -43,7 +43,7 @@ def test_insert_start_session(db):
 
     conn.close()
 
-def test_insert_interaction(db):
+def test_InsertInteraction(db):
     session_id = str(uuid.uuid4())
     db.insertStartSession(session_id, "2025-02-26 05:00:00")
 
@@ -63,7 +63,7 @@ def test_insert_interaction(db):
 
     conn.close()
 
-def test_fetch_conversation(db):
+def test_fetchConversation(db):
     session_id = str(uuid.uuid4())
     db.insertStartSession(session_id, "2025-02-26 10:00:00")
 
@@ -84,7 +84,7 @@ def test_fetch_conversation(db):
 
     conn.close()
 
-def test_insert_biometrics(db):
+def test_insertBiometrics(db):
     session_id = str(uuid.uuid4())
     db.insertStartSession(session_id, "2025-02-26 10:00:00")
 
