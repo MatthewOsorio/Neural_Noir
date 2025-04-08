@@ -30,6 +30,8 @@ class AIEarlyInterrogation(AI):
         self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
         if self._currentEvidence == False:
             self._finish = True
+        else:
+            self._introducedEvidence = False
 
     def introduceEvidence(self):
         gpt_prompt= self.conversation.getConversation()[:]
@@ -68,6 +70,7 @@ class AIEarlyInterrogation(AI):
         if not self._introducedEvidence:
             self._introducedEvidence = True
             self.introduceEvidence()
+            return self._aiResponse
         
         if self._counter == 3:
             self.sendConversationToStoryGraph()
@@ -95,7 +98,7 @@ class AIEarlyInterrogation(AI):
                         - **DO NOT ASK QUESTIONS UNRELATED TO THE EVIDENCE**
                         - **DO NOT MENTION MARKS, BRUISES, AND BLACK EYE**
                     ''' 
-        gpt_prompt= self.conversation.getConversation()[:]
+        gpt_prompt= self._evidenceConversation[:]
         instruction = {'role':  'assistant', 'content': prompt}
         gpt_prompt.append(instruction)
 
