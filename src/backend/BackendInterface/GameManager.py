@@ -1,11 +1,11 @@
-from ..AI_System.AIController import AIController
-from ..BiometricSystem.BiometricController import BiometricController
-from ..Conversation.ConversationModel import ConversationModel
-from ..GameStateSystem.GameStateManager import GameStateManager
-from ..SRSystem.SpeechToText import SpeechToText
-from ..TTSSystem.TextToSpeechController import TextToSpeechController
-from ..Database.DatabaseController import DatabaseController
-from ..Database.SessionController import SessionController
+from AI_System.AIController import AIController
+from BiometricSystem.BiometricController import BiometricController
+from Conversation.ConversationModel import ConversationModel
+from GameStateSystem.GameStateManager import GameStateManager
+from SRSystem.SpeechToText import SpeechToText
+from TTSSystem.TextToSpeechController import TextToSpeechController
+from Database.DatabaseController import DatabaseController
+from Database.SessionController import SessionController
 
 class GameManager:
     def __init__(self):

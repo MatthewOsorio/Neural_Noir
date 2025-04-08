@@ -1,5 +1,5 @@
 from .AI_Behavior import AIInitialPhase, AIEarlyInterrogation, AIMidInterrogation, AIFinalInterrogation, AIContext
-from ..StoryGraph.StoryGraph import StoryGraph
+from StoryGraph.StoryGraph import StoryGraph
 
 class AIController:
     def __init__(self, conversation):

@@ -4,12 +4,7 @@ from .AI import AI
 class AIInitialPhase(AI):
     def __init__(self, conversation):
         super().__init__(conversation)
-        self._questions= [
-            'What is your name?',
-            'Do you work at the Reno Times?',
-            'Do you work as a photographer?',
-            'Did you work for Vinh Davis?'
-        ]
+
         self._finished = False
         self._currentQuestion = 0
 
