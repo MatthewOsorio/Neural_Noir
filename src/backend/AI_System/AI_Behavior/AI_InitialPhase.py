@@ -16,7 +16,8 @@ class AIInitialPhase(AI):
         self._finished = False
         self._currentQuestion = 0
 
-
+    #This methods does not make sense, if it is not the inititial question we are asking gpt to make a response to a response it has recently made
+    #Matt freaking debug this, perhaps add some more state to determine if we've asked the original question.
     def askQuestion(self):
         gptInput= self._history.getHistory()[:]
         instruction = self._questions[self._currentQuestion]
@@ -43,7 +44,6 @@ class AIInitialPhase(AI):
         self._history.addAIResponse(gptResponse)
 
         if gptResponse == "Correct":
-            print("VALID")
             self._currentQuestion += 1
             self.askedAllQuestions()
         else:
@@ -53,7 +53,6 @@ class AIInitialPhase(AI):
         gptInput= self._history.getHistory()[:]
         instruction= ''
 
-        
         if self._currentQuestion == 3:
             instruction = dedent(f'''
                 [INSTRUCTION] Evaluate Mark's response: "{user_response}"
