@@ -13,7 +13,7 @@ class StoryGraph:
         self._finalEvidence = [
             "Gun Matching the Bullet Wound – The murder weapon is found near the crime scene, and detectives claim it matches employee’s fingerprints.",
             "Johnny’s Last Notes – A notebook belonging to Johnny, containing scribbled messages about Vinh Davis’s crimes. It also mentions the employee’s name, suggesting Johnny trusted the employee to help him.",
-            "the employee’s Own Camera Film – The detectives show a developed film roll from the employee’s camera found at the crime scene, possibly containing a blurred or distorted photo from the altercation.",
+            "The employee’s Own Camera Film – The detectives show a developed film roll from the employee’s camera found at the crime scene, possibly containing a blurred or distorted photo from the altercation.",
             "Police Ballistics Report – The gunshot report confirms that the weapon was fired at close range, suggesting a struggle before the CEO was shot."
         ]
 
