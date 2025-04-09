@@ -2,12 +2,14 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
+from .AI_History import AIHistory
 
 if TYPE_CHECKING:
     from AI_Context import AIContext
 
 class AI(ABC):
     def __init__(self, conversation):
+        self._history = AIHistory()
         self.gpt = OpenAI()
         self.conversation = conversation
         self.userNervous = None
@@ -33,6 +35,9 @@ class AI(ABC):
     
     def getNervous(self):
         return self.userNervous
+    
+    def getSystemPrompt(self):
+        return self.system_prompt
 
     def sendToGPT(self, prompt):
         response = self.gpt.chat.completions.create(
