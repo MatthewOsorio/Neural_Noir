@@ -38,7 +38,7 @@ while state_index < len(states):
         if ai_response == False:
             finished_phase = True
             state_index += 1
-            if state_index < len(states):
+            if state_index < len(states): 
                 gameState.updateState(states[state_index])
                 ai_response = ai.generateResponse()
                 if ai_response:

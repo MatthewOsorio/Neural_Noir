@@ -1,5 +1,3 @@
-import random
-
 class StoryGraph:
     def __init__(self):
         self._earlyEvidence = [
@@ -64,9 +62,9 @@ class StoryGraph:
     def receiveConversation(self, convo):
         self._convoAboutEvidence.append(convo)
 
-    def receiveVerdict(self, evidenceIndex, verdict):
+    def receiveVerdict(self, evidenceKey, verdict):
         verdict = verdict.upper()
-        self._verdictsByEvidence[evidenceIndex] = verdict
+        self._verdictsByEvidence[evidenceKey] = verdict
 
     def determineFinalVerdict(self):
         guilty = 0

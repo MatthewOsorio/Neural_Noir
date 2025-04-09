@@ -17,6 +17,9 @@ class State4:
         self.overlay = None
         self.image = prompt
         self.useEmotibit = False
+
+    def testPrint(self):
+        print("This is state 4")
     
     def setGame(self, game):
         self.game = game

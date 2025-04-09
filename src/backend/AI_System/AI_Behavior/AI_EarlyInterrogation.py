@@ -18,9 +18,6 @@ class AIEarlyInterrogation(AI):
         self._evidenceQueue = []
         self._playerResponses = {}
 
-        self._verdictKeyword = None
-        self._verdict = {}
-
         self.setupConvo()
 
     def receiveEvidence(self):
@@ -72,11 +69,6 @@ class AIEarlyInterrogation(AI):
             self.introduceEvidence()
             return self._aiResponse
         
-        if self._counter == 3:
-            self.sendConversationToStoryGraph()
-            self.moveOnToNextTopic()
-            print(f"\n Verdicts so far: {self._verdict}\n")
-        
         return self._aiResponse
         
     def processResponse(self, userResponse):
@@ -106,18 +98,31 @@ class AIEarlyInterrogation(AI):
         self.addAIResponseToConvo(gpt_response)
         self._aiResponse = gpt_response
 
-        if self._counter == 2:
+        self._counter += 1
+
+        if self._counter == 3:
             verdict = self.getVerdictFromConvo()
             self._verdictKeyword = verdict
 
             evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
             curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
-            self.recordVerdict(curEvidenceIndex, verdict)
+           
+            evidenceKey = f"{self._phase}-{curEvidenceIndex}"
+            self._storyGraph.receiveVerdict(evidenceKey, verdict)
 
-        self._counter += 1
+            self.sendConversationToStoryGraph()
+            self.moveOnToNextTopic()
+
+            print(f"\n Verdicts so far: {self._storyGraph._verdictsByEvidence}\n")
 
     def getVerdictFromConvo(self):
-        convo = self._evidenceConversation[:]
+        convo = self._evidenceConversation[-7:]
+
+        print("*******************************\n")
+        print("Debug evidenceConversation list")
+        for message in convo:
+            print(f"{message['role'].capitalize()}: {message['content']}\n")
+        print("********************************\n")
 
         prompt = f'''You are going to analyze the conversation between the detective and the suspect.
                     At the end, return only ONE word verdict (truthful, untruthful, or inconclusive) based on the suspect's answers.
@@ -137,9 +142,6 @@ class AIEarlyInterrogation(AI):
             return match.group(1)
         else:
             return "inconclusive"
-
-    def recordVerdict(self, index, verdict):
-        self._verdict[index] = verdict
 
     def reset(self):
         self._currentEvidence = None
