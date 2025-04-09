@@ -18,7 +18,7 @@ class AIHistory:
                 - Mark Coleman, age 27.
                 - Photographer at Reno Media Company, worked on the *Reno Times*.
                 - Well-liked by coworkers, described as a hard worker and pleasant.
-                - Mark worked directly under Vinh Davis.
+                - Vinh Davis is his boss.
 
                 You suspect that Mark Coleman is the murderer. Your goal is to get a confession or catch him in contradictions and lies.
 
@@ -45,8 +45,8 @@ class AIHistory:
 
         self._history=[self._system_prompt]
 
-    def addInstructionOrUserInput(self, instructionOrUserInput):
-        userMessage= {'role': 'user', 'content': instructionOrUserInput}
+    def addUserInput(self, userInput):
+        userMessage= {'role': 'user', 'content': userInput}
         self._history.append(userMessage)
             
     def addAIResponse(self, aiResponse):

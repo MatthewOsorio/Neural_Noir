@@ -3,9 +3,10 @@ import re
 from .AI import AI
 
 class AIEarlyInterrogation(AI):
-    def __init__(self, conversation, storyGraph, phase="EARLY"):
+    def __init__(self, conversation, storyGraph, history, phase="EARLY"):
         super().__init__(conversation)
         self._storyGraph = storyGraph
+        self._history = history
         self._phase = phase
 
         self._currentEvidence = None
@@ -22,6 +23,8 @@ class AIEarlyInterrogation(AI):
         self._verdict = {}
 
         self.setupConvo()
+
+        print(self._history.getHistory())
 
     def receiveEvidence(self):
         if self._storyGraph == None:
