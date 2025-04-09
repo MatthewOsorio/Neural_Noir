@@ -57,7 +57,7 @@ class AIInitialPhase(AI):
         if self._currentQuestion == 3:
             instruction = dedent(f'''
                 [INSTRUCTION] Evaluate Mark's response: "{user_response}"
-                Your job is to determine if the answer is  and directly addresses the current question.
+                Your job is to determine if the answer is correct and directly addresses the current question.
 
                 **Only do the following:**
                 - If Mark clearly states that he worked under Vinh Davis, respond with **Correct** and nothing else.
@@ -70,6 +70,7 @@ class AIInitialPhase(AI):
                 - Do NOT mention Vinh's death or the night it happened.
                 - Do NOT ask follow-up questions about location or motives.
                 - Do NOT reveal that you know Mark worked under Vinh — make him admit it.
+                - Speak naturally, taking turns between Harris and Miller as needed.
             ''')
         else:
             instruction = dedent(f'''
