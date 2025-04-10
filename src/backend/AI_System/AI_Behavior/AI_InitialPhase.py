@@ -7,7 +7,7 @@ class AIInitialPhase(AI):
         self._questions= [
             'What is your name?',
             'Do you work at the Reno Times?',
-            'Do you work as a journalist?',
+            'Do you work as a photographer?',
             'Did you work for Vinh Davis?'
         ]
         self._finished = False
@@ -36,17 +36,22 @@ class AIInitialPhase(AI):
         
         if self._currentQuestion == 2:
             prompt = f'''
-                    You started the interrogation. Based on the current information you have verify the users response: {user_response}.
+                    You started the interrogation. Based on the current information you have to verify the users response: {user_response}.
                     Determine if it aligns with the current information you have.
                     
                     **Rules**
                         - Only respond as Harris. Label dialogue like this: Detective Harris: [dialogue]
                         - If the answer clearly indicates the user worked for Vinh Davis, **respond with Correct**
-                        - Once you respond with "Correct" **do not** ask another question 
+                        - Once you respond with "Correct" **do not** ask another question
                         - If the answer is no, ask the question again (respond as Harris)
+                        - After asking the suspect for their name, use the name the suspect gave you
+                        - **Do not tell the suspect that their name is wrong. It is always correct**
+                        - **DO NOT QUESTION THE NAME THAT THE SUSPECT GAVE YOU. THAT IS THEIR ACTUAL GIVEN NAME**
+                        - **MOVE ONTO THE NEXT QUESTION AFTER THE SUSPECT GIVES YOU THEIR NAME AND MAKE SURE TO MARK THEIR RESPONSE AS CORRECT**
                         - **DO NOT** MENTION ANY OF THE DETAILS ABOUT THE CASE OR ASK ANYTHING ABOUT WHERE HE WAS 
-                        - **DO NOT ASK WHERE THE SUSPECT WAS THE NIGHT VIHN DAVIS WAS MURDRED**
-
+                        - **DO NOT ASK WHERE THE SUSPECT WAS THE NIGHT VINH DAVIS WAS MURDERED**
+                        - **DO NOT ASK ABOUT THEIR BRUISES OR THE BLACK EYE**
+                        - **DO NOT ASK ABOUT PREVIOUS ALTERCATIONS WITH VINH DAVIS**      
                 '''
         else:
             prompt = f'''
@@ -55,13 +60,10 @@ class AIInitialPhase(AI):
                         
                         **Rules**
                             - Only respond as Harris. Label dialogue like this: Detective Harris: [dialogue]
+                            - The name the suspect gives you is always correct. It is not a lie 
                             - If the answer is correct and reasonable **respond with Correct**
                             - Once you respond with "Correct" **do not** ask another question 
-                            - If the user response with a lie, point out that they are lying (respond as Harris)
-                            - Ignore minor spelling differences in names. Treat "Marc" and "Mark" as the same
-                            - If the user says their name is mark or marc, do not ask for their last name
-                            - If the user responds with "Marc" or "Mark" as their name, **respond with Correct**
-                            
+                            - If the user responds with a lie, point out that they are lying (respond as Harris)                 
                     '''
         
         new_instruction = {'role': 'assistant', 'content': prompt}
