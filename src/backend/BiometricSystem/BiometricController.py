@@ -1,4 +1,5 @@
 from .BiometricReader import BiometricReader as br
+import threading
 from threading import Thread
 from ..GameStateSystem import GameState
 
@@ -7,13 +8,14 @@ class BiometricController:
         self.nervous= False
         self._aiReference = None
         self.biometricReader= br()
+        self.threadEvent = threading.Event()
         self.inputThread = Thread(target= self.read, daemon= True)
         self.inputThread.start()
         self._gameState = None
         self._gameIsReady = False
-
+        
     def read(self):
-        while True:
+        while self.threadEvent.is_set() == False:
             try:
                 self.biometricReader.read()
                 self.isNervous(self.biometricReader.getHeartRate())
@@ -75,4 +77,9 @@ class BiometricController:
     def restart(self):
         self.biometricReader.restartBoard()
 
+    def cleanThread(self):
+        self.threadEvent.set()
+        if self.inputThread is not None and self.inputThread.is_alive():
+            print("Joining Biometric Thread")
+            self.inputThread.join(timeout = 6)
     

@@ -58,11 +58,13 @@ class InterrogationRoom:
 
         self.prompt = prompt
 
+        self.threadEvent = threading.Event()
+
         self.thread = None
 
         self.redoable = False
 
-        self.threadEvent = threading.Event()
+        
 
         
         
@@ -191,7 +193,8 @@ class InterrogationRoom:
             self.Overlay.ptt.hidePTTButton()
             print("talk")
             self.thread = threading.Thread(target=self.processSpeech, daemon=True)
-            self.thread.start()
+            if self.threadEvent.is_set() == False:
+                self.thread.start()
             return task.done 
 
         return task.cont
@@ -227,7 +230,8 @@ class InterrogationRoom:
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
             self.Overlay.hideUserInputBox()
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
-            self.thread.start()
+            if self.threadEvent.is_set() == False:
+                self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
             self.redoable = False
@@ -272,7 +276,8 @@ class InterrogationRoom:
         
         #Convert the response to speech
         self.thread = threading.Thread(target=self.responseToSpeech, daemon=True)
-        self.thread.start()
+        if self.threadEvent.is_set() == False:
+            self.thread.start()
         return task.done
 
     #TTS process
@@ -311,6 +316,10 @@ class InterrogationRoom:
         if self.thread is not None and self.thread.is_alive():
             print("Joining game thread")
             self.thread.join(timeout = 2)
+
+        if self.useEmotibit == True:
+            self.game._bioController.cleanThread()
+
         self.Overlay.cleanUpThreads()
         self.base.cleanUpThreads()
         

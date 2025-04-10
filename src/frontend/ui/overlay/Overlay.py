@@ -254,7 +254,7 @@ class Overlay:
         return task.again
 
     def checkInternetThread(self):
-        print("check (background thread)")
+        #print("check (background thread)")
         self.connection = self.base.base.connection
         status = self.connection.checkInternet()
 

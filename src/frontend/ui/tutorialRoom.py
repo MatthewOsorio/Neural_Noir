@@ -64,6 +64,14 @@ class TutorialRoom:
 
         self.threadEvent = threading.Event()
 
+        self.tutorialEvents = {
+            "Intro": False,
+            "PTT": False,
+            "Accept": False,
+            "Pause": False,
+            "NextQuestion": False
+        }
+
         
         
     def pauseGame(self):
@@ -163,6 +171,8 @@ class TutorialRoom:
         flashback = self.Overlay.flashback.getActive()
         while flashback == True:
             flashback = self.Overlay.flashback.getActive()
+
+        self.tutorialEvents["Intro"] = True
               
         if self.useEmotibit == True:
             self.Overlay.showBioData()
@@ -183,7 +193,8 @@ class TutorialRoom:
             "Press it to start recording your response. The recording will stop when you stop talking.",
             15)
     
-        self.Overlay.tutorials.showTutorialBox(False)
+        if self.tutorialEvents["PTT"] == False:
+            self.Overlay.tutorials.showTutorialBox(False)
 
         self.Overlay.ptt.showPTTButton()
         self.redoable = True
@@ -200,6 +211,7 @@ class TutorialRoom:
             self.Overlay.tutorials.hideTutorialBox()
             self.Overlay.ptt.hidePTTButton()
             print("talk")
+            self.tutorialEvents["PTT"] = True
             self.thread = threading.Thread(target=self.processSpeech, daemon=True)
             self.thread.start()
             return task.done 
@@ -233,7 +245,8 @@ class TutorialRoom:
             "If not, you are given one retry per question. Click accept to move onto the next question or retry to redo your reply to this question.",
             15)
         
-        self.Overlay.tutorials.showTutorialBox(False)
+        if self.tutorialEvents["Accept"] == False:
+            self.Overlay.tutorials.showTutorialBox(False)
 
         if self.redoable is True:
             self.Overlay.acceptSpeechButton.show()
@@ -247,6 +260,7 @@ class TutorialRoom:
             self.Overlay.hideUserInputBox()
             self.Overlay.tutorials.hideTutorialBox()
             self.Overlay.tutorials.tutorialActive = True
+            self.tutorialEvents["Accept"] = True
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
             self.thread.start()
             return task.done
@@ -279,13 +293,55 @@ class TutorialRoom:
             15
         )
 
-        self.Overlay.tutorials.showTutorialBox(True)
+        if self.tutorialEvents["Pause"] == False:
+            self.Overlay.tutorials.showTutorialBox(True)
+
+        if self.tutorialEvents["Pause"] == True:
+            self.Overlay.tutorials.setInactive()
+            taskMgr.add(lambda task: self.answerNextQuestion(response, task), "nextQuestionTask")
+            return task.done
 
         active = self.Overlay.tutorials.getActive()
         if active is False:
             self.Overlay.tutorials.hideTutorialBox()
+            self.Overlay.tutorials.tutorialActive = True
+            self.tutorialEvents["Pause"] = True
+            taskMgr.add(lambda task: self.answerNextQuestion(response, task), "nextQuestionTask")
+            return task.done
         elif active is True:
             return task.cont
+        
+    def answerNextQuestion(self, response, task):
+        
+        self.setTutorialBox(
+            (0, 0, 0.1), 
+            (0.5, 0, 0.3), 
+            "Try answering the next question on your own!",
+            15
+        )
+
+        print(f"Tutorial active: {self.Overlay.tutorials.tutorialActive}")
+
+        if self.tutorialEvents["NextQuestion"] == False:
+            self.Overlay.tutorials.showTutorialBox(True)
+
+        if self.tutorialEvents["NextQuestion"] == True:
+            self.Overlay.tutorials.setInactive()
+            taskMgr.add(lambda task: self.subtitles(response, task), "nextQuestionTask")
+            return task.done
+
+        active = self.Overlay.tutorials.getActive()
+        if active is False:
+            print("False")
+            self.Overlay.tutorials.hideTutorialBox()
+            self.tutorialEvents["NextQuestion"] = True
+            taskMgr.add(lambda task: self.subtitles(response, task), "nextQuestionTask")
+            return task.done
+        elif active is True:
+            print("Truye")
+            return task.again
+
+    def subtitles(self, response, task):    
 
         print(response)
         if (self.menu.subtitles == True):
@@ -327,6 +383,7 @@ class TutorialRoom:
         taskMgr.remove("UpdateSpeech")
         taskMgr.remove("UpdateSpeechTask")
         taskMgr.remove("UpdateSpeechTask2")
+        taskMgr.remove("nextQuestionTask")
         self.Overlay.cleanUpTasks()
 
     def cleanUpThreads(self):
