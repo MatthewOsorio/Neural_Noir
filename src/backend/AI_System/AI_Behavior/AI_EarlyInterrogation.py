@@ -22,10 +22,9 @@ class AIEarlyInterrogation(AI):
         self._verdictKeyword = None
         self._verdict = {}
 
-        self.setupConvo()
+        # self.setupConvo()
 
-        print(self._history.getHistory())
-
+    # Requesting evidence based on phase, 
     def receiveEvidence(self):
         if self._storyGraph == None:
             raise Exception("Story Graph reference has not been set")
@@ -37,17 +36,17 @@ class AIEarlyInterrogation(AI):
     def introduceEvidence(self):
         gpt_prompt= self.conversation.getConversation()[:]
 
-        prompt= f'''You are going to introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
+        prompt= f'''[INSTRUCTION] Introduce this piece of evidence {self._currentEvidence}. Follow the rules below:
                     **RULES**
                         - Ask the suspect what they know about the piece of evidence. 
                         - If the evidence was found at the crime scene mention that. 
-                        - **ONLY** respond as Harris.
-                        - **ONLY MENTION THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
-        instruction = {'role': 'assistant', 'content': prompt}
+                        - **ONLY TALK ABOUT THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
+        
+        instruction = {'role': 'user', 'content': prompt}
+
         gpt_prompt.append(instruction)
-
         gpt_response = self.sendToGPT(gpt_prompt)
-
+        print("THIS IS WHAT GPT SAYS: ")
         self.addAIResponseToConvo(gpt_response)
         self._aiResponse = gpt_response
 
@@ -80,7 +79,7 @@ class AIEarlyInterrogation(AI):
         return self._aiResponse
         
     def processResponse(self, userResponse):
-        self.conversation.addUserInput(userResponse)
+        # self.conversation.addUserInput(userResponse)
         self.addUserStatementToConvo(userResponse)
 
         prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}.
@@ -107,6 +106,8 @@ class AIEarlyInterrogation(AI):
         self._aiResponse = gpt_response
 
         if self._counter == 2:
+            #Potentially utilize threading for this
+            #Also potentially decouple this process and perform it in stroy graph or make it another process
             verdict = self.getVerdictFromConvo()
             self._verdictKeyword = verdict
 
@@ -154,9 +155,9 @@ class AIEarlyInterrogation(AI):
         temp = {'role': 'assistant', 'content': statement}
         self._evidenceConversation.append(temp)
 
-    def setupConvo(self):
-        context = self.conversation.getContext()
-        self._evidenceConversation.append(context)
+    # def setupConvo(self):
+    #     context = self.conversation.getContext()
+    #     self._evidenceConversation.append(context)
 
     def moveOnToNextTopic(self):
         self._currentEvidence = None

@@ -9,6 +9,7 @@ class AIController:
         self._aiHistory = AIHistory() 
         self._userNervous = None
         self._storyGraph = StoryGraph()
+        self._aiState = None
 
     def setAIBehavior(self, state):
         match state.value:
@@ -22,7 +23,8 @@ class AIController:
                 self._ai = AIContext(AIFinalInterrogation(self._conversation, self._storyGraph))
 
     def update(self, state):
-        self.setAIBehavior(state)
+        self._aiState = state.value
+        self.setAIBehavior()
 
     def generateResponse(self):
         return self._ai.generateResponse()

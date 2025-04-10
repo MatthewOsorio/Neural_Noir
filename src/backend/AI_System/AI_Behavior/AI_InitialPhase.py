@@ -1,4 +1,3 @@
-import os
 from .AI import AI
 from textwrap import dedent
 
@@ -30,10 +29,6 @@ class AIInitialPhase(AI):
             return formattedResponse
         else:
             return self._questions[self._currentQuestion]
-
-    def formatResponse(self, response):
-        parsedResponse = [line.strip() for line in response.split("\n") if line.strip()]
-        return "\n".join(parsedResponse)
 
     def processResponse(self, userResponse):
         preppedResponse = "[MARK] " + userResponse

@@ -50,7 +50,7 @@ class ConversationModel:
         self._sessionController = sessionController
         ConversationModel.conversation.append(ConversationModel.context)
 
-    # We should not save the instructions made to gpt, we should only keep the conversation. The instructions should be given in the method
+    # We should not save the instructions made to gpt, we should only keep the  . The instructions should be given in the method
     def updateConversationInstruction(self, new_instruction):
         ConversationModel.conversation.append(new_instruction)
 

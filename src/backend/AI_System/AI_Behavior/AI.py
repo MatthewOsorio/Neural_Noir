@@ -34,8 +34,9 @@ class AI(ABC):
     def getNervous(self):
         return self.userNervous
     
-    def getSystemPrompt(self):
-        return self.system_prompt
+    def formatResponse(self, response):
+        parsedResponse = [line.strip() for line in response.split("\n") if line.strip()]
+        return "\n".join(parsedResponse)
 
     def sendToGPT(self, prompt):
         response = self.gpt.chat.completions.create(
