@@ -66,7 +66,7 @@ class mainMenu:
             text_font = self.manager.font,
             text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(-1, 0, -0.3),
+            pos=(-1, 0, -0.6),
             parent=self.mainMenu,
             command=self.moveToQuit,
             frameColor = (0,0,0,0)
@@ -78,7 +78,7 @@ class mainMenu:
             text_font = self.manager.font,
             text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(-1, 0, -0.6),
+            pos=(-1, 0, -0.3),
             parent=self.mainMenu,
             command=self.moveToTutorials,
             frameColor = (0,0,0,0)
