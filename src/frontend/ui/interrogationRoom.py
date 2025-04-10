@@ -157,7 +157,7 @@ class InterrogationRoom:
         self.menu.audioMenu.setVoiceVolumeSlider(self.voiceVolume)
         self.menu.audioMenu.setSFXVolumeSlider(self.sfxVolume)
 
-        self.pausable = True
+        self.pausable = False
         self.ended = False
         self.current = 0
         self.Overlay.flashback.setImage(self.prompt)
@@ -188,10 +188,10 @@ class InterrogationRoom:
        
     #Updates the overlay to show the PTT Button
     def speechUI(self, task):
-        
+        self.pausable = True
         pttActive = self.Overlay.ptt.getPTTActive()
         if pttActive == False: 
-            self.pausible = False
+            self.pausable = False
             self.Overlay.ptt.hidePTTButton()
             print("talk")
             self.thread = threading.Thread(target=self.processSpeech, daemon=True)
@@ -240,13 +240,13 @@ class InterrogationRoom:
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
             taskMgr.add(self.speechUI, "UpdateSpeechTask")
+            self.pausable = True
             return task.done
         
         return task.cont
               
     #Response processing part
     def processResponse(self):
-        self.pausable = True
         
         response = self.state.generateResponse()
 
