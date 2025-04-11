@@ -1,5 +1,4 @@
 class ConversationModel:
-
     context= {'role': 'developer',
               'content': 
                 '''
@@ -74,3 +73,7 @@ class ConversationModel:
     
     def getContext(self):
         return ConversationModel.context
+    
+    def resetConversation(self):
+        ConversationModel.conversation = []
+        #ConversationModel.conversation.append(ConversationModel.context)

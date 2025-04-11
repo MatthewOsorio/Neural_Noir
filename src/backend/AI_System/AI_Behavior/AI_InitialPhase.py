@@ -27,9 +27,15 @@ class AIInitialPhase(AI):
 
         if 'Correct' in gpt_response:
             self._currentQuestion += 1
+            print("State 1 Q: Correct")
             self.askedAllQuestions()
         else:
             self._questions[self._currentQuestion] = gpt_response
+            print("State 1 Q: Incorrect")
+
+        print(f"State 1 current question: {self._currentQuestion}")
+        print(f"State 1 finished: {self._finished}")
+        #print(self.conversation.getConversation())
 
     def evaluateResponse(self, user_response):
         prompt= ''

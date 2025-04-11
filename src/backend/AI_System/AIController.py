@@ -3,7 +3,8 @@ from ..StoryGraph.StoryGraph import StoryGraph
 
 class AIController:
     def __init__(self, conversation):
-        self._ai = None     
+        self._ai = None    
+        self._conversation = None 
         self._conversation = conversation
         self._userNervous = None
         self._storyGraph = StoryGraph()

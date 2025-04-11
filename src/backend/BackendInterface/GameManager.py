@@ -149,3 +149,7 @@ class GameManager:
     def insertInteractionInDB(self):
         self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), self.userResponse, self.response)
 
+    def resetConversation(self):
+        self._conversation.resetConversation()
+
+

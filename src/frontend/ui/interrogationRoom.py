@@ -66,7 +66,7 @@ class InterrogationRoom:
 
         self.redoable = False
 
-        
+        self.testStates = None
 
         
         
