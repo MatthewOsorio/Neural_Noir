@@ -1,4 +1,4 @@
-from .AI_Behavior import AIInitialPhase, AIEarlyInterrogation, AIMidInterrogation, AIFinalInterrogation, AIContext
+from .AI_Behavior import AIInterrogation, AIContext, AIInitialPhase
 from StoryGraph.StoryGraph import StoryGraph
 from .AI_History import AIHistory
 
@@ -9,22 +9,20 @@ class AIController:
         self._aiHistory = AIHistory() 
         self._userNervous = None
         self._storyGraph = StoryGraph()
-        self._aiState = None
 
     def setAIBehavior(self, state):
         match state.value:
             case 1:
                 self._ai = AIContext(AIInitialPhase(self._conversation, self._aiHistory))
             case 2:
-                self._ai = AIContext(AIEarlyInterrogation(conversation= self._conversation, storyGraph= self._storyGraph, history= self._aiHistory))
+                self._ai = AIContext(AIInterrogation(conversation= self._conversation, storyGraph= self._storyGraph, history= self._aiHistory, phase="EARLY"))
             case 3:
-                self._ai = AIContext(AIMidInterrogation(self._conversation, self._storyGraph))
+                self._ai = AIContext(AIInterrogation(conversation= self._conversation, storyGraph= self._storyGraph, history= self._aiHistory, phase="MID"))
             case 4:
-                self._ai = AIContext(AIFinalInterrogation(self._conversation, self._storyGraph))
+                self._ai = AIContext(AIInterrogation(conversation= self._conversation, storyGraph= self._storyGraph, history= self._aiHistory, phase="FINAL"))
 
     def update(self, state):
-        self._aiState = state.value
-        self.setAIBehavior()
+        self.setAIBehavior(state)
 
     def generateResponse(self):
         return self._ai.generateResponse()

@@ -2,8 +2,8 @@
 import re
 from .AI import AI
 
-class AIEarlyInterrogation(AI):
-    def __init__(self, conversation, storyGraph, history, phase="EARLY"):
+class AIInterrogation(AI):
+    def __init__(self, conversation, storyGraph, history, phase):
         super().__init__(conversation)
         self._storyGraph = storyGraph
         self._history = history
@@ -11,6 +11,7 @@ class AIEarlyInterrogation(AI):
 
         self._currentEvidence = None
         self._introducedEvidence = False
+
         self._aiResponse = None
         self._evidenceConversation = []
         self._counter = 0

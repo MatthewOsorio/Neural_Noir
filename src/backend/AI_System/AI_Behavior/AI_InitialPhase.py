@@ -22,11 +22,9 @@ class AIInitialPhase(AI):
             gptInput.append({"role": "user", "content": instruction})
 
             response = self.sendToGPT(gptInput)
-            formattedResponse = self.formatResponse(response)
-            self._history.addAIResponse(formattedResponse)
-
+            self._history.addAIResponse(response)
             self._startedInstruction = True
-            return formattedResponse
+            return response
         else:
             return self._questions[self._currentQuestion]
 

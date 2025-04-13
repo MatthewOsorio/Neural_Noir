@@ -1,6 +1,6 @@
 from .BiometricReader import BiometricReader as br
 from threading import Thread
-from GameStateSystem import GameState
+# from GameStateSystem import GameState
 
 class BiometricController:
     def __init__(self):

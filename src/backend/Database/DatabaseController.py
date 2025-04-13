@@ -24,7 +24,7 @@ class DatabaseController:
                     sessionStartTime TEXT,
                     sessionEndTime TEXT
                 );
-
+ 
                 CREATE TABLE IF NOT EXISTS Interaction(
                     interactionID TEXT PRIMARY KEY,
                     startTime TEXT,
