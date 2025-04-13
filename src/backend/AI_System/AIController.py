@@ -13,13 +13,13 @@ class AIController:
     def setAIBehavior(self, state):
         match state.value:
             case 1:
-                self._ai = AIContext(AIInitialPhase(self._conversation, self._aiHistory))
+                self._ai = AIContext(AIInitialPhase(self._aiHistory))
             case 2:
-                self._ai = AIContext(AIInterrogation(conversation= self._conversation, storyGraph= self._storyGraph, history= self._aiHistory, phase="EARLY"))
+                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="EARLY"))
             case 3:
-                self._ai = AIContext(AIInterrogation(conversation= self._conversation, storyGraph= self._storyGraph, history= self._aiHistory, phase="MID"))
+                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="MID"))
             case 4:
-                self._ai = AIContext(AIInterrogation(conversation= self._conversation, storyGraph= self._storyGraph, history= self._aiHistory, phase="FINAL"))
+                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="FINAL"))
 
     def update(self, state):
         self.setAIBehavior(state)

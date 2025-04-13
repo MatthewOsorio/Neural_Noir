@@ -3,10 +3,9 @@ import re
 from .AI import AI
 
 class AIInterrogation(AI):
-    def __init__(self, conversation, storyGraph, history, phase):
+    def __init__(self, storyGraph, phase):
         super().__init__(conversation)
         self._storyGraph = storyGraph
-        self._history = history
         self._phase = phase
 
         self._currentEvidence = None

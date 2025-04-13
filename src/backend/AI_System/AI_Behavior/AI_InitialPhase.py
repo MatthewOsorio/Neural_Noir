@@ -2,27 +2,25 @@ from .AI import AI
 from textwrap import dedent
 
 class AIInitialPhase(AI):
-    def __init__(self, conversation, history):
-        super().__init__(conversation)
+    def __init__(self, history):
+        super().__init__(history)
         self._questions = [
             "[INSTRUCTION] Ask the suspect for what their name is.",
             "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
             "[INSTRUCTION] Ask if Mark worked as a photographer at Reno Media Company.",
             "[INSTRUCTION] Ask if the Mark worked under Vinh Davis."
         ]
-        self._history = history
         self._finished = False
         self._currentQuestion = 0
         self._startedInstruction = False
 
     def askQuestion(self):
         if not self._startedInstruction:
-            gptInput = self._history.getHistory()[:]
+            gptInput = self._aiHistory.getHistory()[:]
             instruction = self._questions[self._currentQuestion]
             gptInput.append({"role": "user", "content": instruction})
 
             response = self.sendToGPT(gptInput)
-            self._history.addAIResponse(response)
             self._startedInstruction = True
             return response
         else:
@@ -30,21 +28,20 @@ class AIInitialPhase(AI):
 
     def processResponse(self, userResponse):
         preppedResponse = "[MARK] " + userResponse
-        self._history.addUserInput(preppedResponse)
+        self._aiHistory.addUserInput(preppedResponse)
 
         gptResponse = self.evaluateResponse(userResponse)
 
         if gptResponse == "Correct":
-            print("VALID")
+            # print("VALID")
             self._currentQuestion += 1
             self.askedAllQuestions()
             self._startedInstruction = False
         else:
-            self._history.addAIResponse(gptResponse)
             self._questions[self._currentQuestion] = gptResponse
 
     def evaluateResponse(self, user_response):
-        gptInput = self._history.getHistory()[:]
+        gptInput = self._aiHistory.getHistory()[:]
         originalQuestion = self._questions[self._currentQuestion]
         instruction = ''
 
