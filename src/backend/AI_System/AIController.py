@@ -1,14 +1,12 @@
 from .AI_Behavior import AIInterrogation, AIContext, AIInitialPhase
-from backend.StoryGraph.StoryGraph import StoryGraph
+from StoryGraph.StoryGraph import StoryGraph
 from .AI_History import AIHistory
 
 class AIController:
-    def __init__(self, conversation):
-        self._ai = None    
-        self._conversation = None 
-        self._conversation = conversation
-        self._aiHistory = AIHistory() 
+    def __init__(self):
+        self._ai = None     
         self._userNervous = None
+        self._aiHistory = AIHistory() 
         self._storyGraph = StoryGraph()
 
     def setAIBehavior(self, state):

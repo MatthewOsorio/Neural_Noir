@@ -29,7 +29,7 @@ class GameManager:
         self._database = DatabaseController()
         self._sessionController = SessionController(self._database)
         self._conversation = ConversationModel(self._database, self._sessionController)
-        self._aiController = AIController(self._conversation)
+        self._aiController = AIController()
         self._gameState = GameStateManager()
         self._sr = SpeechToText()
         self._tts = TextToSpeechController()

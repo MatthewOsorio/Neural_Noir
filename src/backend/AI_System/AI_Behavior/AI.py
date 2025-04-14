@@ -2,7 +2,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
-from backend.TTSSystem.TextToSpeechController import TextToSpeechController
+from TTSSystem import TextToSpeechController
+from textwrap import dedent
+
 
 if TYPE_CHECKING:
     from AI_Context import AIContext
@@ -99,6 +101,7 @@ class AI(ABC):
     
     def addAIResponses(self, responseList):
         self._aiHistory.addAIResponse(self.parseDetectiveResponses(responseList))
+        print(self._aiHistory)
     
     # uses the TTS to create an audio file and adds the audio file directly to the dictionary
     def makeSpeechFile(self, detectiveResponses):
