@@ -2,14 +2,15 @@
 import re
 from .AI import AI
 
-class AIFinalInterrogation(AI):
-    def __init__(self, conversation, storyGraph, phase="FINAL"):
+class AIInterrogation(AI):
+    def __init__(self, storyGraph, phase):
         super().__init__(conversation)
         self._storyGraph = storyGraph
         self._phase = phase
 
         self._currentEvidence = None
         self._introducedEvidence = False
+
         self._aiResponse = None
         self._evidenceConversation = []
         self._counter = 0
@@ -18,8 +19,12 @@ class AIFinalInterrogation(AI):
         self._evidenceQueue = []
         self._playerResponses = {}
 
-        self.setupConvo()
+        self._verdictKeyword = None
+        self._verdict = {}
 
+        # self.setupConvo()
+
+    # Requesting evidence based on phase, 
     def receiveEvidence(self):
         if self._storyGraph == None:
             raise Exception("Story Graph reference has not been set")
@@ -27,23 +32,21 @@ class AIFinalInterrogation(AI):
         self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
         if self._currentEvidence == False:
             self._finish = True
-        else:
-            self._introducedEvidence = False
 
     def introduceEvidence(self):
         gpt_prompt= self.conversation.getConversation()[:]
 
-        prompt= f'''You are going to introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
+        prompt= f'''[INSTRUCTION] Introduce this piece of evidence {self._currentEvidence}. Follow the rules below:
                     **RULES**
                         - Ask the suspect what they know about the piece of evidence. 
                         - If the evidence was found at the crime scene mention that. 
-                        - **ONLY** respond as Harris.
-                        - **ONLY MENTION THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
-        instruction = {'role': 'assistant', 'content': prompt}
+                        - **ONLY TALK ABOUT THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
+        
+        instruction = {'role': 'user', 'content': prompt}
+
         gpt_prompt.append(instruction)
-
         gpt_response = self.sendToGPT(gpt_prompt)
-
+        print("THIS IS WHAT GPT SAYS: ")
         self.addAIResponseToConvo(gpt_response)
         self._aiResponse = gpt_response
 
@@ -55,7 +58,8 @@ class AIFinalInterrogation(AI):
         self._evidenceConversation.clear()
         self.setupConvo()
 
-    ## This method just returns whatever is stored in the aiResponse attribute. That attributes gets set when we introduce the evidence or the ai response to the user input
+    ## This method just returns whatever is stored in the aiResponse attribute.
+    # That attribute gets set when we introduce the evidence or the ai response to the user input
     def generateResponse(self) -> str:    
         if self._currentEvidence == None:
             self.receiveEvidence()
@@ -66,15 +70,18 @@ class AIFinalInterrogation(AI):
         if not self._introducedEvidence:
             self._introducedEvidence = True
             self.introduceEvidence()
-            return self._aiResponse
+        
+        if self._counter == 3:
+            self.sendConversationToStoryGraph()
+            self.moveOnToNextTopic()
+            print(f"\n Verdicts so far: {self._verdict}\n")
         
         return self._aiResponse
         
     def processResponse(self, userResponse):
-        self.conversation.addUserInput(userResponse)
+        # self.conversation.addUserInput(userResponse)
         self.addUserStatementToConvo(userResponse)
 
-        # Need to change prompt according to plot rules - good cop scenario
         prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}.
                     The user was {'nervous' if self.userNervous else 'not nervous'} when giving their response.
                     Respond to the users explanation according to the rules below.
@@ -85,7 +92,7 @@ class AIFinalInterrogation(AI):
                         - If the user was nervous point out it out in your response.
                         - Be concise in your response
                         - If you catch the user in a lie. Point it out in your response.
-                        - Respond as if are Detective Harris
+                        - Respond as if are Detective Harris.
                         - **ONLY TALK ABOUT THE EVIDENCE**
                         - **DO NOT ASK QUESTIONS UNRELATED TO THE EVIDENCE**
                         - **DO NOT MENTION MARKS, BRUISES, AND BLACK EYE**
@@ -98,31 +105,20 @@ class AIFinalInterrogation(AI):
         self.addAIResponseToConvo(gpt_response)
         self._aiResponse = gpt_response
 
-        self._counter += 1
-
-        if self._counter == 3:
+        if self._counter == 2:
+            #Potentially utilize threading for this
+            #Also potentially decouple this process and perform it in stroy graph or make it another process
             verdict = self.getVerdictFromConvo()
             self._verdictKeyword = verdict
 
             evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
             curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
-           
-            evidenceKey = f"{self._phase}-{curEvidenceIndex}"
-            self._storyGraph.receiveVerdict(evidenceKey, verdict)
+            self.recordVerdict(curEvidenceIndex, verdict)
 
-            self.sendConversationToStoryGraph()
-            self.moveOnToNextTopic()
-
-            print(f"\n Verdicts so far: {self._storyGraph._verdictsByEvidence}\n")
+        self._counter += 1
 
     def getVerdictFromConvo(self):
-        convo = self._evidenceConversation[-7:]
-
-        print("*******************************\n")
-        print("Debug evidenceConversation list")
-        for message in convo:
-            print(f"{message['role'].capitalize()}: {message['content']}\n")
-        print("********************************\n")
+        convo = self._evidenceConversation[:]
 
         prompt = f'''You are going to analyze the conversation between the detective and the suspect.
                     At the end, return only ONE word verdict (truthful, untruthful, or inconclusive) based on the suspect's answers.
@@ -142,7 +138,10 @@ class AIFinalInterrogation(AI):
             return match.group(1)
         else:
             return "inconclusive"
-    
+
+    def recordVerdict(self, index, verdict):
+        self._verdict[index] = verdict
+
     def reset(self):
         self._currentEvidence = None
         self._introducedEvidence = False
@@ -156,9 +155,9 @@ class AIFinalInterrogation(AI):
         temp = {'role': 'assistant', 'content': statement}
         self._evidenceConversation.append(temp)
 
-    def setupConvo(self):
-        context = self.conversation.getContext()
-        self._evidenceConversation.append(context)
+    # def setupConvo(self):
+    #     context = self.conversation.getContext()
+    #     self._evidenceConversation.append(context)
 
     def moveOnToNextTopic(self):
         self._currentEvidence = None
