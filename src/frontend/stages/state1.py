@@ -46,7 +46,9 @@ class State1:
             self.updateBaseValues()
             self.endPhase = True
 
-        self.parseResponse(self.response)
+        if self.response is not False:
+            self.parseResponse(self.response)
+            
         return self.response
 
     def updateData(self, task):

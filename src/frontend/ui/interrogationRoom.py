@@ -268,7 +268,7 @@ class InterrogationRoom:
             self.state.setUseEmotibit(self.useEmotibit)
             response = self.state.begin()
             print("New state response")
-            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
 
             print("End")
 
