@@ -3,7 +3,7 @@ from BackendInterface.GameManager import GameManager
 
 gameState = GameManager()
 gameState.setupGame(False)
-gameState.updateGameState(1)
+gameState.updateGameState(2)
 finished = False
 
 while(not finished):

@@ -52,8 +52,6 @@ class AIHistory:
     def addAIResponse(self, aiResponse):
         assistantMessage= {'role': 'assistant', 'content': aiResponse}
         self._history.append(assistantMessage)
-
-        print(self._history)
         
     def getHistory(self):
         return self._history

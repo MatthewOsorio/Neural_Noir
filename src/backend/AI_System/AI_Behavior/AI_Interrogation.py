@@ -1,10 +1,11 @@
 # Bad cop scenario
 import re
+from textwrap import dedent
 from .AI import AI
 
 class AIInterrogation(AI):
-    def __init__(self, storyGraph, phase):
-        super().__init__(conversation)
+    def __init__(self, storyGraph, history, phase):
+        super().__init__(history)
         self._storyGraph = storyGraph
         self._phase = phase
 
@@ -12,12 +13,12 @@ class AIInterrogation(AI):
         self._introducedEvidence = False
 
         self._aiResponse = None
-        self._evidenceConversation = []
+        # self._evidenceConversation = []
         self._counter = 0
         self._finish = False
 
-        self._evidenceQueue = []
-        self._playerResponses = {}
+        # self._evidenceQueue = []
+        # self._playerResponses = {}
 
         self._verdictKeyword = None
         self._verdict = {}
@@ -34,21 +35,20 @@ class AIInterrogation(AI):
             self._finish = True
 
     def introduceEvidence(self):
-        gpt_prompt= self.conversation.getConversation()[:]
+        gptInput= self._aiHistory.getHistory()[:]
+        
+        prompt= dedent(f'''[INSTRUCTION] Introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
 
-        prompt= f'''[INSTRUCTION] Introduce this piece of evidence {self._currentEvidence}. Follow the rules below:
                     **RULES**
-                        - Ask the suspect what they know about the piece of evidence. 
-                        - If the evidence was found at the crime scene mention that. 
-                        - **ONLY TALK ABOUT THE CURRENT EVIDENCE. DO NOT MENTION ANY OTHER EVIDENCE'''
+                    - Ask the suspect what they know about this specific piece of evidence.
+                    - If the evidence was found at the crime scene, briefly mention that.
+                    - Do NOT discuss any other evidence. Do NOT refer to anything unrelated to this item.
+                    - Wait for the suspect's response before saying more.''')
         
         instruction = {'role': 'user', 'content': prompt}
-
-        gpt_prompt.append(instruction)
-        gpt_response = self.sendToGPT(gpt_prompt)
-        print("THIS IS WHAT GPT SAYS: ")
-        self.addAIResponseToConvo(gpt_response)
-        self._aiResponse = gpt_response
+        gptInput.append(instruction)
+        gptResponse = self.sendToGPT(gptInput)
+        return gptResponse
 
     def sendConversationToStoryGraph(self):
         if self._storyGraph == None:
@@ -79,30 +79,29 @@ class AIInterrogation(AI):
         return self._aiResponse
         
     def processResponse(self, userResponse):
-        # self.conversation.addUserInput(userResponse)
-        self.addUserStatementToConvo(userResponse)
+        gptInput = self._aiHistory.getHistory()[:]
+        preppedResponse = "[MARK] " + userResponse
 
-        prompt= f'''This is the users explanation about evidence that has been presented: {userResponse}.
-                    The user was {'nervous' if self.userNervous else 'not nervous'} when giving their response.
-                    Respond to the users explanation according to the rules below.
-                    
+        instruction = dedent(f'''[INSTRUCTION] This is the suspect's explanation of the current evidence: "{preppedResponse}".
+                    The suspect appeared {'nervous' if self.userNervous else 'not nervous'} when responding.
+
+                    [EVIDENCE] {self._currentEvidence}
+
                     **RULES**
-                        - Respond as Detective Harris.
-                        - First make a comment about their response. Then ask **only one** question to get more details before moving on to the next evidence.
-                        - If the user was nervous point out it out in your response.
-                        - Be concise in your response
-                        - If you catch the user in a lie. Point it out in your response.
-                        - Respond as if are Detective Harris.
-                        - **ONLY TALK ABOUT THE EVIDENCE**
-                        - **DO NOT ASK QUESTIONS UNRELATED TO THE EVIDENCE**
-                        - **DO NOT MENTION MARKS, BRUISES, AND BLACK EYE**
-                    ''' 
-        gpt_prompt= self.conversation.getConversation()[:]
-        instruction = {'role':  'assistant', 'content': prompt}
-        gpt_prompt.append(instruction)
+                    - First, comment on the suspect's explanation.
+                    - Then, ask exactly ONE follow-up question to get more detail about this piece of evidence.
+                    - Both detectives must remain focused on the current evidence. Do not have them both ask questions at the same time. They may reinforce each other, apply pressure, or rephrase the same question, but never change the topic.
+                    - If the suspect seemed nervous, make note of it.
+                    - If the suspect's response seems dishonest or inconsistent, call it out.
+                    - DO NOT discuss other evidence, the suspect's physical appearance (bruises, black eye), or any unrelated topics.
+                    - DO NOT reference the night of the murder or past altercations.
+                    - Stay fully in character and be concise.
+                    - DO NOT ask more than one question or change the topic.''')
+        
+        
+        gptInput.append({"role": 'user', 'content': instruction})
 
-        gpt_response = self.sendToGPT(gpt_prompt)
-        self.addAIResponseToConvo(gpt_response)
+        gpt_response = self.sendToGPT(gptInput)
         self._aiResponse = gpt_response
 
         if self._counter == 2:
