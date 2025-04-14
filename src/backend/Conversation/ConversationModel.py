@@ -5,7 +5,7 @@ class ConversationModel:
     def __init__(self, database, sessionController):
         self._database = database
         self._sessionController = sessionController
-        ConversationModel.conversation.append(ConversationModel.context)
+       # ConversationModel.conversation.append(ConversationModel.context)
 
     def sendUserResponseToDB(self, startTime, endTime, userResponse, npcResponse):
         sessionID = self._sessionController.getSessionID()
@@ -25,5 +25,5 @@ class ConversationModel:
     def getConversation(self) -> list:
         return ConversationModel.conversation 
     
-    def getContext(self):
-        return ConversationModel.context
+  #  def getContext(self):
+      #  return ConversationModel.context

@@ -68,6 +68,7 @@ class InterrogationRoom:
 
         self.testStates = None
 
+        self.currentLine = 0
         
         
     def pauseGame(self):
@@ -252,8 +253,11 @@ class InterrogationRoom:
 
         if response != False:
             #Update the overlay to show the response
-            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            #taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            self.currentLine = 0
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
             
+
         else:
             self.current = self.current + 1
             print(f"State {self.current}")
@@ -269,18 +273,34 @@ class InterrogationRoom:
             print("End")
 
     #Updates subtitles if applicable
-    def responseUI(self, response, task):
-        print(response)
+    def responseUI(self, task):
+        count = self.currentLine
+        #print(f"Response: {response}")
         if (self.menu.subtitles == True):
-            self.Overlay.subtitles.setResponse(response)
+            subtitlesString = f"{self.state.speakers[count]}: {self.state.texts[count]}"
+            print(f"Sub string {count}: {subtitlesString}")
+            self.Overlay.subtitles.setResponse(subtitlesString)
             self.Overlay.subtitles.updateSubtitles()
             self.Overlay.showSubtitlesBox()
         
-        #Convert the response to speech
-        self.thread = threading.Thread(target=self.responseToSpeech, daemon=True)
+        print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
+        #self.game._tts.speak(self.state.audioFilePaths[count])
+        self.thread = threading.Thread(target=self.playAudio, args=(self.state.audioFilePaths[count],), daemon=True)
         if self.threadEvent.is_set() == False:
             self.thread.start()
+
         return task.done
+    
+    def playAudio(self, audioPath):
+        self.game._tts.speak(audioPath)
+
+        if self.currentLine < len(self.state.audioFilePaths) - 1:
+            self.currentLine = self.currentLine + 1
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+        else:
+            self.state.resetResponse()
+            taskMgr.add(self.updateResponse, "Update")
+
 
     #TTS process
     def responseToSpeech(self):
