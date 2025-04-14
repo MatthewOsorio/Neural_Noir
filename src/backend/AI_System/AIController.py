@@ -1,5 +1,5 @@
 from .AI_Behavior import AIInterrogation, AIContext, AIInitialPhase
-from StoryGraph.StoryGraph import StoryGraph
+from backend.StoryGraph.StoryGraph import StoryGraph
 from .AI_History import AIHistory
 
 class AIController:
