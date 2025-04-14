@@ -180,13 +180,15 @@ class InterrogationRoom:
         self.state.testPrint()
 
         response = self.state.begin()
+        self.currentLine = 0
+        taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
         self.state.convert()
-        self.Overlay.ptt.showPTTButton()
-        self.redoable = True
+        #self.Overlay.ptt.showPTTButton()
+       # self.redoable = True
         #Get the speech input
-        taskMgr.add(self.speechUI, "UpdateSpeechTask")
-        
-       
+        #taskMgr.add(self.speechUI, "UpdateSpeechTask")
+  
+
     #Updates the overlay to show the PTT Button
     def speechUI(self, task):
         self.pausable = True

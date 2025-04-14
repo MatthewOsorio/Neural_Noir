@@ -31,6 +31,10 @@ class State1:
     def begin(self):
         self.game._gameState.updateState(1)
         self.response = self.game.generateAIResponse()
+
+        if self.response is not False:
+            self.parseResponse(self.response)
+            
         return self.response
         
     def convert(self):
