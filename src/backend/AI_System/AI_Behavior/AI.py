@@ -101,7 +101,6 @@ class AI(ABC):
     
     def addAIResponses(self, responseList):
         self._aiHistory.addAIResponse(self.parseDetectiveResponses(responseList))
-        print(self._aiHistory)
     
     # uses the TTS to create an audio file and adds the audio file directly to the dictionary
     def makeSpeechFile(self, detectiveResponses):
