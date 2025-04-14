@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
-from TTSSystem import TextToSpeechController
+from backend.TTSSystem import TextToSpeechController
 from textwrap import dedent
 
 

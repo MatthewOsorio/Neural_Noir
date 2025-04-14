@@ -47,9 +47,12 @@ class State2:
 
         if self.useEmotibit:
             self.overlay.showBioData()
-            
+
+          
         self.response = self.game.generateAIResponse()
-        self.parseResponse(self.response)
+        print ("State 2 response: ", self.response)
+        if self.response is not False:
+            self.parseResponse(self.response)
         return self.response
         
     def convert(self):
@@ -63,11 +66,12 @@ class State2:
             print("Ending phase")
             self.endPhase = True
 
-        self.parseResponse(self.response)
+        if self.response is not False:
+            self.parseResponse(self.response)
         return self.response
     
-    #def introduceEvidence(self):
-       # self.game._aiController.introduceEvidence()
+    def introduceEvidence(self):
+        self.game._aiController.introduceEvidence()
 
     def parseResponse(self, response):
 

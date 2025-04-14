@@ -69,7 +69,7 @@ class AIInterrogation(AI):
 
         if not self._introducedEvidence:
             self._introducedEvidence = True
-            self.introduceEvidence()
+            self._aiResponse = self.introduceEvidence()
         
         if self._counter == 3:
             self.sendConversationToStoryGraph()
