@@ -3,8 +3,8 @@ import re
 from .AI import AI
 
 class AIInterrogation(AI):
-    def __init__(self, storyGraph, phase):
-        super().__init__(conversation)
+    def __init__(self, storyGraph, history, phase):
+        super().__init__(history)
         self._storyGraph = storyGraph
         self._phase = phase
 
