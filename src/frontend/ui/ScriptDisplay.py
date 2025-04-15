@@ -19,8 +19,10 @@ class ScriptDisplay():
         script = []
 
         for interaction in conversation:
-            script.append(f"Detective: {interaction[0]}")
-            script.append(f"Player: {interaction[1]}")
+            script.append(f"{interaction[0]}: {interaction[2]}")
+            if interaction[1] != "":
+                script.append(f"{interaction[1]}: {interaction[3]}")
+            script.append(f"Player: {interaction[4]}")
 
         return script
     

@@ -100,7 +100,7 @@ class DatabaseController:
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    SELECT response, userInput
+                    SELECT speaker1, speaker2, response1, response2, userInput
                     FROM Interaction
                     WHERE sessionID = ?
                 """, (str(sessionID),))
