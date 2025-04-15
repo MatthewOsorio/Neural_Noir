@@ -301,6 +301,8 @@ class Overlay:
         self.errorScreen.showConnectionError()
         return task.done  
     
+    #NOTE This will automatically end the game if the emotibit connection is lost for around 15 seconds while emotibit mode is on
+    #If for some reason you need to test something with emotibit mode on, disable "self.Overlay.startEmotiBitCheck()" in beginInterrogation function in interrogationRoom
     def startEmotiBitCheck(self):
         if self.base.useEmotibit is True:
             taskMgr.doMethodLater(5, self.checkEmotiBitConnection, "checkEmotiBitConnectionTask")
