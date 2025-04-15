@@ -155,6 +155,9 @@ class PauseMenu():
             self.game.restartEmotibit()
             if self.room.useEmotibit:
                 self.game._bioController._gameIsReady = False
+                self.game._bioController.emotibitErrorCount = 0
+                self.game._bioController.errorFlag = False
+                self.game._bioController.incrementError = False
 
             #self.game.resetConversation()
             self.game.begin = False

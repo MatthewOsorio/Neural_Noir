@@ -33,6 +33,7 @@ class Overlay:
         self.tutorials = Tutorial(self.base)
 
         self.connectionError = False
+        self.initialImageFinished = False
 
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -100,22 +101,24 @@ class Overlay:
         self.PTTButton.setTransparency(TransparencyAttrib.MAlpha)
 
         self.acceptSpeechButton = DirectButton(
-            text = "Accept Speech",
-            scale = 0.05,
-            pos = (0, 0, 0),
+            text = "ACCEPT",
+            scale = 0.1,
+            pos = (1.5, 0, -0.5),
             command = None,
             parent = self.overlay,
-            frameColor=(0, 0, 1, 1),
+            frameColor=(0, 0, 0, 1),
+            text_fg = (1, 1, 1, 1),
             sortOrder=1
         )
 
         self.redoSpeechButton = DirectButton(
-            text = "Redo Speech",
-            scale = 0.05,
-            pos = (0, -0.1, -0.1),
+            text = "RETAKE",
+            scale = 0.1,
+            pos = (1.5, -0.1, -0.7),
             command = None,
             parent = self.overlay,
-            frameColor=(1, 0, 0, 1),
+            frameColor=(0, 0, 0, 1),
+            text_fg = (1, 1, 1, 1),
             sortOrder=1
         )
 
@@ -151,7 +154,7 @@ class Overlay:
         self.hideBioData()
 
         self.errorScreen.hideConnectionError()
-        self.errorScreen.hideOpenAIError()
+       # self.errorScreen.hideOpenAIError()
 
         self.hideUserInputBox()
         self.setAcceptButtonCommand()
@@ -160,7 +163,7 @@ class Overlay:
         taskMgr.doMethodLater(5, self.updateOverlay, "updateOverlayTask") 
         taskMgr.doMethodLater(5, self.checkInternetConnection, "checkConnectionTask") 
 
-    
+
     def show(self):
         self.overlay.show()
     
@@ -248,6 +251,17 @@ class Overlay:
     def showBioData(self):
         self.bioBackground.show()
 
+    def hideAll(self):
+        self.bioBackground.hide()
+        self.subtitlesBox.hide()
+        self.userInputBox.hide()
+        self.PTTButton.hide()
+        self.PTTButton.noError = False
+        self.acceptSpeechButton.hide()
+        self.redoSpeechButton.hide()
+        self.flashback.hide()
+        self.base.menu.pauseMenu.hide()
+
     def checkInternetConnection(self, task):
         self.internetThread = threading.Thread(target=self.checkInternetThread, daemon=True)
         self.internetThread.start()
@@ -263,15 +277,60 @@ class Overlay:
 
             # Show error on the main thread
             taskMgr.add(lambda task: self.handleConnectionError(task), "showConnectionErrorTask")
+
+    #check connection to OpenAI API if there is internet 
+    def checkGPTConnection(self):
+        status = self.connection.checkOpenai()
+
+        if not status and not self.connectionError:
+            self.connectionError = True
+            
+            taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
         
     def handleConnectionError(self, task):
+        self.hideAll()
+        self.base.pausable = False
         self.errorScreen.showConnectionError()
-        return task.done       
+        return task.done  
+
+    def handleOpenAIError(self, task):
+        self.hideAll()
+        self.base.pausable = False
+        self.errorScreen.connectionErrorText.setText("OpenAI Error")
+        self.errorScreen.connectionErrorText2.setText("Please check your OpenAI API key.")
+        self.errorScreen.showConnectionError()
+        return task.done  
+    
+    def startEmotiBitCheck(self):
+        if self.base.useEmotibit is True:
+            taskMgr.doMethodLater(5, self.checkEmotiBitConnection, "checkEmotiBitConnectionTask")
+
+    def checkEmotiBitConnection(self, task):
+        status = self.base.game._bioController.errorFlag
+        #print(f"Emotibit Error Count: {self.base.game._bioController.emotibitErrorCount}")
+        if status and not self.connectionError:
+            self.connectionError = True
+            
+            # Show error on the main thread
+            taskMgr.add(lambda task: self.handleEmotiBitError(task), "showConnectionErrorTask")
+
+        return task.again
+
+    def handleEmotiBitError(self, task):
+        self.hideAll()
+        self.base.pausable = False
+        self.errorScreen.connectionErrorText.setText("EmotiBit Error")
+        self.errorScreen.connectionErrorText2.setText("Please check your EmotiBit connection.")
+        self.errorScreen.showConnectionError()
+        return task.done
+
 
     def cleanUpTasks(self):
         taskMgr.remove("updateOverlayTask")
         taskMgr.remove("checkConnectionTask")
         taskMgr.remove("showConnectionErrorTask")
+        if self.base.useEmotibit is True:
+            taskMgr.remove("checkEmotiBitConnectionTask")
 
     def cleanUpThreads(self):
         self.threadEvent.set()

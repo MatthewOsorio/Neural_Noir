@@ -13,15 +13,28 @@ class BiometricController:
         self.inputThread.start()
         self._gameState = None
         self._gameIsReady = False
+        self.emotibitErrorCount = 0
+        self.errorFlag = False
+        self.incrementError = False
         
     def read(self):
         while self.threadEvent.is_set() == False:
             try:
                 self.biometricReader.read()
+                #print("Error Count = 0")
+                self.emotibitErrorCount = 0
                 self.isNervous(self.biometricReader.getHeartRate())
                 # print(type(self.biometricReader.getHeartRate()))
             except Exception as e:
-                self.reconnect(e)
+                if self.incrementError is True:
+                    #print("Error Count +1")
+                    self.emotibitErrorCount += 1
+
+                if self.emotibitErrorCount > 3:
+                    self.errorFlag = True 
+
+                else:
+                    self.reconnect(e)
 
     # From Matt
     # This method is called whenever the game state is updated in game state manager. 

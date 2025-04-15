@@ -3,13 +3,18 @@ class PTT:
         self.base = base
         self.pttActive = False
         self.button = None
+        self.noError = True
 
     def setButton(self, button):
         self.button = button
 
     def showPTTButton(self):
-        self.button.show()
-        self.pttActive = True
+        if self.noError == True:
+            self.button.show()
+            self.pttActive = True
+        elif self.noError == False:
+            self.button.hide()
+            self.pttActive = False
     
     def hidePTTButton(self):
         self.button.hide()

@@ -73,7 +73,7 @@ class InterrogationRoom:
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
-        if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True):
+        if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True and not self.Overlay.connectionError):
             self.menu.pauseMenu.show()
             self.menu.pauseMenu.showImage()
             self.gameState = 'paused'
@@ -169,6 +169,8 @@ class InterrogationRoom:
             flashback = self.Overlay.flashback.getActive()
               
         if self.useEmotibit == True:
+            self.game._bioController.incrementError = True
+            self.Overlay.startEmotiBitCheck()
             self.Overlay.showBioData()
         
         self.testStates = [State1(), State2(), State3(), State4()]
@@ -317,7 +319,7 @@ class InterrogationRoom:
         self.Overlay.hideSubtitlesBox()
 
         #If the game has not been quit, restart the process
-        if self.ended == False:
+        if self.ended == False and not self.Overlay.connectionError:
             self.Overlay.ptt.showPTTButton()
             #threading.Thread(target=self.processSpeech, daemon=True).start()
             self.processNext()
