@@ -211,7 +211,8 @@ class InterrogationRoom:
         
         self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
-        self.game.insertInteractionInDB()
+        
+  
         self.Overlay.userSpeech.active = True
         self.Overlay.userSpeech.redo = False
 
@@ -236,6 +237,8 @@ class InterrogationRoom:
         userInputActive = self.Overlay.userSpeech.getActive()
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
             self.Overlay.hideUserInputBox()
+            self.game.insertInteractionInDB()
+            self.game.resetSpeechForDB()
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
             if self.threadEvent.is_set() == False:
                 self.thread.start()
@@ -287,7 +290,9 @@ class InterrogationRoom:
             self.Overlay.subtitles.setResponse(subtitlesString)
             self.Overlay.subtitles.updateSubtitles()
             self.Overlay.showSubtitlesBox()
-        
+            self.game.speakers.append(self.state.speakers[count])
+            self.game.responses.append(self.state.texts[count])
+
         print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
         #self.game._tts.speak(self.state.audioFilePaths[count])
         self.thread = threading.Thread(target=self.playAudio, args=(self.state.audioFilePaths[count],), daemon=True)

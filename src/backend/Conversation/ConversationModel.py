@@ -7,12 +7,12 @@ class ConversationModel:
         self._sessionController = sessionController
         # ConversationModel.conversation.append(ConversationModel.context)
 
-    def sendUserResponseToDB(self, startTime, endTime, userResponse, npcResponse):
+    def sendUserResponseToDB(self, startTime, endTime, userResponse, npcResponse1, npcResponse2, speaker1, speaker2):
         sessionID = self._sessionController.getSessionID()
         feedback_ID = None
         print(f"Logging to DB: SessionID={sessionID}, UserInput={userResponse}")  # Debug
         try:
-            self._database.insertInteraction(startTime, endTime, userResponse, npcResponse, sessionID, feedback_ID)
+            self._database.insertInteraction(startTime, endTime, userResponse, npcResponse1, npcResponse2, speaker1, speaker2 , sessionID, feedback_ID)
         except Exception as e:
             print(f"Cannot insert user response into DB: {e}")
 

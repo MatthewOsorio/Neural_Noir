@@ -6,6 +6,7 @@ class DatabaseController:
     def __init__(self):
         self.db_path = os.path.join(os.path.dirname(__file__), "neural_noir.db")
         self.initializeDB()
+      #  self.alterTable()
 
     def getConnection(self):
         try:
@@ -30,7 +31,10 @@ class DatabaseController:
                     startTime TEXT,
                     endTime TEXT,
                     userInput TEXT,
-                    response TEXT,
+                    response1 TEXT,
+                    response2 TEXT,
+                    speaker1 TEXT,
+                    speaker2 TEXT,
                     sessionID TEXT,
                     feedbackID TEXT,
                     FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
@@ -53,7 +57,16 @@ class DatabaseController:
             """   
             )
         conn.close()
-    
+
+    #def alterTable(self):
+       # conn = self.getConnection()
+       # with conn:
+       #     cur = conn.cursor()
+      #      cur.execute("""
+       #         DROP TABLE IF EXISTS Interaction
+       #     """)
+      #  conn.close()
+        
     def insertStartSession(self, sessionID, startTime):
         try:
             conn = self.getConnection()
@@ -67,16 +80,16 @@ class DatabaseController:
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement: ", e)
 
-    def insertInteraction(self, start, end, userInput, response, sessionID, feedbackID):
+    def insertInteraction(self, start, end, userInput, response1, response2, speaker1, speaker2, sessionID, feedbackID):
         try:
             interactionID = str(uuid.uuid4())
             conn = self.getConnection()
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    INSERT INTO Interaction (interactionID, startTime, endTime, userInput, response, sessionID, feedbackID)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (interactionID, start, end, userInput, response, sessionID, feedbackID))
+                    INSERT INTO Interaction (interactionID, startTime, endTime, userInput, response1, response2, speaker1, speaker2, sessionID, feedbackID)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (interactionID, start, end, userInput, response1, response2, speaker1, speaker2, sessionID, feedbackID))
                 conn.commit()
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
