@@ -12,7 +12,7 @@ class DatabaseController:
     def __init__(self):
         self.db_path = os.path.join(os.path.dirname(__file__), "neural_noir.db")
         self.initializeDB()
-      #  self.alterTable()
+     #   self.alterTable()
 
     def getConnection(self):
         try:
@@ -36,11 +36,8 @@ class DatabaseController:
                     interactionID TEXT PRIMARY KEY,
                     startTime TEXT,
                     endTime TEXT,
-                    userInput TEXT,
-                    response1 TEXT,
-                    response2 TEXT,
-                    speaker1 TEXT,
-                    speaker2 TEXT,
+                    response TEXT,
+                    Speaker TEXT,
                     sessionID TEXT,
                     feedbackID TEXT,
                     FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
@@ -51,9 +48,9 @@ class DatabaseController:
             )
         conn.close()
 
-    #def alterTable(self):
-       # conn = self.getConnection()
-       # with conn:
+  #  def alterTable(self):
+     #   conn = self.getConnection()
+      #  with conn:
        #     cur = conn.cursor()
       #      cur.execute("""
        #         DROP TABLE IF EXISTS Interaction
@@ -73,16 +70,16 @@ class DatabaseController:
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement: ", e)
 
-    def insertInteraction(self, start, end, userInput, response1, response2, speaker1, speaker2, sessionID, feedbackID):
+    def insertInteraction(self, start, end, response, speaker, sessionID, feedbackID):
         try:
             interactionID = str(uuid.uuid4())
             conn = self.getConnection()
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    INSERT INTO Interaction (interactionID, startTime, endTime, userInput, response1, response2, speaker1, speaker2, sessionID, feedbackID)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (interactionID, start, end, userInput, response1, response2, speaker1, speaker2, sessionID, feedbackID))
+                    INSERT INTO Interaction (interactionID, startTime, endTime, response, speaker, sessionID, feedbackID)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (interactionID, start, end, response, speaker, sessionID, feedbackID))
                 conn.commit()
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
@@ -93,7 +90,7 @@ class DatabaseController:
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    SELECT speaker1, speaker2, response1, response2, userInput
+                    SELECT speaker, response
                     FROM Interaction
                     WHERE sessionID = ?
                 """, (str(sessionID),))

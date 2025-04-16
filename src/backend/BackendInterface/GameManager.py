@@ -147,15 +147,8 @@ class GameManager:
     def setUseEmotibit(self, useEmotibit):
         self._useEmotibit = useEmotibit
 
-    def insertInteractionInDB(self):
-        if len(self.responses) < 2:
-            self.responses.append("")
-
-        if len(self.speakers) < 2:
-            self.speakers.append("")
-
-        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), self.userResponse, self.responses[0], 
-                                                self.responses[1], self.speakers[0], self.speakers[1])
+    def insertInteractionInDB(self, response, speaker):
+        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), response, speaker)
 
     def resetConversation(self):
         self._conversation.resetConversation()
