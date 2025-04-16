@@ -19,10 +19,6 @@ class GameManager:
         self._database = None
         self._sessionController = None
             
-        self.responses = []
-        self.speakers = []
-        self.userResponse = None
-
         self._useEmotibit = False
 
     # instantiate all objects here
@@ -152,9 +148,4 @@ class GameManager:
 
     def resetConversation(self):
         self._conversation.resetConversation()
-
-    def resetSpeechForDB(self):
-        self.speakers = []
-        self.responses = []
-        self.userResponse = None
 

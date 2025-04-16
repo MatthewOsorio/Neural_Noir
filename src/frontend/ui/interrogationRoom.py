@@ -238,7 +238,6 @@ class InterrogationRoom:
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
             self.Overlay.hideUserInputBox()
             self.game.insertInteractionInDB(speech, "Player")
-            self.game.resetSpeechForDB()
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
             if self.threadEvent.is_set() == False:
                 self.thread.start()

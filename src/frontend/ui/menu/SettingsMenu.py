@@ -46,10 +46,10 @@ class settingsMenu:
         self.useEmotibitText = OnscreenText(
             text = 'Use Emotibit',
             font = self.manager.font,
-            scale = 0.15,
+            scale = 0.1,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, -0.2 ,0)
+            pos = (-1, 0.4 ,0)
         )
 
         self.emotibitOn = DirectCheckButton(
@@ -57,7 +57,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, -0.3, -0.4),
+            pos = (-1.3, 0.3, 0.25),
             command = self.setEmotibitOn
         )
 
@@ -66,8 +66,35 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, -0.3, -0.4),
+            pos = (-0.7, 0.3, 0.25),
             command = self.setEmotibitOff
+        )
+
+        self.difficultyText = OnscreenText(
+            text = 'Difficulty',
+            font = self.manager.font,
+            scale = 0.1,
+            parent = self.settingsMenu,
+            fg = (1,1,1,1),
+            pos = (-1, 0.1 ,0)
+        )
+
+        self.diffEasy = DirectCheckButton(
+            text = "Easy",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-1.3, 0.0, -0.05),
+            command = None
+        )
+
+        self.diffHard = DirectCheckButton(
+            text = "Hard",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-0.7, 0.0, -0.05),
+            command = None
         )
 
         self.backButton = DirectButton(
