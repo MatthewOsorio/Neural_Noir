@@ -26,10 +26,17 @@ class AIInterrogation(AI):
             raise Exception("Story Graph reference has not been set")
 
         self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
+
         if self._currentEvidence == False:
             self._finish = True
 
     def introduceEvidence(self):
+        if self._currentEvidence is None:
+            self.receiveEvidence()
+
+            if self._finish:
+                return False
+        
         gptInput= self._aiHistory.getHistory()[:]
         
         prompt= dedent(f'''[INSTRUCTION] Introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
@@ -47,36 +54,28 @@ class AIInterrogation(AI):
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
         gptResponse = self.sendToGPT(gptInput)
-        self._aiResponse = gptResponse
+        self._introducedEvidence = True
+        return gptResponse
+    # def sendConversationToStoryGraph(self):
+    #     if self._storyGraph == None:
+    #         raise Exception("Story Graph reference has not been set")
 
-    def sendConversationToStoryGraph(self):
-        if self._storyGraph == None:
-            raise Exception("Story Graph reference has not been set")
-
-        self._storyGraph.receiveConversation(self._evidenceConversation)
-        self._evidenceConversation.clear()
+    #     self._storyGraph.receiveConversation(self._evidenceConversation)
+    #     self._evidenceConversation.clear()
 
     # This code returns a response after a verdict has been decided. That is not supposed to happen. 
-    def generateResponse(self):    
-        if self._currentEvidence == None:
-            self.receiveEvidence()
-        
-        if self._finish:
-            return False
-
+    def generateResponse(self): 
         if not self._introducedEvidence:
-            self._introducedEvidence = True
-            self.introduceEvidence()
-        
-        if self._counter == 3:
-            print(self._aiHistory.getHistory())
-            # self.generateVerdict()
-            # self.sendConversationToStoryGraph()
-            self.moveOnToNextTopic()
-            # print(f"\n Verdicts so far: {self._verdict}\n")
-        
-        return self._aiResponse
-        
+            return self.introduceEvidence()
+        else:
+            if self._counter == 3:
+                self.generateVerdict()
+                self.moveOnToNextTopic()
+                return self.introduceEvidence()
+            else:
+                return self._aiResponse
+
+
     def processResponse(self, userResponse):
         gptInput = self._aiHistory.getHistory()[:]
         preppedResponse = "[MARK] " + userResponse
@@ -107,12 +106,13 @@ class AIInterrogation(AI):
         self._counter += 1
 
     def generateVerdict(self):
-        verdict = self.getVerdictFromConvo()
-        self._verdictKeyword = verdict
+        print("getting stuff done mayne")
+        # verdict = self.getVerdictFromConvo()
+        # self._verdictKeyword = verdict
 
-        evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
-        curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
-        self.recordVerdict(curEvidenceIndex, verdict)
+        # evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
+        # curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
+        # self.recordVerdict(curEvidenceIndex, verdict)
 
     def getVerdictFromConvo(self):
         convo = self._evidenceConversation[:]
@@ -152,11 +152,9 @@ class AIInterrogation(AI):
         temp = {'role': 'assistant', 'content': statement}
         self._evidenceConversation.append(temp)
 
-    # def setupConvo(self):
-    #     context = self.conversation.getContext()
-    #     self._evidenceConversation.append(context)
-
     def moveOnToNextTopic(self):
+        print("Movin one manyne")
         self._currentEvidence = None
         self._counter = 0
-        self._introducedEvidence = False
+        self._introducedEvidence = False\
+        
