@@ -56,7 +56,8 @@ class menuManager:
             "emotibit": True,
             "sfxVolume": 0.5,
             "voiceVolume": 0.5,
-            "subtitles": False
+            "subtitles": False,
+            "difficulty": "easy"
         }
 
         self.mainBackground = base.loader.loadTexture(Background)

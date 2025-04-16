@@ -16,6 +16,7 @@ class settingsMenu:
         self.hoverColor = (1,1,0.5,1)
 
         self.useEmotibit = False
+        self.difficulty = "easy"
 
         self.settingsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -85,7 +86,7 @@ class settingsMenu:
             parent = self.settingsMenu,
             scale = 0.1,
             pos = (-1.3, 0.0, -0.05),
-            command = None
+            command = self.setDifficultyEasy
         )
 
         self.diffHard = DirectCheckButton(
@@ -94,7 +95,7 @@ class settingsMenu:
             parent = self.settingsMenu,
             scale = 0.1,
             pos = (-0.7, 0.0, -0.05),
-            command = None
+            command = self.setDifficultyHard
         )
 
         self.backButton = DirectButton(
@@ -175,6 +176,33 @@ class settingsMenu:
         settings["emotibit"] = False
         with open(self.manager.userSettings, 'w') as file:
             json.dump(settings, file)
+    
+    def setDifficultyEasy(self, state):
+        self.difficulty = "easy"
+        self.diffHard["indicatorValue"] = False
+        self.diffEasy["indicatorValue"] = True
+        self.diffHard.setIndicatorValue
+        self.diffEasy.setIndicatorValue
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["difficulty"] = "easy"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)
+
+    def setDifficultyHard(self, state):
+        self.difficulty = "hard"
+        self.diffHard["indicatorValue"] = True
+        self.diffEasy["indicatorValue"] = False
+        self.diffHard.setIndicatorValue
+        self.diffEasy.setIndicatorValue
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["difficulty"] = "hard"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)
+
 
     def getUseEmotibit(self):
         return self.useEmotibit
@@ -185,3 +213,7 @@ class settingsMenu:
             self.setEmotibitOn(True)
         elif self.settings["emotibit"] == False:
             self.setEmotibitOff(True)
+        if self.settings["difficulty"] == "easy":
+            self.setDifficultyEasy(True)
+        elif self.settings["difficulty"] == "hard":
+            self.setDifficultyHard(True)
