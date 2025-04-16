@@ -27,6 +27,7 @@ class InterrogationRoom:
         self.menu = menu
 
         self.useEmotibit = self.menu.settingsMenu.getUseEmotibit()
+        self.difficulty = self.menu.settingsMenu.getDifficulty()
 
         self.base.disableMouse()
         self.gameState= 'gameplay'

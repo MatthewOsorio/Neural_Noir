@@ -80,12 +80,21 @@ class settingsMenu:
             pos = (-1, 0.1 ,0)
         )
 
+        self.difficultyDesc = OnscreenText(
+            text = 'Playing on hard mode will remove some of the hints, \nand you will not know if your biometric data is in the normal range.' \
+            '\nAlso, the amount of evidence you need to successfully refute will be higher.',
+            scale = 0.04,
+            parent = self.settingsMenu,
+            fg = (1,1,1,1),
+            pos = (-1, 0.03 ,0.03)
+        )
+
         self.diffEasy = DirectCheckButton(
             text = "Easy",
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, 0.0, -0.05),
+            pos = (-1.3, 0.0, -0.2),
             command = self.setDifficultyEasy
         )
 
@@ -94,7 +103,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, 0.0, -0.05),
+            pos = (-0.7, 0.0, -0.2),
             command = self.setDifficultyHard
         )
 
@@ -206,6 +215,9 @@ class settingsMenu:
 
     def getUseEmotibit(self):
         return self.useEmotibit
+    
+    def getDifficulty(self):
+        return self.difficulty
 
     def setUserSettingsValues(self, settings):
         self.settings = settings
