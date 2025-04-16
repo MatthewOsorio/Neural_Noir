@@ -13,17 +13,12 @@ class AIInterrogation(AI):
         self._introducedEvidence = False
 
         self._aiResponse = None
-        # self._evidenceConversation = []
+        self._evidenceConversation = []
         self._counter = 0
         self._finish = False
 
-        # self._evidenceQueue = []
-        # self._playerResponses = {}
-
         self._verdictKeyword = None
         self._verdict = {}
-
-        # self.setupConvo()
 
     # Requesting evidence based on phase, 
     def receiveEvidence(self):
@@ -31,90 +26,93 @@ class AIInterrogation(AI):
             raise Exception("Story Graph reference has not been set")
 
         self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
+
         if self._currentEvidence == False:
             self._finish = True
 
     def introduceEvidence(self):
+        if self._currentEvidence is None:
+            self.receiveEvidence()
+
+            if self._finish:
+                return False
+        
         gptInput= self._aiHistory.getHistory()[:]
         
         prompt= dedent(f'''[INSTRUCTION] Introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
 
-                    **RULES**
-                    - Ask the suspect what they know about this specific piece of evidence.
+                **RULES**
+                    - If this is the first piece of evidence in the interrogation, begin questioning the suspect about it directly.
+                    - If this is not the first piece of evidence, begin by smoothly transitioning from the previous topic — make the shift feel like a natural continuation of the interrogation.
+                    - Then, ask the suspect what they know about this specific piece of evidence.
                     - If the evidence was found at the crime scene, briefly mention that.
-                    - Do NOT discuss any other evidence. Do NOT refer to anything unrelated to this item.
-                    - Wait for the suspect's response before saying more.''')
+                    - Respond as either or both detectives, staying fully in character.
+                    - Both detectives may speak, but they must stay focused on this specific item.
+                    - Do NOT discuss any other evidence or unrelated topics.
+                    - Be concise.''')
         
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
         gptResponse = self.sendToGPT(gptInput)
+        self._introducedEvidence = True
         return gptResponse
+    # def sendConversationToStoryGraph(self):
+    #     if self._storyGraph == None:
+    #         raise Exception("Story Graph reference has not been set")
 
-    def sendConversationToStoryGraph(self):
-        if self._storyGraph == None:
-            raise Exception("Story Graph reference has not been set")
+    #     self._storyGraph.receiveConversation(self._evidenceConversation)
+    #     self._evidenceConversation.clear()
 
-        self._storyGraph.receiveConversation(self._evidenceConversation)
-        self._evidenceConversation.clear()
-        self.setupConvo()
-
-    ## This method just returns whatever is stored in the aiResponse attribute.
-    # That attribute gets set when we introduce the evidence or the ai response to the user input
-    def generateResponse(self) -> str:    
-        if self._currentEvidence == None:
-            self.receiveEvidence()
-        
-        if self._finish:
-            return False
-
+    # This code returns a response after a verdict has been decided. That is not supposed to happen. 
+    def generateResponse(self): 
         if not self._introducedEvidence:
-            self._introducedEvidence = True
-            self._aiResponse = self.introduceEvidence()
-        
-        if self._counter == 3:
-            self.sendConversationToStoryGraph()
-            self.moveOnToNextTopic()
-            print(f"\n Verdicts so far: {self._verdict}\n")
-        
-        return self._aiResponse
-        
+            return self.introduceEvidence()
+        else:
+            if self._counter == 3:
+                self.generateVerdict()
+                self.moveOnToNextTopic()
+                return self.introduceEvidence()
+            else:
+                return self._aiResponse
+
+
     def processResponse(self, userResponse):
         gptInput = self._aiHistory.getHistory()[:]
         preppedResponse = "[MARK] " + userResponse
-
-        instruction = dedent(f'''[INSTRUCTION] This is the suspect's explanation of the current evidence: "{preppedResponse}".
-                    The suspect appeared {'nervous' if self.userNervous else 'not nervous'} when responding.
+        self._aiHistory.addUserInput(preppedResponse)
+        instruction = dedent(f"""[INSTRUCTION] The suspect gave the following response: "{preppedResponse}"
+                    The suspect appeared {'nervous' if self.userNervous else 'not nervous'} while responding.
 
                     [EVIDENCE] {self._currentEvidence}
 
                     **RULES**
-                    - First, comment on the suspect's explanation.
-                    - Then, ask exactly ONE follow-up question to get more detail about this piece of evidence.
-                    - Both detectives must remain focused on the current evidence. Do not have them both ask questions at the same time. They may reinforce each other, apply pressure, or rephrase the same question, but never change the topic.
-                    - If the suspect seemed nervous, make note of it.
-                    - If the suspect's response seems dishonest or inconsistent, call it out.
-                    - DO NOT discuss other evidence, the suspect's physical appearance (bruises, black eye), or any unrelated topics.
-                    - DO NOT reference the night of the murder or past altercations.
-                    - Stay fully in character and be concise.
-                    - DO NOT ask more than one question or change the topic.''')
-        
+                    - Respond as Detective Harris and/or Detective Miller.
+                    - First, react to the suspect's explanation (skepticism, encouragement, or confrontation based on character).
+                    - Then, ask exactly ONE follow-up question about this piece of evidence.
+                    - Both detectives may speak — either together or back-to-back — but they must stay on the same topic.
+                    - Do NOT ask two separate questions in the same response.
+                    - If the suspect seemed nervous, acknowledge it in your tone or commentary.
+                    - If the suspect’s response is dishonest, evasive, or contradictory, point it out.
+                    - DO NOT reference other evidence, the suspect's injuries, or the night of the murder.
+                    - Stay fully in character: Harris is aggressive and skeptical; Miller is empathetic and calm.
+                    - Be concise.
+                    - End your turn after the question. Wait for the suspect’s next reply before continuing.
+                    """)
         
         gptInput.append({"role": 'user', 'content': instruction})
 
-        gpt_response = self.sendToGPT(gptInput)
-        self._aiResponse = gpt_response
-
-        if self._counter == 2:
-            #Potentially utilize threading for this
-            #Also potentially decouple this process and perform it in stroy graph or make it another process
-            verdict = self.getVerdictFromConvo()
-            self._verdictKeyword = verdict
-
-            evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
-            curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
-            self.recordVerdict(curEvidenceIndex, verdict)
-
+        gptResponse = self.sendToGPT(gptInput)
+        self._aiResponse = gptResponse
         self._counter += 1
+
+    def generateVerdict(self):
+        print("getting stuff done mayne")
+        # verdict = self.getVerdictFromConvo()
+        # self._verdictKeyword = verdict
+
+        # evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
+        # curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
+        # self.recordVerdict(curEvidenceIndex, verdict)
 
     def getVerdictFromConvo(self):
         convo = self._evidenceConversation[:]
@@ -154,11 +152,9 @@ class AIInterrogation(AI):
         temp = {'role': 'assistant', 'content': statement}
         self._evidenceConversation.append(temp)
 
-    # def setupConvo(self):
-    #     context = self.conversation.getContext()
-    #     self._evidenceConversation.append(context)
-
     def moveOnToNextTopic(self):
+        print("Movin one manyne")
         self._currentEvidence = None
         self._counter = 0
-        self._introducedEvidence = False
+        self._introducedEvidence = False\
+        
