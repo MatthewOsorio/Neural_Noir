@@ -12,7 +12,7 @@ class DatabaseController:
     def __init__(self):
         self.db_path = os.path.join(os.path.dirname(__file__), "neural_noir.db")
         self.initializeDB()
-     #   self.alterTable()
+        #self.alterTable()
 
     def getConnection(self):
         try:
@@ -50,11 +50,11 @@ class DatabaseController:
 
   #  def alterTable(self):
      #   conn = self.getConnection()
-      #  with conn:
-       #     cur = conn.cursor()
-      #      cur.execute("""
-       #         DROP TABLE IF EXISTS Interaction
-       #     """)
+     #   with conn:
+          #  cur = conn.cursor()
+          #  cur.execute("""
+          #      DROP TABLE IF EXISTS Interaction
+          #  """)
       #  conn.close()
         
     def insertStartSession(self, sessionID, startTime):

@@ -15,6 +15,7 @@ from ..overlay.error import ErrorScreen
 from ..overlay.userSpeech import UserSpeech
 from ..overlay.tutorials import Tutorial
 import threading
+from direct.interval.LerpInterval import LerpPosInterval
 
 class Overlay:
     def __init__(self, base):
@@ -146,6 +147,15 @@ class Overlay:
         self.userInputBox.setTransparency(TransparencyAttrib.MAlpha)
         self.userSpeech.setParent(self.userInputBox)
         self.userInputBox.hide()
+
+        self.evidenceBox = OnscreenImage(
+            self.base.base.menuManager.backGroundBlack,
+            parent=self.overlay,
+            scale=(0.3, 0.15, 0.15),
+            pos=(1.7 , 0, 1),
+        )
+
+        self.evidenceBox.hide()
 
         self.ptt.setButton(self.PTTButton)
         self.ptt.hidePTTButton()
@@ -340,3 +350,15 @@ class Overlay:
         if self.internetThread is not None:
             print("Joining internet check thread")
             self.internetThread.join()
+
+    def evidenceBoxPopOut(self):
+        self.evidenceBox.show()
+
+        popOut = LerpPosInterval(
+            self.evidenceBox,
+            duration=0.5,
+            pos=(1.7, 0, 1),
+            startPos=(2.5, 0, 1)
+        )
+
+        popOut.start()

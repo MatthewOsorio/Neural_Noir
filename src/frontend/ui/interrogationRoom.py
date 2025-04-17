@@ -291,7 +291,7 @@ class InterrogationRoom:
             self.Overlay.subtitles.updateSubtitles()
             self.Overlay.showSubtitlesBox()
 
-            self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
+        self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
 
         print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
         #self.game._tts.speak(self.state.audioFilePaths[count])
