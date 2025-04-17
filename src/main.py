@@ -16,6 +16,7 @@ from frontend.ui.interrogationRoom import InterrogationRoom
 from frontend.ui.connection_utils import Connection
 from frontend.ui.connectionDisplay import ConnectionDisplay
 from frontend.ui.tutorialRoom import TutorialRoom
+from frontend.ui.warnings.dataUsageWarning import Warning
 
 import threading
 
@@ -24,6 +25,12 @@ class main(ShowBase):
         super().__init__()
 
         self.start = False
+        self.warning = Warning(self)
+        self.warning.show()
+        self.warning.button['command'] = self.continueSetUp
+
+    def continueSetUp(self):
+        self.warning.hide()
         self.menuManager = menuManager(self, self.start)
         self.interrogationRoom = None
 
