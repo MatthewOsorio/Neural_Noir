@@ -16,6 +16,8 @@ class BiometricController:
         self.emotibitErrorCount = 0
         self.errorFlag = False
         self.incrementError = False
+
+        self.bcTestFlag = False
         
     def read(self):
         while self.threadEvent.is_set() == False:
@@ -23,9 +25,12 @@ class BiometricController:
                 self.biometricReader.read()
                 #print("Error Count = 0")
                 self.emotibitErrorCount = 0
+                self.bcTestFlag = True
                 self.isNervous(self.biometricReader.getHeartRate())
                 # print(type(self.biometricReader.getHeartRate()))
             except Exception as e:
+                self.bcTestFlag = True
+
                 if self.incrementError is True:
                     #print("Error Count +1")
                     self.emotibitErrorCount += 1

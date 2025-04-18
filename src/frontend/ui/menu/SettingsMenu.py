@@ -107,6 +107,33 @@ class settingsMenu:
             command = self.setDifficultyHard
         )
 
+        self.fontText = OnscreenText(
+            text = 'Font',
+            font = self.manager.font,
+            scale = 0.1,
+            parent = self.settingsMenu,
+            fg = (1,1,1,1),
+            pos = (-1, -0.3 , -0.3)
+        )
+
+        self.fontStylized = DirectCheckButton(
+            text = "Stylized",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-1.3, -0.4, -0.4),
+            command = self.setFontLime
+        )
+
+        self.fontNormal = DirectCheckButton(
+            text = "Normal",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-0.7, -0.4, -0.4),
+            command = self.setFontNormal
+        )
+
         self.backButton = DirectButton(
             text="Back",
             text_font = self.manager.font,
@@ -212,6 +239,29 @@ class settingsMenu:
         with open(self.manager.userSettings, 'w') as file:
             json.dump(settings, file)
 
+    def setFontLime(self, state):
+        self.manager.setFontLime()
+        self.fontStylized["indicatorValue"] = True
+        self.fontNormal["indicatorValue"] = False
+        self.fontStylized.setIndicatorValue
+        self.fontNormal.setIndicatorValue
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["font"] = "stylized"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)        
+
+    def setFontNormal(self, state):
+        self.manager.setFontNormal()
+        self.fontStylized["indicatorValue"] = False
+        self.fontNormal["indicatorValue"] = True
+        self.fontStylized.setIndicatorValue
+        self.fontNormal.setIndicatorValue
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["font"] = "normal"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)   
 
     def getUseEmotibit(self):
         return self.useEmotibit
@@ -229,3 +279,7 @@ class settingsMenu:
             self.setDifficultyEasy(True)
         elif self.settings["difficulty"] == "hard":
             self.setDifficultyHard(True)
+        if self.settings["font"] == "stylized":
+            self.setFontLime(True)
+        elif self.settings["font"] == "normal":
+            self.setFontNormal(True)

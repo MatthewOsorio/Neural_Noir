@@ -26,15 +26,20 @@ class Warning:
             scale=0.1,
             command=None,
             pos=(0, 0, -0.5),
-            parent=self.frame
+            parent=self.frame,
+            frameColor = (0, 0, 0, 0),
+            text_fg = (1, 1, 1, 1)
         )
+
+        self.button.bind(DGG.ENTER, lambda event: self.setColorHover(self.button))  # Mouse enters
+        self.button.bind(DGG.EXIT, lambda event: self.setColorDefault(self.button)) 
 
         self.warningTextTop = OnscreenText
         self.warningTextAIUsage = OnscreenText
         self.warningTextNLP = OnscreenText
         self.warningTextBiometricData = OnscreenText
 
-        self.warningTextCreator(self.warningTextTop, "Warning", (0, 0.9), 0.1, self.frame, (1, 1, 1, 1))
+        self.warningTextCreator(self.warningTextTop, "Warning", (0, 0.8), 0.1, self.frame, (1, 1, 1, 1))
         self.warningTextCreator(
             self.warningTextAIUsage, 
             "This game uses OpenAI's ChatGPT to generate responses. By continuing, you agree to the use of AI technology.", 
@@ -69,4 +74,11 @@ class Warning:
             fg=color,
             wordwrap= self.wordWrap
         )
+
+    def setColorHover (self, button):
+        button["text_fg"] = (1, 1, 0.5, 1)
+
+    def setColorDefault (self, button):
+        button["text_fg"] = (1, 1, 1, 1)
+
         

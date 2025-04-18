@@ -57,7 +57,8 @@ class menuManager:
             "sfxVolume": 0.5,
             "voiceVolume": 0.5,
             "subtitles": False,
-            "difficulty": "easy"
+            "difficulty": "easy",
+            "font": "stylized"
         }
 
         self.mainBackground = base.loader.loadTexture(Background)
@@ -143,5 +144,12 @@ class menuManager:
     
     def showTutorials(self):
         self.tutorialsMenu.show()
+
+    def setFontLime(self):
+        self.font = self.base.loader.loadFont(Limelight)
+        self.mainMenu.updateFont()
         
-        
+    def setFontNormal(self):
+        self.font = self.base.loader.loadFont("cmss12.egg")
+        self.mainMenu.updateFont()
+
