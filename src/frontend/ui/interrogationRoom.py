@@ -291,6 +291,9 @@ class InterrogationRoom:
             self.Overlay.subtitles.updateSubtitles()
             self.Overlay.showSubtitlesBox()
 
+        #Probably put detective animation call here 
+        #self.animationTest(speakers[count], sentiment[count])
+
         self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
 
         print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
