@@ -152,7 +152,7 @@ class Overlay:
             self.base.base.menuManager.backGroundBlack,
             parent=self.overlay,
             scale=(0.3, 0.15, 0.15),
-            pos=(1.7 , 0, 1),
+            pos=(2.5 , 0, 1),
         )
 
         self.evidenceBox.hide()
@@ -352,13 +352,14 @@ class Overlay:
             self.internetThread.join()
 
     def evidenceBoxPopOut(self):
-        self.evidenceBox.show()
+        if self.base.difficulty == "easy":
+            self.evidenceBox.show()
 
-        popOut = LerpPosInterval(
-            self.evidenceBox,
-            duration=0.5,
-            pos=(1.7, 0, 1),
-            startPos=(2.5, 0, 1)
-        )
+            popOut = LerpPosInterval(
+                self.evidenceBox,
+                duration=0.5,
+                pos=(1.7, 0, 1),
+                startPos=(2.5, 0, 1)
+            )
 
-        popOut.start()
+            popOut.start()

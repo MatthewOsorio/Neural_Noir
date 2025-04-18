@@ -22,7 +22,7 @@ class Warning:
         )
 
         self.button = DirectButton(
-            text="OK",
+            text="I understand",
             scale=0.1,
             command=None,
             pos=(0, 0, -0.5),
