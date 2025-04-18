@@ -5,6 +5,7 @@ from frontend.stages.state1 import State1
 from frontend.stages.state2 import State2
 from frontend.stages.state3 import State3
 from frontend.stages.state4 import State4
+from direct.actor.Actor import Actor
 from direct.task import Task
 from direct.task.TaskManagerGlobal import taskMgr 
 import threading
@@ -122,12 +123,15 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
-        # load policeman
-        self.policeman = self.base.loader.loadModel("../blender/policeman/converted/policeman_converted.bam")
-        self.policeman.setScale(0.5)
-        self.policeman.setPos(-0.43, 2, -1.5)
+        # load harris_male_sitting_pose
+        self.harris = self.base.loader.loadModel("../blender//policeman_converted.bam")
+        self.harris.setScale(0.5)
+        self.harris.setPos(-0.43, 2, -1.5)
         self.room.setHpr(0, 0, 0)
-        self.policeman.reparentTo(self.base.render)
+        self.harris.reparentTo(self.base.render)
+
+        # load miller_stand_to_sit
+
         
     def unloadModels(self):
         self.room.detachNode()
