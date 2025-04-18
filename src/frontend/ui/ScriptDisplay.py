@@ -19,8 +19,9 @@ class ScriptDisplay():
         script = []
 
         for interaction in conversation:
-            script.append(f"Detective: {interaction[0]}")
-            script.append(f"Player: {interaction[1]}")
+            interactionString = f"{interaction[0]}: {interaction[1]}"
+            script.append(interactionString)
+            
 
         return script
     
@@ -29,9 +30,9 @@ class ScriptDisplay():
         sessionID = self.gameManager._sessionController.getSessionID()
         conversation = self.gameManager._database.fetchConversation(sessionID)
 
-        print("Fetched conversation from DB: ", conversation) # debug
+        #print("Fetched conversation from DB: ", conversation) # debug
         script = self.formatScript(conversation)
-        print("Formatted: script, script") #debug
+      #  print("Formatted: script, script") #debug
         return script
 
     def generateDisplayBox(self):
@@ -54,7 +55,7 @@ class ScriptDisplay():
                         text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"))
 
         dialogue_texts = self.getScript()
-        print("Dialogue texts for display:", dialogue_texts) # debug
+      #  print("Dialogue texts for display:", dialogue_texts) # debug
         print("Creating GUI elements for ScriptDisplay") # debug
 
         line_height= 0.1

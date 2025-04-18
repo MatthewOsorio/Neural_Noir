@@ -2,10 +2,17 @@ import sqlite3
 import os
 import uuid
 
+#Note from Evie 
+    # I added some more columns to the Interaction Table to account for both detectives responding
+    # You may need to drop and recreate the table to get it to work. If so just uncomment the alterTable function and run the program once
+    # Also, because one of our requirements is the ethical handling of data, I removed the biometric feedback table entirely 
+    # Even though we weren't using it, for the sake of clarity 
+
 class DatabaseController:
     def __init__(self):
         self.db_path = os.path.join(os.path.dirname(__file__), "neural_noir.db")
         self.initializeDB()
+        #self.alterTable()
 
     def getConnection(self):
         try:
@@ -24,36 +31,32 @@ class DatabaseController:
                     sessionStartTime TEXT,
                     sessionEndTime TEXT
                 );
-
+ 
                 CREATE TABLE IF NOT EXISTS Interaction(
                     interactionID TEXT PRIMARY KEY,
                     startTime TEXT,
                     endTime TEXT,
-                    userInput TEXT,
                     response TEXT,
+                    Speaker TEXT,
                     sessionID TEXT,
                     feedbackID TEXT,
                     FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
                     FOREIGN KEY (feedbackID) REFERENCES BiometricFeedback(feedbackID)
                 );
                               
-                CREATE TABLE IF NOT EXISTS BiometricFeedback(
-                    feedbackID TEXT PRIMARY KEY,
-                    startTime TEXT,
-                    endTime TEXT,
-                    stdDeviation REAL,
-                    temperature REAL,
-                    heartRate REAL,
-                    skinConductance REAL,
-                    sessionID TEXT,
-                    interactionID TEXT,
-                    FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
-                    FOREIGN KEY (interactionID) REFERENCES Interaction(interactionID)
-                );
             """   
             )
         conn.close()
-    
+
+  #  def alterTable(self):
+     #   conn = self.getConnection()
+     #   with conn:
+          #  cur = conn.cursor()
+          #  cur.execute("""
+          #      DROP TABLE IF EXISTS Interaction
+          #  """)
+      #  conn.close()
+        
     def insertStartSession(self, sessionID, startTime):
         try:
             conn = self.getConnection()
@@ -67,16 +70,16 @@ class DatabaseController:
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement: ", e)
 
-    def insertInteraction(self, start, end, userInput, response, sessionID, feedbackID):
+    def insertInteraction(self, start, end, response, speaker, sessionID, feedbackID):
         try:
             interactionID = str(uuid.uuid4())
             conn = self.getConnection()
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    INSERT INTO Interaction (interactionID, startTime, endTime, userInput, response, sessionID, feedbackID)
+                    INSERT INTO Interaction (interactionID, startTime, endTime, response, speaker, sessionID, feedbackID)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (interactionID, start, end, userInput, response, sessionID, feedbackID))
+                """, (interactionID, start, end, response, speaker, sessionID, feedbackID))
                 conn.commit()
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
@@ -87,7 +90,7 @@ class DatabaseController:
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    SELECT response, userInput
+                    SELECT speaker, response
                     FROM Interaction
                     WHERE sessionID = ?
                 """, (str(sessionID),))
@@ -95,20 +98,6 @@ class DatabaseController:
         except sqlite3.Error as e:
             raise Exception("Error retrieving conversation", e)
         
-    def insertBiometrics(self, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID):
-        try:
-            feedbackID = str(uuid.uuid4())
-            conn = self.getConnection()
-            with conn:
-                cur = conn.cursor()
-                cur.execute("""
-                    INSERT INTO BiometricFeedback (feedbackID, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (feedbackID, startTime, endTime, stdDeviation, temperature, heartRate, skinConductance, sessionID, interactionID))
-                conn.commit()
-        except sqlite3.Error as e:
-            raise Exception("Ereror inserting biometrics: ", e)
-
     def closeConnection(self):
         conn = self.getConnection()
         conn.close()

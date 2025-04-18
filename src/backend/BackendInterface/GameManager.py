@@ -19,9 +19,6 @@ class GameManager:
         self._database = None
         self._sessionController = None
             
-        self.response = None
-        self.userResponse = None
-
         self._useEmotibit = False
 
     # instantiate all objects here
@@ -29,7 +26,7 @@ class GameManager:
         self._database = DatabaseController()
         self._sessionController = SessionController(self._database)
         self._conversation = ConversationModel(self._database, self._sessionController)
-        self._aiController = AIController(self._conversation)
+        self._aiController = AIController()
         self._gameState = GameStateManager()
         self._sr = SpeechToText()
         self._tts = TextToSpeechController()
@@ -146,6 +143,9 @@ class GameManager:
     def setUseEmotibit(self, useEmotibit):
         self._useEmotibit = useEmotibit
 
-    def insertInteractionInDB(self):
-        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), self.userResponse, self.response)
+    def insertInteractionInDB(self, response, speaker):
+        self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), response, speaker)
+
+    def resetConversation(self):
+        self._conversation.resetConversation()
 

@@ -9,12 +9,16 @@ class Connection:
     def checkInternet(self, url="https://www.google.com", timeout=60):
         try:
             response = requests.head(url, timeout=timeout)
+           # print("Internet connection successful.")
             return response.status_code == 200 # Internet connection available
         except requests.ConnectionError: # "No internet connection"
+           # print("No internet connection.")
             return False
         except requests.Timeout: # Server taking too long to respond
+           # print("Connection timed out.")
             return False
         except requests.RequestException: # Send a report
+           # print("An error occurred while checking the internet connection.")
             return False
         
     def checkOpenai(self):

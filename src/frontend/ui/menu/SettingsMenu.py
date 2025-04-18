@@ -16,6 +16,7 @@ class settingsMenu:
         self.hoverColor = (1,1,0.5,1)
 
         self.useEmotibit = False
+        self.difficulty = "easy"
 
         self.settingsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -46,10 +47,10 @@ class settingsMenu:
         self.useEmotibitText = OnscreenText(
             text = 'Use Emotibit',
             font = self.manager.font,
-            scale = 0.15,
+            scale = 0.1,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, -0.2 ,0)
+            pos = (-1, 0.4 ,0)
         )
 
         self.emotibitOn = DirectCheckButton(
@@ -57,7 +58,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, -0.3, -0.4),
+            pos = (-1.3, 0.3, 0.25),
             command = self.setEmotibitOn
         )
 
@@ -66,8 +67,44 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, -0.3, -0.4),
+            pos = (-0.7, 0.3, 0.25),
             command = self.setEmotibitOff
+        )
+
+        self.difficultyText = OnscreenText(
+            text = 'Difficulty',
+            font = self.manager.font,
+            scale = 0.1,
+            parent = self.settingsMenu,
+            fg = (1,1,1,1),
+            pos = (-1, 0.1 ,0)
+        )
+
+        self.difficultyDesc = OnscreenText(
+            text = 'Playing on hard mode will remove some of the hints, \nand you will not know if your biometric data is in the normal range.' \
+            '\nAlso, the amount of evidence you need to successfully refute will be higher.',
+            scale = 0.04,
+            parent = self.settingsMenu,
+            fg = (1,1,1,1),
+            pos = (-1, 0.03 ,0.03)
+        )
+
+        self.diffEasy = DirectCheckButton(
+            text = "Easy",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-1.3, 0.0, -0.2),
+            command = self.setDifficultyEasy
+        )
+
+        self.diffHard = DirectCheckButton(
+            text = "Hard",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-0.7, 0.0, -0.2),
+            command = self.setDifficultyHard
         )
 
         self.backButton = DirectButton(
@@ -148,9 +185,39 @@ class settingsMenu:
         settings["emotibit"] = False
         with open(self.manager.userSettings, 'w') as file:
             json.dump(settings, file)
+    
+    def setDifficultyEasy(self, state):
+        self.difficulty = "easy"
+        self.diffHard["indicatorValue"] = False
+        self.diffEasy["indicatorValue"] = True
+        self.diffHard.setIndicatorValue
+        self.diffEasy.setIndicatorValue
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["difficulty"] = "easy"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)
+
+    def setDifficultyHard(self, state):
+        self.difficulty = "hard"
+        self.diffHard["indicatorValue"] = True
+        self.diffEasy["indicatorValue"] = False
+        self.diffHard.setIndicatorValue
+        self.diffEasy.setIndicatorValue
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["difficulty"] = "hard"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)
+
 
     def getUseEmotibit(self):
         return self.useEmotibit
+    
+    def getDifficulty(self):
+        return self.difficulty
 
     def setUserSettingsValues(self, settings):
         self.settings = settings
@@ -158,3 +225,7 @@ class settingsMenu:
             self.setEmotibitOn(True)
         elif self.settings["emotibit"] == False:
             self.setEmotibitOff(True)
+        if self.settings["difficulty"] == "easy":
+            self.setDifficultyEasy(True)
+        elif self.settings["difficulty"] == "hard":
+            self.setDifficultyHard(True)

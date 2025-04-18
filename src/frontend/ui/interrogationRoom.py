@@ -3,6 +3,8 @@ from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
 from frontend.stages.state1 import State1
 from frontend.stages.state2 import State2
+from frontend.stages.state3 import State3
+from frontend.stages.state4 import State4
 from direct.task import Task
 from direct.task.TaskManagerGlobal import taskMgr 
 import threading
@@ -25,6 +27,7 @@ class InterrogationRoom:
         self.menu = menu
 
         self.useEmotibit = self.menu.settingsMenu.getUseEmotibit()
+        self.difficulty = self.menu.settingsMenu.getDifficulty()
 
         self.base.disableMouse()
         self.gameState= 'gameplay'
@@ -58,17 +61,20 @@ class InterrogationRoom:
 
         self.prompt = prompt
 
+        self.threadEvent = threading.Event()
+
         self.thread = None
 
         self.redoable = False
 
-        self.threadEvent = threading.Event()
+        self.testStates = None
 
+        self.currentLine = 0
         
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
-        if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True):
+        if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True and not self.Overlay.connectionError):
             self.menu.pauseMenu.show()
             self.menu.pauseMenu.showImage()
             self.gameState = 'paused'
@@ -153,7 +159,7 @@ class InterrogationRoom:
         self.menu.audioMenu.setVoiceVolumeSlider(self.voiceVolume)
         self.menu.audioMenu.setSFXVolumeSlider(self.sfxVolume)
 
-        self.pausable = True
+        self.pausable = False
         self.ended = False
         self.current = 0
         self.Overlay.flashback.setImage(self.prompt)
@@ -164,9 +170,11 @@ class InterrogationRoom:
             flashback = self.Overlay.flashback.getActive()
               
         if self.useEmotibit == True:
+            self.game._bioController.incrementError = True
+            self.Overlay.startEmotiBitCheck()
             self.Overlay.showBioData()
         
-        self.testStates = [State1(), State2()]
+        self.testStates = [State1(), State2(), State3(), State4()]
 
         self.state = self.testStates[0]
     
@@ -175,23 +183,26 @@ class InterrogationRoom:
         self.state.testPrint()
 
         response = self.state.begin()
+        self.currentLine = 0
+        taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
         self.state.convert()
-        self.Overlay.ptt.showPTTButton()
-        self.redoable = True
+        #self.Overlay.ptt.showPTTButton()
+       # self.redoable = True
         #Get the speech input
-        taskMgr.add(self.speechUI, "UpdateSpeechTask")
-        
-       
+        #taskMgr.add(self.speechUI, "UpdateSpeechTask")
+  
+
     #Updates the overlay to show the PTT Button
     def speechUI(self, task):
-        
+        self.pausable = True
         pttActive = self.Overlay.ptt.getPTTActive()
         if pttActive == False: 
-            self.pausible = False
+            self.pausable = False
             self.Overlay.ptt.hidePTTButton()
             print("talk")
             self.thread = threading.Thread(target=self.processSpeech, daemon=True)
-            self.thread.start()
+            if self.threadEvent.is_set() == False:
+                self.thread.start()
             return task.done 
 
         return task.cont
@@ -201,7 +212,8 @@ class InterrogationRoom:
         
         self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
-        self.game.insertInteractionInDB()
+        
+  
         self.Overlay.userSpeech.active = True
         self.Overlay.userSpeech.redo = False
 
@@ -226,28 +238,33 @@ class InterrogationRoom:
         userInputActive = self.Overlay.userSpeech.getActive()
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
             self.Overlay.hideUserInputBox()
+            self.game.insertInteractionInDB(speech, "Player")
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
-            self.thread.start()
+            if self.threadEvent.is_set() == False:
+                self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
             self.redoable = False
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
             taskMgr.add(self.speechUI, "UpdateSpeechTask")
+            self.pausable = True
             return task.done
         
         return task.cont
               
     #Response processing part
     def processResponse(self):
-        self.pausable = True
         
         response = self.state.generateResponse()
 
         if response != False:
             #Update the overlay to show the response
-            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            #taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            self.currentLine = 0
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
             
+
         else:
             self.current = self.current + 1
             print(f"State {self.current}")
@@ -258,22 +275,42 @@ class InterrogationRoom:
             self.state.setUseEmotibit(self.useEmotibit)
             response = self.state.begin()
             print("New state response")
-            taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            self.currentLine = 0
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
 
             print("End")
 
     #Updates subtitles if applicable
-    def responseUI(self, response, task):
-        print(response)
+    def responseUI(self, task):
+        count = self.currentLine
+        #print(f"Response: {response}")
         if (self.menu.subtitles == True):
-            self.Overlay.subtitles.setResponse(response)
+            subtitlesString = f"{self.state.speakers[count]}: {self.state.texts[count]}"
+            print(f"Sub string {count}: {subtitlesString}")
+            self.Overlay.subtitles.setResponse(subtitlesString)
             self.Overlay.subtitles.updateSubtitles()
             self.Overlay.showSubtitlesBox()
-        
-        #Convert the response to speech
-        self.thread = threading.Thread(target=self.responseToSpeech, daemon=True)
-        self.thread.start()
+
+        self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
+
+        print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
+        #self.game._tts.speak(self.state.audioFilePaths[count])
+        self.thread = threading.Thread(target=self.playAudio, args=(self.state.audioFilePaths[count],), daemon=True)
+        if self.threadEvent.is_set() == False:
+            self.thread.start()
+
         return task.done
+    
+    def playAudio(self, audioPath):
+        self.game._tts.speak(audioPath)
+
+        if self.currentLine < len(self.state.audioFilePaths) - 1:
+            self.currentLine = self.currentLine + 1
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+        else:
+            self.state.resetResponse()
+            taskMgr.add(self.updateResponse, "Update")
+
 
     #TTS process
     def responseToSpeech(self):
@@ -287,7 +324,7 @@ class InterrogationRoom:
         self.Overlay.hideSubtitlesBox()
 
         #If the game has not been quit, restart the process
-        if self.ended == False:
+        if self.ended == False and not self.Overlay.connectionError:
             self.Overlay.ptt.showPTTButton()
             #threading.Thread(target=self.processSpeech, daemon=True).start()
             self.processNext()
@@ -311,6 +348,10 @@ class InterrogationRoom:
         if self.thread is not None and self.thread.is_alive():
             print("Joining game thread")
             self.thread.join(timeout = 2)
+
+        if self.useEmotibit == True:
+            self.game._bioController.cleanThread()
+
         self.Overlay.cleanUpThreads()
         self.base.cleanUpThreads()
         

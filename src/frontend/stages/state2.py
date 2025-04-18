@@ -18,6 +18,10 @@ class State2:
         self.image = prompt
         self.useEmotibit = False
 
+        self.speakers = []
+        self.texts = []
+        self.audioFilePaths = []
+
     def testPrint(self):
         print("This is state 2")  
     
@@ -43,8 +47,12 @@ class State2:
 
         if self.useEmotibit:
             self.overlay.showBioData()
-            
+        
+        self.overlay.evidenceBoxPopOut()  
         self.response = self.game.generateAIResponse()
+        print ("State 2 response: ", self.response)
+        if self.response is not False:
+            self.parseResponse(self.response)
         return self.response
         
     def convert(self):
@@ -58,7 +66,24 @@ class State2:
             print("Ending phase")
             self.endPhase = True
 
+        if self.response is not False:
+            self.parseResponse(self.response)
         return self.response
     
     def introduceEvidence(self):
         self.game._aiController.introduceEvidence()
+
+    def parseResponse(self, response):
+
+        print (response)
+
+        for line in response:
+            self.speakers.append(line.get("Speaker"))
+            self.texts.append(line.get("Text"))
+            self.audioFilePaths.append(line.get("AudioFilepath"))
+            print(f"audio path: {line.get('AudioFilepath')}")
+    
+    def resetResponse(self):
+        self.speakers = []
+        self.texts = []
+        self.audioFilePaths = []

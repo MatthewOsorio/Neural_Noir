@@ -3,6 +3,7 @@ from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectLabel import DirectLabel
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 from direct.gui.DirectButton import DirectButton
+import threading
 from panda3d.core import TransparencyAttrib
 
 from panda3d.core import TextNode
@@ -133,6 +134,9 @@ class PauseMenu():
     def returnToMain(self):
         self.quitClicked = False
 
+        for thread in threading.enumerate():
+            print(f"🧵 Thread Name: {thread.name}, Alive: {thread.is_alive()}, Daemon: {thread.daemon}")
+
         #Ensures quit command is not sent twice 
         if self.quitClicked == False:
             self.quitClicked == True
@@ -151,9 +155,17 @@ class PauseMenu():
             self.game.restartEmotibit()
             if self.room.useEmotibit:
                 self.game._bioController._gameIsReady = False
+                self.game._bioController.emotibitErrorCount = 0
+                self.game._bioController.errorFlag = False
+                self.game._bioController.incrementError = False
+
+            #self.game.resetConversation()
             self.game.begin = False
             self.ended = True
             self.room.base.returnToMenu()
+
+            for thread in threading.enumerate():
+                print(f"🧵 Thread Name: {thread.name}, Alive: {thread.is_alive()}, Daemon: {thread.daemon}")
         
     def testAudioSettings(self):
         self.hide()

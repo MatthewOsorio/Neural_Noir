@@ -6,11 +6,15 @@ from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 
+from ..menu.emotibitSetUp import EmotibitTutorial
+
 
 class TutorialsMenu:
     def __init__(self, manager, base):
         self.manager = manager
         self.base = base
+
+        self.eTutorial = EmotibitTutorial(self.base)
 
         self.tutorialsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -27,6 +31,15 @@ class TutorialsMenu:
             command = self.loadTutorialRoom
         )
 
+        self.emotibitTutorialButton = DirectButton(
+            text = "EmotiBit Tutorial",
+            text_font = self.manager.font,
+            scale = 0.1,
+            pos=(-1, 0, 0.5),
+            parent = self.tutorialsMenu,
+            command = self.loadEmotiBitTutorial
+        )
+
         self.backButton = DirectButton(
             text="Back",
             text_font = self.manager.font,
@@ -38,6 +51,7 @@ class TutorialsMenu:
         )
 
         self.hide()
+        self.eTutorial.hide()
 
     def moveToMain(self):
         self.hide()
@@ -53,3 +67,14 @@ class TutorialsMenu:
         self.hide()
         self.manager.hideImage()
         self.manager.beginTutorial()
+
+    def loadEmotiBitTutorial(self):
+        self.hide()
+        self.eTutorial.show()
+        self.eTutorial.setUpBC()
+        self.eTutorial.button['command'] = self.hideEmotiBitTutorial
+    
+    def hideEmotiBitTutorial(self):
+        self.eTutorial.goBack()
+        self.show()
+    

@@ -15,6 +15,7 @@ from ..overlay.error import ErrorScreen
 from ..overlay.userSpeech import UserSpeech
 from ..overlay.tutorials import Tutorial
 import threading
+from direct.interval.LerpInterval import LerpPosInterval
 
 class Overlay:
     def __init__(self, base):
@@ -33,6 +34,7 @@ class Overlay:
         self.tutorials = Tutorial(self.base)
 
         self.connectionError = False
+        self.initialImageFinished = False
 
         self.overlay = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -100,22 +102,24 @@ class Overlay:
         self.PTTButton.setTransparency(TransparencyAttrib.MAlpha)
 
         self.acceptSpeechButton = DirectButton(
-            text = "Accept Speech",
-            scale = 0.05,
-            pos = (0, 0, 0),
+            text = "ACCEPT",
+            scale = 0.1,
+            pos = (1.5, 0, -0.5),
             command = None,
             parent = self.overlay,
-            frameColor=(0, 0, 1, 1),
+            frameColor=(0, 0, 0, 1),
+            text_fg = (1, 1, 1, 1),
             sortOrder=1
         )
 
         self.redoSpeechButton = DirectButton(
-            text = "Redo Speech",
-            scale = 0.05,
-            pos = (0, -0.1, -0.1),
+            text = "RETAKE",
+            scale = 0.1,
+            pos = (1.5, -0.1, -0.7),
             command = None,
             parent = self.overlay,
-            frameColor=(1, 0, 0, 1),
+            frameColor=(0, 0, 0, 1),
+            text_fg = (1, 1, 1, 1),
             sortOrder=1
         )
 
@@ -144,6 +148,15 @@ class Overlay:
         self.userSpeech.setParent(self.userInputBox)
         self.userInputBox.hide()
 
+        self.evidenceBox = OnscreenImage(
+            self.base.base.menuManager.backGroundBlack,
+            parent=self.overlay,
+            scale=(0.3, 0.15, 0.15),
+            pos=(2.5 , 0, 1),
+        )
+
+        self.evidenceBox.hide()
+
         self.ptt.setButton(self.PTTButton)
         self.ptt.hidePTTButton()
         self.setButtonCommand()
@@ -151,7 +164,7 @@ class Overlay:
         self.hideBioData()
 
         self.errorScreen.hideConnectionError()
-        self.errorScreen.hideOpenAIError()
+       # self.errorScreen.hideOpenAIError()
 
         self.hideUserInputBox()
         self.setAcceptButtonCommand()
@@ -160,7 +173,7 @@ class Overlay:
         taskMgr.doMethodLater(5, self.updateOverlay, "updateOverlayTask") 
         taskMgr.doMethodLater(5, self.checkInternetConnection, "checkConnectionTask") 
 
-    
+
     def show(self):
         self.overlay.show()
     
@@ -184,7 +197,7 @@ class Overlay:
         if self.heartRate is not None:
             self.displayHeartRate.setText("Heart Rate: " + str(round(self.heartRate, 2)))
             if self.base.current > 0:
-                if self.heartRate > self.base.game.getHeartRateRange()[1]:
+                if self.heartRate > self.base.game.getHeartRateRange()[1] and self.base.difficulty is "easy":
                     self.displayHeartRate.setFg((1, 0, 0, 1))
                 else:
                     self.displayHeartRate.setFg((1, 1, 1, 1))
@@ -195,7 +208,7 @@ class Overlay:
         if self.eda is not None:
             self.displayEda.setText("EDA: " + str(round(self.eda, 2)))
             if self.base.current > 0:
-                if self.eda > self.base.game.getEDARange()[1]:
+                if self.eda > self.base.game.getEDARange()[1] and self.base.difficulty is "easy":
                     self.displayEda.setFg((1, 0, 0, 1))
                 else:
                     self.displayEda.setFg((1, 1, 1, 1))
@@ -206,7 +219,7 @@ class Overlay:
         if self.temperature is not None:
             self.displayTemperature.setText("Temperature: " + str(round(self.temperature, 2)))
             if self.base.current > 0:
-                if self.temperature > self.base.game.getTempRange()[1]:
+                if self.temperature > self.base.game.getTempRange()[1] and self.base.difficulty is "easy":
                     self.displayTemperature.setFg((1, 0, 0, 1))
                 else:
                     self.displayTemperature.setFg((1, 1, 1, 1))
@@ -248,13 +261,24 @@ class Overlay:
     def showBioData(self):
         self.bioBackground.show()
 
+    def hideAll(self):
+        self.bioBackground.hide()
+        self.subtitlesBox.hide()
+        self.userInputBox.hide()
+        self.PTTButton.hide()
+        self.PTTButton.noError = False
+        self.acceptSpeechButton.hide()
+        self.redoSpeechButton.hide()
+        self.flashback.hide()
+        self.base.menu.pauseMenu.hide()
+
     def checkInternetConnection(self, task):
         self.internetThread = threading.Thread(target=self.checkInternetThread, daemon=True)
         self.internetThread.start()
         return task.again
 
     def checkInternetThread(self):
-        print("check (background thread)")
+        #print("check (background thread)")
         self.connection = self.base.base.connection
         status = self.connection.checkInternet()
 
@@ -263,15 +287,62 @@ class Overlay:
 
             # Show error on the main thread
             taskMgr.add(lambda task: self.handleConnectionError(task), "showConnectionErrorTask")
+
+    #check connection to OpenAI API if there is internet 
+    def checkGPTConnection(self):
+        status = self.connection.checkOpenai()
+
+        if not status and not self.connectionError:
+            self.connectionError = True
+            
+            taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
         
     def handleConnectionError(self, task):
+        self.hideAll()
+        self.base.pausable = False
         self.errorScreen.showConnectionError()
-        return task.done       
+        return task.done  
+
+    def handleOpenAIError(self, task):
+        self.hideAll()
+        self.base.pausable = False
+        self.errorScreen.connectionErrorText.setText("OpenAI Error")
+        self.errorScreen.connectionErrorText2.setText("Please check your OpenAI API key.")
+        self.errorScreen.showConnectionError()
+        return task.done  
+    
+    #NOTE This will automatically end the game if the emotibit connection is lost for around 15 seconds while emotibit mode is on
+    #If for some reason you need to test something with emotibit mode on, disable "self.Overlay.startEmotiBitCheck()" in beginInterrogation function in interrogationRoom
+    def startEmotiBitCheck(self):
+        if self.base.useEmotibit is True:
+            taskMgr.doMethodLater(5, self.checkEmotiBitConnection, "checkEmotiBitConnectionTask")
+
+    def checkEmotiBitConnection(self, task):
+        status = self.base.game._bioController.errorFlag
+        #print(f"Emotibit Error Count: {self.base.game._bioController.emotibitErrorCount}")
+        if status and not self.connectionError:
+            self.connectionError = True
+            
+            # Show error on the main thread
+            taskMgr.add(lambda task: self.handleEmotiBitError(task), "showConnectionErrorTask")
+
+        return task.again
+
+    def handleEmotiBitError(self, task):
+        self.hideAll()
+        self.base.pausable = False
+        self.errorScreen.connectionErrorText.setText("EmotiBit Error")
+        self.errorScreen.connectionErrorText2.setText("Please check your EmotiBit connection.")
+        self.errorScreen.showConnectionError()
+        return task.done
+
 
     def cleanUpTasks(self):
         taskMgr.remove("updateOverlayTask")
         taskMgr.remove("checkConnectionTask")
         taskMgr.remove("showConnectionErrorTask")
+        if self.base.useEmotibit is True:
+            taskMgr.remove("checkEmotiBitConnectionTask")
 
     def cleanUpThreads(self):
         self.threadEvent.set()
@@ -279,3 +350,16 @@ class Overlay:
         if self.internetThread is not None:
             print("Joining internet check thread")
             self.internetThread.join()
+
+    def evidenceBoxPopOut(self):
+        if self.base.difficulty == "easy":
+            self.evidenceBox.show()
+
+            popOut = LerpPosInterval(
+                self.evidenceBox,
+                duration=0.5,
+                pos=(1.7, 0, 1),
+                startPos=(2.5, 0, 1)
+            )
+
+            popOut.start()

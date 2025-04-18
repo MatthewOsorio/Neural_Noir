@@ -22,7 +22,7 @@ class ErrorScreen:
             self.base.base.menuManager.black,
             parent=self.connectionError,
             scale=(2, 2, 2),
-            pos=(0 , 0, 0),
+            pos=(0 , 0, 0)
         )
 
         self.connectionErrorText = OnscreenText(
@@ -51,62 +51,18 @@ class ErrorScreen:
             parent = self.connectionError,
             pos = (0, 0, 0),
             command = self.closeGame,
-            sortOrder=1
+            sortOrder=3
         )
 
-        self.openAIError = DirectFrame(
-            frameColor=(0, 0, 0, 0),
-            frameSize=(-1, 1, -1, 1),
-            parent=self.base.base.aspect2d
-        )
-
-        self.openAIErrorBG = OnscreenImage(
-            self.base.base.menuManager.black,
-            parent=self.openAIError,
-            scale=(2, 2, 2),
-            pos=(0 , 0, 0),
-        )
-
-        self.openAIErrorText = OnscreenText(
-            text = "Connection Error",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
-            scale = 0.2,
-            parent = self.openAIError,
-            fg = (1,1,1,1),
-            pos = (0,0.6,0)
-        )
-
-        self.openAIErrorText2 = OnscreenText(
-            text = "Please check your connection with OpenAI.",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
-            scale = 0.1,
-            parent = self.openAIError,
-            fg = (1,1,1,1),
-            pos = (0,0.4,0)
-        )
-
-        self.openAIErrorButton = DirectButton(
-            text = "Continue",
-            text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
-            scale = 0.1,
-            frameColor = (1, 1, 1, 1),
-            parent = self.openAIError,
-            pos = (0, 0, 0),
-            command = None,
-            sortOrder=1
-        )
+        self.connectionErrorBG.setBin("fixed", 2)
+        self.connectionErrorText.setBin("fixed", 3)
+        self.connectionErrorText2.setBin("fixed", 3)
 
     def showConnectionError(self):
         self.connectionError.show()
     
     def hideConnectionError(self):
         self.connectionError.hide()
-
-    def showOpenAIError(self):
-        self.openAIError.show()
-    
-    def hideOpenAIError(self):
-        self.openAIError.hide()
 
     def closeGame(self):
         sys.exit()

@@ -17,6 +17,10 @@ class State1:
         self.currentBaseE = 0
         self.currentBaseT = 0
 
+        self.speakers = []
+        self.texts = []
+        self.audioFilePaths = []
+
     def testPrint(self):
         print("This is state 1")
 
@@ -27,6 +31,10 @@ class State1:
     def begin(self):
         self.game._gameState.updateState(1)
         self.response = self.game.generateAIResponse()
+
+        if self.response is not False:
+            self.parseResponse(self.response)
+            
         return self.response
         
     def convert(self):
@@ -42,6 +50,9 @@ class State1:
             self.updateBaseValues()
             self.endPhase = True
 
+        if self.response is not False:
+            self.parseResponse(self.response)
+            
         return self.response
 
     def updateData(self, task):
@@ -97,4 +108,19 @@ class State1:
 
     def cleanUpTasks(self):
         tskMgr.remove("data")
+
+    def parseResponse(self, response):
+
+        print (response)
+
+        for line in response:
+            self.speakers.append(line.get("Speaker"))
+            self.texts.append(line.get("Text"))
+            self.audioFilePaths.append(line.get("AudioFilepath"))
+            print(f"audio path: {line.get('AudioFilepath')}")
+    
+    def resetResponse(self):
+        self.speakers = []
+        self.texts = []
+        self.audioFilePaths = []
 
