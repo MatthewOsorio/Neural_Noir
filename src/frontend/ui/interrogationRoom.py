@@ -71,6 +71,7 @@ class InterrogationRoom:
 
         self.currentLine = 0
         
+        self.currentEvidence = None
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -261,6 +262,8 @@ class InterrogationRoom:
         if response != False:
             #Update the overlay to show the response
             #taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
+            #self.currentEvidence = self.game._aiController.getCurrentEvidence()
             self.currentLine = 0
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
             
@@ -274,6 +277,8 @@ class InterrogationRoom:
             self.state.setOverlay(self.Overlay)
             self.state.setUseEmotibit(self.useEmotibit)
             response = self.state.begin()
+            #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
+            #self.currentEvidence = self.game._aiController.getCurrentEvidence()
             print("New state response")
             self.currentLine = 0
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")

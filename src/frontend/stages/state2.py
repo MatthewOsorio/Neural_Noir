@@ -48,8 +48,10 @@ class State2:
         if self.useEmotibit:
             self.overlay.showBioData()
         
-        self.overlay.evidenceBoxPopOut()  
-        self.response = self.game.generateAIResponse()
+        self.response = self.game.generateAIResponse()  
+        self.overlay.base.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()      
+        self.overlay.evidenceBoxSetText()
+        self.overlay.evidenceBoxPopOut() 
         print ("State 2 response: ", self.response)
         if self.response is not False:
             self.parseResponse(self.response)

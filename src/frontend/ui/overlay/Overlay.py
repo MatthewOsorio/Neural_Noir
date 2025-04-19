@@ -155,6 +155,14 @@ class Overlay:
             pos=(2.5 , 0, 1),
         )
 
+        self.evidenceText = OnscreenText(
+            text = "",
+            fg = (1, 1, 1, 1),
+            scale = (0.1),
+            pos = (0, -0.2, -0.2),
+            parent = self.evidenceBox
+        )
+
         self.evidenceBox.hide()
 
         self.ptt.setButton(self.PTTButton)
@@ -363,3 +371,7 @@ class Overlay:
             )
 
             popOut.start()
+
+    def evidenceBoxSetText(self):
+        evidenceStr = f"Current Evidence: {self.base.currentEvidence}"
+        self.evidenceText.setText(evidenceStr)

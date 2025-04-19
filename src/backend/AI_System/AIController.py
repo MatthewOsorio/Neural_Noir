@@ -32,3 +32,6 @@ class AIController:
     def updateNervous(self, isNervous):
         self._userState = isNervous
         self._ai.updateNervous(isNervous)
+
+    def getCurrentEvidence(self):
+        return self._ai.getCurrentEvidence()
