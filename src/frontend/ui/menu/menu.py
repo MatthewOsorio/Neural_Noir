@@ -47,6 +47,12 @@ class menuManager:
         self.initializeBackground()
         
         self.audio = audioManager(self.base)
+        self.pauseMenu = None
+        self.mainMenu = None
+        self.quitMenu = None
+        self.audioMenu = None
+        self.tutorialsMenu = None
+        self.settingsMenu = None
         
         self.gameStart = startFlag
         self.gameState = 'menu'
@@ -82,11 +88,14 @@ class menuManager:
         self.mainMenu = mainMenu(self, self.base)
         self.settingsMenu = settingsMenu(self, self.base)
         self.audioMenu = audioSettings(self, self.base, self.audio)
-        self.pauseMenu = None
+        
         self.quitMenu = confirmQuit(self, self.base)
         self.tutorialsMenu = TutorialsMenu(self, self.base)
 
         self.subtitles = False
+
+        self.mainTextColor = (1,1,1,1)
+        self.hoverColor = (1,1,0.5,1)
 
     def initializeBackground(self):
         if self.titleImage is not None: 
@@ -147,9 +156,34 @@ class menuManager:
 
     def setFontLime(self):
         self.font = self.base.loader.loadFont(Limelight)
-        self.mainMenu.updateFont()
+        if self.mainMenu is not None:
+            self.mainMenu.updateFont()
+
+        if self.audioMenu is not None:
+            self.audioMenu.updateFont()
+
+        if self.pauseMenu is not None:
+            self.pauseMenu.updateFont()
+
+        if self.settingsMenu is not None:
+            self.settingsMenu.updateFont()
         
     def setFontNormal(self):
         self.font = self.base.loader.loadFont("cmss12.egg")
-        self.mainMenu.updateFont()
+        if self.mainMenu is not None:
+            self.mainMenu.updateFont()
 
+        if self.audioMenu is not None:
+            self.audioMenu.updateFont()
+
+        if self.pauseMenu is not None:
+            self.pauseMenu.updateFont()
+
+        if self.settingsMenu is not None:
+            self.settingsMenu.updateFont()
+
+    def setColorHover (self, button):
+        button["text_fg"] = self.hoverColor
+
+    def setColorDefault (self, button):
+        button["text_fg"] = self.mainTextColor

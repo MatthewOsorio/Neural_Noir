@@ -166,6 +166,7 @@ class settingsMenu:
             settings = json.load(file)
 
         self.setUserSettingsValues(settings)
+        self.updateFont()
 
     def moveToMain(self):
         self.hide()
@@ -283,3 +284,18 @@ class settingsMenu:
             self.setFontLime(True)
         elif self.settings["font"] == "normal":
             self.setFontNormal(True)
+
+    def updateFont(self):
+        self.emotibitOn["text_font"] = self.manager.font
+        self.emotibitOff["text_font"] = self.manager.font
+        self.diffEasy["text_font"] = self.manager.font
+        self.diffHard["text_font"] = self.manager.font
+        self.fontStylized["text_font"] = self.manager.font
+        self.fontNormal["text_font"] = self.manager.font
+        self.backButton["text_font"] = self.manager.font
+        self.audioButton["text_font"] = self.manager.font
+        self.topText.font = self.manager.font
+        self.difficultyText.font = self.manager.font
+        #self.difficultyDesc.font = self.manager.font        
+        self.useEmotibitText.font = self.manager.font   
+        self.fontText.font = self.manager.font   

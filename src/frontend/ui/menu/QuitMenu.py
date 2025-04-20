@@ -27,7 +27,7 @@ class confirmQuit:
             pos= (0, 0, 0),
             parent=self.base.aspect2d)
         
-        titleText= 'Are you sure?'
+        titleText= 'Are you sure you want to quit?'
         #TitleFrame= DirectFrame(parent= parentFrame,
                                 #frameColor= (0, 0, 0, 0),
                                 #frameSize= (-0.50, 0.50, -0.25, 0.25),
