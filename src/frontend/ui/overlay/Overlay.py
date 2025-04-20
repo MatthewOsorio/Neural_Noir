@@ -158,11 +158,14 @@ class Overlay:
         self.evidenceText = OnscreenText(
             text = "",
             fg = (1, 1, 1, 1),
-            scale = (0.1),
-            pos = (0, -0.2, -0.2),
+            scale = (0.12, 0.24),
+            wordwrap =  9,
+            pos = (-0.1, -0.3, -0.3),
             parent = self.evidenceBox
         )
 
+        self.evidenceBox.setColor(0, 0, 0, 0.7)
+        self.evidenceBox.setTransparency(TransparencyAttrib.MAlpha)
         self.evidenceBox.hide()
 
         self.ptt.setButton(self.PTTButton)

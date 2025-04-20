@@ -22,6 +22,8 @@ class State2:
         self.texts = []
         self.audioFilePaths = []
 
+        self.currentEvidence = None
+
     def testPrint(self):
         print("This is state 2")  
     
@@ -49,12 +51,16 @@ class State2:
             self.overlay.showBioData()
         
         self.response = self.game.generateAIResponse()  
-        self.overlay.base.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()      
-        self.overlay.evidenceBoxSetText()
-        self.overlay.evidenceBoxPopOut() 
+
+
         print ("State 2 response: ", self.response)
         if self.response is not False:
-            self.parseResponse(self.response)
+            self.parseResponse(self.response)        
+            self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
+            self.overlay.base.currentEvidence = self.evidenceString()
+            self.overlay.evidenceBoxSetText()
+            self.overlay.evidenceBoxPopOut() 
+
         return self.response
         
     def convert(self):
@@ -70,6 +76,11 @@ class State2:
 
         if self.response is not False:
             self.parseResponse(self.response)
+
+            self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
+            self.overlay.base.currentEvidence = self.evidenceString()        
+            self.overlay.evidenceBoxSetText()
+        
         return self.response
     
     def introduceEvidence(self):
@@ -89,3 +100,8 @@ class State2:
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+
+    def evidenceString(self):
+        evidence = self.currentEvidence.split("–")
+        evidenceStr = evidence[0]
+        return evidenceStr

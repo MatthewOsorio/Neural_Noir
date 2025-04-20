@@ -22,6 +22,8 @@ class State3:
         self.texts = []
         self.audioFilePaths = []
 
+        self.currentEvidence = None
+
     def testPrint(self):
         print("This is state 3")
     
@@ -43,14 +45,21 @@ class State3:
 
         flashback = self.overlay.flashback.getActive()
         while flashback == True:
+            self.overlay.evidenceBox.hide()
             flashback = self.overlay.flashback.getActive()
 
         if self.useEmotibit:
             self.overlay.showBioData()
             
         self.response = self.game.generateAIResponse()
+
+
         print ("State 2 response: ", self.response)
-        if self.response is not False:
+        if self.response is not False:        
+            self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
+            self.overlay.base.currentEvidence = self.evidenceString()
+            self.overlay.evidenceBoxSetText()
+            self.overlay.evidenceBoxPopOut() 
             self.parseResponse(self.response)
         return self.response
         
@@ -68,6 +77,9 @@ class State3:
         if self.response is not False:
             self.parseResponse(self.response)
             
+            self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
+            self.overlay.base.currentEvidence = self.evidenceString()
+            self.overlay.evidenceBoxSetText()
         return self.response
     
     def introduceEvidence(self):
@@ -87,3 +99,8 @@ class State3:
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+
+    def evidenceString(self):
+        evidence = self.currentEvidence.split("–")
+        evidenceStr = evidence[0]
+        return evidenceStr
