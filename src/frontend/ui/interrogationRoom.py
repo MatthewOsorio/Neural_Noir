@@ -72,7 +72,6 @@ class InterrogationRoom:
 
         self.currentLine = 0
         
-        
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True and not self.Overlay.connectionError):
@@ -86,9 +85,12 @@ class InterrogationRoom:
         
     def cameraSetUp(self):
         #Moved the camera back slightly so that it does not clip the table
-        self.base.camera.setPos(0, -0.2 , 0)
+        #self.base.camera.setPos(0, -0.2 , 0)
         #Test print for the camera position if we need to change it
         #print(self.base.camera.getPos())
+
+        #debug, room further out
+        self.base.camera.setPos(0, -0.6, 0)
 
         self.cameraSensitivity = 10
         self.horizontal = 0
@@ -123,24 +125,71 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
-        # load harris_male_sitting_pose
-        self.harris = self.base.loader.loadModel("../blender//policeman_converted.bam")
-        self.harris.setScale(0.5)
-        self.harris.setPos(-0.43, 2, -1.5)
-        self.room.setHpr(0, 0, 0)
+        # Load in Harris
+        self.harris = Actor(
+            "../blender/converted_animations/harris.bam",
+            {
+
+                "idle": "../blender/converted_animations/harris_sitting_idle.bam",
+                "laugh": "../blender/converted_animations/harris_sitting_laughing.bam",
+                "bang": "../blender/converted_animations/harris_banging_fist.bam",
+                "lean": "../blender/converted_animations/harris_male_sitting_back_pose.bam",
+                "stand": "../blender/converted_animations/harris_sit_to_stand.bam",
+                "sit": "../blender/converted_animations/harris_stand_to_sit.bam"
+            }
+        )
+        self.harris.setScale(1)
+        self.harris.setPos(0.5, 2.5, -1.1)
+        #self.harris.setPos(-0.40, 2.5, -1.1) #(leftright, forwardbackward, updown)
         self.harris.reparentTo(self.base.render)
+        self.harris.loop("idle")
 
-        # load miller_stand_to_sit
+        # debug visibility for harris
+        self.harris.setLightOff()
+        self.harris.setColor((1, 1, 1, 1))
+        self.harris.show()
+        self.harris.setBin("fixed", 10)
+        self.harris.setDepthTest(True)
+        self.harris.setDepthWrite(True)
 
+        # Load in Miller
+        self.miller = Actor(
+            "../blender/converted_animations/miller.bam",
+            {
+                "idle": "../blender/converted_animations/miller_sitting_idle.bam",
+                "talk": "../blender/converted_animations/miller_talking.bam",
+                "lean": "../blender/converted_animations/miller_male_sitting_back_pose.bam",
+                "sit": "../blender/converted_animations/miller_stand_to_sit.bam",
+                "stand": "../blender/converted_animations/miller_sit_to_stand.bam"
+            }
+        )
+        self.miller.setScale(1)
+        #self.miller.setPos(0.5, 2.5, -1.1)
+        self.miller.setPos(-0.40, 2.5, -1.1) #(leftright, forwardbackward, updown)
+        self.miller.reparentTo(self.base.render)
+        self.miller.loop("lean")
+
+        # debug visibility for miller
+        self.miller.setLightOff()
+        self.miller.setColor((1, 1, 1, 1))
+        self.miller.show()
+        self.miller.setBin("fixed", 10)
+        self.miller.setDepthTest(True)
+        self.miller.setDepthWrite(True)
         
     def unloadModels(self):
         self.room.detachNode()
         self.room.removeNode()
         self.room = None
 
-        self.policeman.detachNode()
-        self.policeman.removeNode()
-        self.policeman = None
+        self.harris.cleanup()
+        self.harris.removeNode()
+        self.harris = None
+
+        self.miller.cleanup()
+        self.miller.removeNode()
+        self.miller = None
+
         #print("Unload models")
 
     def loadLighting(self):

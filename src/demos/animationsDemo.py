@@ -19,6 +19,7 @@ class TestAnimations(ShowBase):
         self.harris = Actor(
             self.pandaPath("harris.bam"),
             {
+                "model": self.pandaPath("harris.bam"),
                 "bang": self.pandaPath("harris_banging_fist.bam"),
                 "lean": self.pandaPath("harris_male_sitting_back_pose.bam"),
                 "stand": self.pandaPath("harris_sitting_idle.bam"),
@@ -30,7 +31,7 @@ class TestAnimations(ShowBase):
         self.harris.reparentTo(self.render)
         self.harris.setScale(0.5)
         self.harris.setPos(-1, 5, -1.5)
-        self.harris.loop("idle")
+        self.harris.loop("model")
 
         self.accept("1", self.playAnim, [self.harris, "idle"])
         self.accept("2", self.playAnim, [self.harris, "laugh"])
