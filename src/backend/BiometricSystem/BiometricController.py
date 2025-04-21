@@ -23,10 +23,11 @@ class BiometricController:
         while self.threadEvent.is_set() == False:
             try:
                 self.biometricReader.read()
+                print("reading")
                 #print("Error Count = 0")
                 self.emotibitErrorCount = 0
-                self.bcTestFlag = True
-                self.isNervous(self.biometricReader.getHeartRate())
+                self.bcTestFlag = False
+                self.isNervous(self.biometricReader.getHeartRate(), self.biometricReader.getTemperature(), self.biometricReader.getEDA())
                 # print(type(self.biometricReader.getHeartRate()))
             except Exception as e:
                 self.bcTestFlag = True
@@ -67,14 +68,15 @@ class BiometricController:
             #self.biometricReader.clear()
             self.biometricReader.setup()
         
-    def isNervous(self, heartRate):
-        if heartRate > 100.00:
+    def isNervous(self, heartRate, temperature, EDA):
+        if heartRate > self.biometricReader.heartRateBase[1] or temperature > self.BiometricReader.temperatureBase[1] or EDA > self.biometricReader.edaBase[1]:
             self.setNervous(True)
         else:
             self.setNervous(False)
             
     def setNervous(self, isNervous):
         self.nervous= isNervous
+        print(f"User Nervous: {self.nervous}")
         self.notifiyAIIfUserNervous()
         
     def getNervous(self):

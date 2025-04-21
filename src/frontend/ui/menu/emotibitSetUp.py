@@ -64,7 +64,10 @@ class EmotibitTutorial:
         self.warningTextCreator(self.etTop, "EmotiBit Set Up", (0, 0.9), 0.1, self.frame, (1, 1, 1, 1))
         self.warningTextCreator(
             self.et, 
-            "Players who own an EmotiBit can use it to read their biometric data during gameplay. This game requires users connect to their EmotiBit via wifi connection."
+            "Players who own an EmotiBit can use it to read their biometric data during gameplay. This game requires users connect to their EmotiBit via wifi connection." \
+            "To connect your EmotiBit to your wifi, follow these steps:\n" 
+            "          1. Remove the microSD card from the base of the EmotiBit.\n" 
+            "          2. Insert the microSD card into your computer.\n" 
             "The box below will display the user's biometric data. If you have an EmotiBit connected, the values should update roughly every 5 seconds."
             "If there is no EmotiBit Connection, it will give an error message.", 
             (0, 0.5), 0.05, self.frame, (1, 1, 1, 1))
@@ -95,9 +98,11 @@ class EmotibitTutorial:
         )
 
     def updateBiometric(self, task):
+        print("Update BC task")
         heartRate = self.getHeartRate()  
         if heartRate is not None and self.bc.bcTestFlag is not True:
             self.showAllBio()
+            print("HR data")
             self.displayHeartRate.setText("Heart Rate: " + str(round(heartRate, 2)))
             
         eda = self.getEda()
@@ -110,6 +115,7 @@ class EmotibitTutorial:
 
         if self.bc.bcTestFlag is True:
             self.hideAllBio()
+            print("No data")
             
         return task.again
         
@@ -144,6 +150,7 @@ class EmotibitTutorial:
         self.frame.hide()
     
     def cleanUp(self):
+        self.bc._gameIsReady = False
         self.bc.cleanThread()
         taskMgr.remove("updateBio")
         self.bc = None
@@ -157,4 +164,6 @@ class EmotibitTutorial:
 
     def setUpBC(self):
         self.bc = BiometricController()
+        self.bc._gameIsReady = True
+        print("Starting bc task")
         taskMgr.doMethodLater(5, self.updateBiometric, "updateBio") 

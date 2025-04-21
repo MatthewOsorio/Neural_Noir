@@ -67,7 +67,7 @@ class State1:
 
     def getAverageHeartRate(self):
         if len(self.heartRate) > 0:
-            self.currentBaseH = self.doMath(self.heartRate, 0.8)
+            self.currentBaseH = self.doMath(self.heartRate, -5)
             print(self.currentBaseH)
             return self.currentBaseH
         else:
