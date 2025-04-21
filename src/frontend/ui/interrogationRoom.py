@@ -74,11 +74,8 @@ class InterrogationRoom:
 
         self.currentLine = 0
         
-<<<<<<< HEAD
         self.currentEvidence = None
         
-=======
->>>>>>> CB_New
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True and not self.Overlay.connectionError):
