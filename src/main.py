@@ -87,7 +87,7 @@ class main(ShowBase):
                 on_failure=sys.exit
             )
             return task.done
-    
+     
         if self.menuManager.tutorialStart == True and self.menuManager.gameStart == False:
             self.connectionDisplay.checkInternetAndDisplay(
                 on_success=on_successTutorial,
