@@ -11,7 +11,6 @@ from direct.task.TaskManagerGlobal import taskMgr
 import threading
 
 from panda3d.core import *
-from panda3d.core import ColorWriteAttrib
 import time
 
 import os
@@ -178,9 +177,6 @@ class InterrogationRoom:
         self.miller.setPos(-0.40, 2, -1.1) #(leftright, forwardbackward, updown)
         self.miller.reparentTo(self.base.render)
         self.miller.loop("lean")
-
-        #from panda3d.core import ColorWriteAttrib
-        self.miller.setAttrib(ColorWriteAttrib.make(ColorWriteAttrib.All))
 
         # debug visibility for miller
         self.miller.setLightOff()
