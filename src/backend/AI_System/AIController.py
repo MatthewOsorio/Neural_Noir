@@ -1,6 +1,7 @@
 from .AI_Behavior import AIInterrogation, AIContext, AIInitialPhase
 from backend.StoryGraph.StoryGraph import StoryGraph
 from .AI_History import AIHistory
+from .VerdictController import VerdictController
 
 class AIController:
     def __init__(self):
@@ -8,17 +9,18 @@ class AIController:
         self._userNervous = None
         self._aiHistory = AIHistory() 
         self._storyGraph = StoryGraph()
+        self._verdictController = VerdictController()
 
     def setAIBehavior(self, state):
         match state.value:
             case 1:
                 self._ai = AIContext(AIInitialPhase(self._aiHistory))
             case 2:
-                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="EARLY"))
+                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="EARLY", verdictController=self._verdictController))
             case 3:
-                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="MID"))
+                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="MID", verdictController=self._verdictController))
             case 4:
-                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="FINAL"))
+                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="FINAL", verdictController= self._verdictController))
 
     def update(self, state):
         self.setAIBehavior(state)

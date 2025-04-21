@@ -28,7 +28,7 @@ class AIInitialPhase(AI):
             return self._questions[self._currentQuestion]
 
     def processResponse(self, userResponse):
-        preppedResponse = "[MARK] " + userResponse
+        preppedResponse = "[MARK]: " + userResponse
         self._aiHistory.addUserInput(preppedResponse)
 
         gptResponse = self.evaluateResponse(userResponse)
