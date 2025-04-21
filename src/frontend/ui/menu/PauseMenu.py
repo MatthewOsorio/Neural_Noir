@@ -219,3 +219,6 @@ class PauseMenu():
         self.audioButton["text_font"] = self.manager.font
         self.displayScriptButton["text_font"] = self.manager.font
         self.title.font = self.manager.font
+
+        if self.scriptMenu is not None:
+            self.scriptMenu.updateFont()

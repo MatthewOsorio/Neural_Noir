@@ -50,12 +50,12 @@ class Overlay:
             pos=(-1.5 , 0, -0.6),
         )
 
-        self.bioBackground.setColor(0, 0, 0, 0.7)
+        self.bioBackground.setColor(0, 0, 0, 0.8)
         self.bioBackground.setTransparency(TransparencyAttrib.MAlpha)
 
         self.bioTitle = OnscreenText(
             text = "Biometrics",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            font = self.base.menu.font,
             scale = 0.25,
             parent = self.bioBackground,
             fg = (1,1,1,1),
@@ -64,7 +64,7 @@ class Overlay:
 
         self.displayHeartRate = OnscreenText(
             text = "Heart Rate: 0",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            font = self.base.menu.font,
             scale = 0.18,
             parent = self.bioBackground,
             fg = (1,1,1,1),
@@ -73,7 +73,7 @@ class Overlay:
 
         self.displayEda = OnscreenText(
             text = "EDA: 0",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            font = self.base.menu.font,
             scale = 0.18,
             parent = self.bioBackground,
             fg = (1,1,1,1),
@@ -82,7 +82,7 @@ class Overlay:
 
         self.displayTemperature = OnscreenText(
             text = "Temperature: 0",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            font = self.base.menu.font,
             scale = 0.18,
             parent = self.bioBackground,
             fg = (1,1,1,1),
@@ -137,13 +137,13 @@ class Overlay:
             pos=(0 , 0, -0.6),
         )              
         
-        self.subtitlesBox.setColor(0, 0, 0, 0.7)
+        self.subtitlesBox.setColor(0, 0, 0, 0.8)
         self.subtitlesBox.setTransparency(TransparencyAttrib.MAlpha)
 
         self.subtitles.setParent(self.subtitlesBox)
         self.subtitlesBox.hide()
 
-        self.userInputBox.setColor(0, 0, 0, 0.7)
+        self.userInputBox.setColor(0, 0, 0, 0.8)
         self.userInputBox.setTransparency(TransparencyAttrib.MAlpha)
         self.userSpeech.setParent(self.userInputBox)
         self.userInputBox.hide()
@@ -164,7 +164,7 @@ class Overlay:
             parent = self.evidenceBox
         )
 
-        self.evidenceBox.setColor(0, 0, 0, 0.7)
+        self.evidenceBox.setColor(0, 0, 0, 0.8)
         self.evidenceBox.setTransparency(TransparencyAttrib.MAlpha)
         self.evidenceBox.hide()
 
@@ -180,6 +180,7 @@ class Overlay:
         self.hideUserInputBox()
         self.setAcceptButtonCommand()
         self.setRedoButtonCommand()
+        self.updateFont()
 
         taskMgr.doMethodLater(5, self.updateOverlay, "updateOverlayTask") 
         taskMgr.doMethodLater(5, self.checkInternetConnection, "checkConnectionTask") 
@@ -378,3 +379,9 @@ class Overlay:
     def evidenceBoxSetText(self):
         evidenceStr = f"Current Evidence: {self.base.currentEvidence}"
         self.evidenceText.setText(evidenceStr)
+
+    def updateFont(self):
+        self.displayHeartRate.font = self.base.menu.font
+        self.displayEda.font = self.base.menu.font
+        self.displayTemperature.font = self.base.menu.font
+        self.bioTitle.font = self.base.menu.font

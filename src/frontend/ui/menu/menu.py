@@ -53,7 +53,7 @@ class menuManager:
         self.audioMenu = None
         self.tutorialsMenu = None
         self.settingsMenu = None
-        
+
         self.gameStart = startFlag
         self.gameState = 'menu'
         self.tutorialStart = startFlag
@@ -152,7 +152,9 @@ class menuManager:
         self.pauseMenu.displayPauseMenu()
     
     def showTutorials(self):
+        self.showImage()
         self.tutorialsMenu.show()
+        
 
     def setFontLime(self):
         self.font = self.base.loader.loadFont(Limelight)
@@ -167,6 +169,12 @@ class menuManager:
 
         if self.settingsMenu is not None:
             self.settingsMenu.updateFont()
+
+        if self.quitMenu is not None:
+            self.quitMenu.updateFont()
+
+        if self.tutorialsMenu is not None:
+            self.tutorialsMenu.updateFont()
         
     def setFontNormal(self):
         self.font = self.base.loader.loadFont("cmss12.egg")
@@ -181,6 +189,12 @@ class menuManager:
 
         if self.settingsMenu is not None:
             self.settingsMenu.updateFont()
+
+        if self.quitMenu is not None:
+            self.quitMenu.updateFont()
+        
+        if self.tutorialsMenu is not None:
+            self.tutorialsMenu.updateFont()
 
     def setColorHover (self, button):
         button["text_fg"] = self.hoverColor

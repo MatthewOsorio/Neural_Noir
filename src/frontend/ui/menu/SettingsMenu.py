@@ -50,7 +50,7 @@ class settingsMenu:
             scale = 0.1,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, 0.4 ,0)
+            pos = (-1, 0.5 ,0)
         )
 
         self.emotibitOn = DirectCheckButton(
@@ -58,7 +58,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, 0.3, 0.25),
+            pos = (-1.3, 0.4, 0.35),
             command = self.setEmotibitOn
         )
 
@@ -67,7 +67,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, 0.3, 0.25),
+            pos = (-0.7, 0.4, 0.35),
             command = self.setEmotibitOff
         )
 
@@ -77,7 +77,7 @@ class settingsMenu:
             scale = 0.1,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, 0.1 ,0)
+            pos = (-1, 0.15 ,0.15)
         )
 
         self.difficultyDesc = OnscreenText(
@@ -86,7 +86,7 @@ class settingsMenu:
             scale = 0.04,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, 0.03 ,0.03)
+            pos = (-1, 0.1 ,0.1)
         )
 
         self.diffEasy = DirectCheckButton(
@@ -94,7 +94,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, 0.0, -0.2),
+            pos = (-1.3, 0.1, -0.1),
             command = self.setDifficultyEasy
         )
 
@@ -103,7 +103,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, 0.0, -0.2),
+            pos = (-0.7, 0.1, -0.1),
             command = self.setDifficultyHard
         )
 
@@ -121,7 +121,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, -0.4, -0.4),
+            pos = (-1.3, -0.45, -0.45),
             command = self.setFontLime
         )
 
@@ -130,7 +130,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, -0.4, -0.4),
+            pos = (-0.7, -0.45, -0.45),
             command = self.setFontNormal
         )
 
@@ -139,7 +139,7 @@ class settingsMenu:
             text_font = self.manager.font,
             text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(-1, -0.9, -0.9),
+            pos=(-1, -0.875, -0.875),
             parent=self.settingsMenu,
             command=self.moveToMain,
             frameColor = (0,0,0,0)
@@ -150,7 +150,7 @@ class settingsMenu:
             text_font = self.manager.font,
             text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(-1, -0.7, -0.7),
+            pos=(-1, -0.675, -0.675),
             command=self.moveToAudio,
             parent=self.settingsMenu,
             frameColor = (0,0,0,0)
@@ -298,4 +298,5 @@ class settingsMenu:
         self.difficultyText.font = self.manager.font
         #self.difficultyDesc.font = self.manager.font        
         self.useEmotibitText.font = self.manager.font   
-        self.fontText.font = self.manager.font   
+        self.fontText.font = self.manager.font 
+          

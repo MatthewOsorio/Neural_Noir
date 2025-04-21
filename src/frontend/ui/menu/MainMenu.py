@@ -143,3 +143,4 @@ class mainMenu:
         self.tutorialsButton["text_font"] = self.manager.font
         self.quitButton["text_font"] = self.manager.font
         self.titleText.font = self.manager.font
+        self.bottomText.font = self.manager.font
