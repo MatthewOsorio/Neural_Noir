@@ -5,11 +5,13 @@ from frontend.stages.state1 import State1
 from frontend.stages.state2 import State2
 from frontend.stages.state3 import State3
 from frontend.stages.state4 import State4
+from direct.actor.Actor import Actor
 from direct.task import Task
-from direct.task.TaskManagerGlobal import taskMgr 
+from direct.task.TaskManagerGlobal import taskMgr
 import threading
 
 from panda3d.core import *
+from panda3d.core import ColorWriteAttrib
 import time
 
 import os
@@ -30,6 +32,7 @@ class InterrogationRoom:
         self.difficulty = self.menu.settingsMenu.getDifficulty()
 
         self.base.disableMouse()
+        self.base.camLens.setNear(0.01)
         self.gameState= 'gameplay'
 
         #pause game if escape is pressed
@@ -71,8 +74,11 @@ class InterrogationRoom:
 
         self.currentLine = 0
         
+<<<<<<< HEAD
         self.currentEvidence = None
         
+=======
+>>>>>>> CB_New
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True and not self.Overlay.connectionError):
@@ -86,7 +92,7 @@ class InterrogationRoom:
         
     def cameraSetUp(self):
         #Moved the camera back slightly so that it does not clip the table
-        self.base.camera.setPos(0, -0.2 , 0)
+        self.base.camera.setPos(0, -0.18 , 0)
         #Test print for the camera position if we need to change it
         #print(self.base.camera.getPos())
 
@@ -97,7 +103,16 @@ class InterrogationRoom:
         #Updates the camera angle
         self.base.taskMgr.add(self.moveCamera, "Move Camera")
 
+        # # CAMERA AT LEFT SIDE OF ROOM FOR DEBUGGING
+        # self.base.camera.setPos(-3, 1, -0.1)
 
+        # # Rotate the camera to look toward detectives' side
+        # self.base.camera.setHpr(295, -5, 0)
+        
+        # self.cameraSensitivity = 10
+        # self.horizontal = 0
+        # self.vertical = 0
+        
     #Allows users to rotate the camera slightly to "look around"
     def moveCamera(self, base):
         if self.base.mouseWatcherNode.hasMouse():
@@ -108,7 +123,10 @@ class InterrogationRoom:
             self.horizontal = (self.x * self.cameraSensitivity) * -1
             self.vertical = self.y * self.cameraSensitivity
 
-            self.base.camera.setHpr(self.horizontal, self.vertical, 0)
+            clamped_horizontal = max(min(self.horizontal, 60), -60)  # Left/right limit
+            clamped_vertical = max(min(self.vertical, 60), -0.8)      # Up/down limit
+
+            self.base.camera.setHpr(clamped_horizontal, clamped_vertical, 0)
 
             #Test for x and y coordinates 
             #print("X: ", self.x, " ", "Y: ", self.y)
@@ -123,21 +141,75 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
-        # load policeman
-        self.policeman = self.base.loader.loadModel("../blender/policeman/converted/policeman_converted.bam")
-        self.policeman.setScale(0.5)
-        self.policeman.setPos(-0.43, 2, -1.5)
-        self.room.setHpr(0, 0, 0)
-        self.policeman.reparentTo(self.base.render)
-        
+        # Load in Harris
+        self.harris = Actor(
+            "../blender/converted_animations/harris.bam",
+            {
+
+                "idle": "../blender/converted_animations/harris_sitting_idle.bam",
+                "laugh": "../blender/converted_animations/harris_sitting_laughing.bam",
+                "bang": "../blender/converted_animations/harris_banging_fist.bam",
+                "lean": "../blender/converted_animations/harris_male_sitting_back_pose.bam",
+                "stand": "../blender/converted_animations/harris_sit_to_stand.bam",
+                "sit": "../blender/converted_animations/harris_stand_to_sit.bam"
+            }
+        )
+        self.harris.setScale(1)
+        self.harris.setPos(0.5, 2.5, -1.1)
+        #self.harris.setPos(-0.40, 2.5, -1.1) #(leftright, forwardbackward, updown)
+        self.harris.reparentTo(self.base.render)
+        self.harris.loop("idle")
+
+        # debug visibility for harris
+        self.harris.setLightOff()
+        self.harris.setColor((1, 1, 1, 1))
+        self.harris.show()
+        self.harris.setBin("opaque", 10)
+        self.harris.setDepthTest(True)
+        self.harris.setDepthWrite(True)
+    
+        self.miller = Actor(
+            "../blender/converted_animations/miller.bam",
+            {
+                "idle": "../blender/converted_animations/miller_sitting_idle.bam",
+                "talk": "../blender/converted_animations/miller_talking.bam",
+                "lean": "../blender/converted_animations/miller_male_sitting_back_pose.bam",
+                "sit": "../blender/converted_animations/miller_stand_to_sit.bam",
+                "stand": "../blender/converted_animations/miller_sit_to_stand.bam"
+            }
+        )
+        self.miller.setScale(1)
+        #self.miller.setPos(0.5, 2.5, -1.1)
+        self.miller.setPos(-0.40, 2, -1.1) #(leftright, forwardbackward, updown)
+        self.miller.reparentTo(self.base.render)
+        self.miller.loop("lean")
+
+        #from panda3d.core import ColorWriteAttrib
+        self.miller.setAttrib(ColorWriteAttrib.make(ColorWriteAttrib.All))
+
+        # debug visibility for miller
+        self.miller.setLightOff()
+        self.miller.setColor((1, 1, 1, 1))
+        #self.miller.show()
+        self.miller.setBin("fixed", 150)
+        self.miller.setDepthTest(True)
+        self.miller.setDepthWrite(True)
+        self.miller.setTransparency(False)
+        self.miller.setTwoSided(True)
+    
     def unloadModels(self):
         self.room.detachNode()
         self.room.removeNode()
         self.room = None
 
-        self.policeman.detachNode()
-        self.policeman.removeNode()
-        self.policeman = None
+        self.harris.cleanup()
+        self.harris.removeNode()
+        self.harris = None
+
+        self.miller.cleanup()
+        self.miller.removeNode()
+        self.miller = None
+
         #print("Unload models")
 
     def loadLighting(self):
@@ -214,7 +286,6 @@ class InterrogationRoom:
         self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
         
-  
         self.Overlay.userSpeech.active = True
         self.Overlay.userSpeech.redo = False
 
