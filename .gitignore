@@ -2,3 +2,4 @@ __pycache__/
 .vs/
 *.json
 .pytest_cache/
+env/
