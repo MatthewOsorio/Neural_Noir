@@ -4,7 +4,7 @@ from textwrap import dedent
 from .AI import AI
 
 class AIInterrogation(AI):
-    def __init__(self, storyGraph, history, phase, verdictController ):
+    def __init__(self, storyGraph, history, phase, verdictController):
         super().__init__(history)
         self._storyGraph = storyGraph
         self._phase = phase
@@ -20,18 +20,18 @@ class AIInterrogation(AI):
         self._finish = False
 
         self._verdictKeyword = None
-        self._verdict = {}
 
-    # Requesting evidence based on phase, 
+    # Purpose: Requesting evidence from story graph based on the current phase of the AI
     def receiveEvidence(self):
         if self._storyGraph == None:
             raise Exception("Story Graph reference has not been set")
 
         self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
-
+        
         if self._currentEvidence == False:
             self._finish = True
 
+    # Purpose: Sending a prompt to GPT to smoothly introduce a peiece of evidence and returning that response
     def introduceEvidence(self):
         if self._currentEvidence is None:
             self.receiveEvidence()
@@ -56,19 +56,20 @@ class AIInterrogation(AI):
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
         gptResponse = self.sendToGPT(gptInput)
-        for response in gptResponse:
-            self._evidenceConversation.append("Detective " + response["Speaker"] + ": " + response["Text"])
+        self.addAIResponsesToEvidenceCono(gptResponse)
         self._introducedEvidence = True
         return gptResponse
             
-    # def sendConversationToStoryGraph(self):
-    #     if self._storyGraph == None:
-    #         raise Exception("Story Graph reference has not been set")
+    # Purpose: Store the AI responses in the evidence conversation list in a transcript format
+    def addAIResponsesToEvidenceCono(self, response):
+        for response in response:
+            self._evidenceConversation.append("Detective " + response["Speaker"] + ": " + response["Text"])
 
-    #     self._storyGraph.receiveConversation(self._evidenceConversation)
-    #     self._evidenceConversation.clear()
-
-    # This code returns a response after a verdict has been decided. That is not supposed to happen. 
+    # Purpose: Managing what kind of response will be returned from the AI
+    #   If we have not introduced evidence, then the AI will introduce it.
+    #   If we are not introducing evidence, then the AI will return whatever is stored in aiResponses which is GPTs response to the user from the processResponse method 
+    #   After three turns the AI will generate a verdict from the evidence conversation and then move on to the next piece of evidence
+    #   When we have exhuasted all the evidence in the current phase we will return false
     def generateResponse(self): 
         if self._finish: 
             return False
@@ -84,7 +85,8 @@ class AIInterrogation(AI):
         
         return self._aiResponse
 
-
+    # Purpose: Receive the users input and format it in the desired format. Create the prompt for GPT and send it to GPT.
+    #   If we have processed the users response three times it will not generate another response because we will begin the process of moving on to the next piece of evidence and verdict generation
     def processResponse(self, userResponse):
         gptInput = self._aiHistory.getHistory()[:]
         preppedResponse = "[MARK]: " + userResponse
@@ -118,50 +120,19 @@ class AIInterrogation(AI):
         gptInput.append({"role": 'user', 'content': instruction})
 
         gptResponse = self.sendToGPT(gptInput)
-
-        for response in gptResponse:
-            self._evidenceConversation.append("Detective " + response["Speaker"] + ": " + response["Text"])
-
+        
+        self.addAIResponsesToEvidenceCono(gptResponse)
         self._aiResponse = gptResponse
         self._counter += 1
     
+    # Purpose: Calling the deriveVerdict method in the verdictController to send to GPT to get a verdict on current evidence conversation
+    #   Then we send the verdict and the necessary information to store it in the story graph
     def generateVerdict(self):
-        self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
-        # verdict = self.getVerdictFromConvo()
-        # self._verdictKeyword = verdict
+        verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
+        self._storyGraph.receiveVerdict(self._currentEvidence, verdict, self._phase)
 
-        # evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
-        # curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
-        # self.recordVerdict(curEvidenceIndex, verdict)
-
-
-    def getVerdictFromConvo(self):
-        convo = self._evidenceConversation[:]
-
-        prompt = f'''You are going to analyze the conversation between the detective and the suspect.
-                    At the end, return only ONE word verdict (truthful, untruthful, or inconclusive) based on the suspect's answers.
-
-                    **Return Format (MUST be one of):**
-                    [[verdict: truthful]]
-                    [[verdict: untruthful]]
-                    [[verdict: inconclusive]]
-
-                    Do NOT explain. Do NOT roleplay. Just output the tag above.
-                    '''
-        convo.append({'role': 'assistant', 'content': prompt})
-        verdictResponse = self.sendToGPT(convo)
-
-        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', verdictResponse.lower())
-        if match:
-            return match.group(1)
-        else:
-            return "inconclusive"
-
-    def recordVerdict(self, index, verdict):
-        self._verdict[index] = verdict
-
+    # Purpose: Once we have finsihed talking about our current evidence we will begin the process of talking about another piece of evidence by reseting the counter and states thats responsible for evidence mangagement
     def moveOnToNextTopic(self):
-        print("Movin one manyne")
         self._currentEvidence = None
         self._counter = 0
         self._introducedEvidence = False

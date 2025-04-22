@@ -7,7 +7,6 @@ from TTSSystem import TextToSpeechController
 if TYPE_CHECKING:
     from AI_Context import AIContext
 
-
 """
 Notes from Matt
     Here are updates I've made the the AI System and TTS to accomdate for the second detective:
