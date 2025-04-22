@@ -22,22 +22,47 @@ class TutorialsMenu:
             parent=self.base.aspect2d
         )
 
+        self.backdrop = OnscreenImage(
+            self.manager.mainBackground, 
+            pos = (1, 0, 0), 
+            parent = self.tutorialsMenu
+            )
+
+        self.backdropBack = OnscreenImage(
+            self.manager.black,
+            pos = (-1, 0, 0),
+            parent = self.tutorialsMenu
+            )
+
+
+        self.topText = TextNode('TopText')
+        self.topText.setText("Tutorials")
+        self.topText_np = self.tutorialsMenu.attachNewNode(self.topText)  
+        self.topText_np.setScale(0.25)
+        self.topText_np.setPos(-1, 0, 0.7)
+        self.topText.setAlign(self.topText.ACenter)
+        self.topText.font = self.manager.font
+
         self.startButton = DirectButton(
             text="Gameplay Tutorial",
             text_font = self.manager.font,
             scale=0.1,
             pos=(-1, 0, 0.3),
             parent=self.tutorialsMenu,
-            command = self.loadTutorialRoom
+            command = self.loadTutorialRoom,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
 
         self.emotibitTutorialButton = DirectButton(
             text = "EmotiBit Tutorial",
             text_font = self.manager.font,
             scale = 0.1,
-            pos=(-1, 0, 0.5),
+            pos=(-1, 0, 0.0),
             parent = self.tutorialsMenu,
-            command = self.loadEmotiBitTutorial
+            command = self.loadEmotiBitTutorial,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
 
         self.backButton = DirectButton(
@@ -47,9 +72,11 @@ class TutorialsMenu:
             scale=0.1,
             pos=(-1, -0.9, -0.9),
             parent=self.tutorialsMenu,
-            command=self.moveToMain
+            command=self.moveToMain,
+            frameColor = (0, 0, 0, 0.0),
         )
 
+        self.setButtonHovers()
         self.hide()
         self.eTutorial.hide()
 
@@ -78,3 +105,18 @@ class TutorialsMenu:
         self.eTutorial.goBack()
         self.show()
     
+    def setButtonHovers(self):
+        self.startButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.startButton)) 
+        self.startButton.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.startButton)) 
+
+        self.emotibitTutorialButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.emotibitTutorialButton)) 
+        self.emotibitTutorialButton.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.emotibitTutorialButton)) 
+
+        self.backButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.backButton)) 
+        self.backButton.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.backButton)) 
+
+    def updateFont(self):
+        self.startButton["text_font"] = self.manager.font
+        self.emotibitTutorialButton["text_font"] = self.manager.font
+        self.backButton["text_font"] = self.manager.font
+        self.topText.font = self.manager.font

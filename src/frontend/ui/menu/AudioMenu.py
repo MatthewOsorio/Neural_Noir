@@ -29,7 +29,7 @@ class audioSettings:
             pos=(0, 0, 0)
         )
 
-        self.backImage.setColor(0, 0, 0, 0.5)
+        self.backImage.setColor(0, 0, 0, 0.8)
         self.backImage.setTransparency(TransparencyAttrib.MAlpha)
 
         self.topText = TextNode('TopText')
@@ -112,7 +112,9 @@ class audioSettings:
             scale = 0.12,
             pos = (0,0,-0.7),
             parent = self.audioMenu,
-            command = self.handleBack
+            command = self.handleBack,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
 
         self.testInput = DirectButton(
@@ -121,7 +123,9 @@ class audioSettings:
             scale = 0.1,
             pos = (-0.6,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioInput
+            command = self.audio.testAudioInput,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
 
         self.testOutput = DirectButton(
@@ -130,7 +134,9 @@ class audioSettings:
             scale = 0.1,
             pos = (0.6,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioOutput
+            command = self.audio.testAudioOutput,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
 
         with open(self.manager.userSettings, "r", encoding="utf-8") as file:
@@ -142,6 +148,8 @@ class audioSettings:
             self.turnSubtitlesOff(True)
 
         self.setInitialValues(settings)
+
+        self.setButtonHovers()
 
         self.hide()
 
@@ -239,3 +247,23 @@ class audioSettings:
         self.volumeSlider["value"] = self.settings.get("sfxVolume", 0.5)
         self.volumeSlider.setValue(self.settings.get("sfxVolume", 0.5))
 
+    def setButtonHovers(self):
+        self.backButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.backButton)) 
+        self.backButton.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.backButton)) 
+    
+        self.testInput.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.testInput)) 
+        self.testInput.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.testInput))
+
+        self.testOutput.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.testOutput)) 
+        self.testOutput.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.testOutput))    
+
+    def updateFont(self):
+        self.backButton["text_font"] = self.manager.font
+        self.testInput["text_font"] = self.manager.font
+        self.testOutput["text_font"] = self.manager.font
+        self.subTitlesOn["text_font"] = self.manager.font
+        self.subTitlesOff["text_font"] = self.manager.font
+        self.topText.font = self.manager.font
+        self.volumeText.font = self.manager.font
+        self.voiceVolumeText.font = self.manager.font
+        self.subTitlesText.font = self.manager.font

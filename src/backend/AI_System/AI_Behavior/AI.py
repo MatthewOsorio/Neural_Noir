@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
 from backend.TTSSystem import TextToSpeechController
-from textwrap import dedent
-
 
 if TYPE_CHECKING:
     from AI_Context import AIContext

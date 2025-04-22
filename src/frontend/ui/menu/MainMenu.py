@@ -136,3 +136,11 @@ class mainMenu:
 
     def setColorDefault (self, button):
         button["text_fg"] = self.mainTextColor
+
+    def updateFont(self):
+        self.startButton["text_font"] = self.manager.font
+        self.settingsButton["text_font"] = self.manager.font
+        self.tutorialsButton["text_font"] = self.manager.font
+        self.quitButton["text_font"] = self.manager.font
+        self.titleText.font = self.manager.font
+        self.bottomText.font = self.manager.font

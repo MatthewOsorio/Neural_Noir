@@ -47,7 +47,13 @@ class menuManager:
         self.initializeBackground()
         
         self.audio = audioManager(self.base)
-        
+        self.pauseMenu = None
+        self.mainMenu = None
+        self.quitMenu = None
+        self.audioMenu = None
+        self.tutorialsMenu = None
+        self.settingsMenu = None
+
         self.gameStart = startFlag
         self.gameState = 'menu'
         self.tutorialStart = startFlag
@@ -57,7 +63,8 @@ class menuManager:
             "sfxVolume": 0.5,
             "voiceVolume": 0.5,
             "subtitles": False,
-            "difficulty": "easy"
+            "difficulty": "easy",
+            "font": "stylized"
         }
 
         self.mainBackground = base.loader.loadTexture(Background)
@@ -81,11 +88,14 @@ class menuManager:
         self.mainMenu = mainMenu(self, self.base)
         self.settingsMenu = settingsMenu(self, self.base)
         self.audioMenu = audioSettings(self, self.base, self.audio)
-        self.pauseMenu = None
+        
         self.quitMenu = confirmQuit(self, self.base)
         self.tutorialsMenu = TutorialsMenu(self, self.base)
 
         self.subtitles = False
+
+        self.mainTextColor = (1,1,1,1)
+        self.hoverColor = (1,1,0.5,1)
 
     def initializeBackground(self):
         if self.titleImage is not None: 
@@ -142,6 +152,52 @@ class menuManager:
         self.pauseMenu.displayPauseMenu()
     
     def showTutorials(self):
+        self.showImage()
         self.tutorialsMenu.show()
         
+
+    def setFontLime(self):
+        self.font = self.base.loader.loadFont(Limelight)
+        if self.mainMenu is not None:
+            self.mainMenu.updateFont()
+
+        if self.audioMenu is not None:
+            self.audioMenu.updateFont()
+
+        if self.pauseMenu is not None:
+            self.pauseMenu.updateFont()
+
+        if self.settingsMenu is not None:
+            self.settingsMenu.updateFont()
+
+        if self.quitMenu is not None:
+            self.quitMenu.updateFont()
+
+        if self.tutorialsMenu is not None:
+            self.tutorialsMenu.updateFont()
         
+    def setFontNormal(self):
+        self.font = self.base.loader.loadFont("cmss12.egg")
+        if self.mainMenu is not None:
+            self.mainMenu.updateFont()
+
+        if self.audioMenu is not None:
+            self.audioMenu.updateFont()
+
+        if self.pauseMenu is not None:
+            self.pauseMenu.updateFont()
+
+        if self.settingsMenu is not None:
+            self.settingsMenu.updateFont()
+
+        if self.quitMenu is not None:
+            self.quitMenu.updateFont()
+        
+        if self.tutorialsMenu is not None:
+            self.tutorialsMenu.updateFont()
+
+    def setColorHover (self, button):
+        button["text_fg"] = self.hoverColor
+
+    def setColorDefault (self, button):
+        button["text_fg"] = self.mainTextColor

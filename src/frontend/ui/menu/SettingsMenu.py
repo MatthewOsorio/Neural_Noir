@@ -50,7 +50,7 @@ class settingsMenu:
             scale = 0.1,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, 0.4 ,0)
+            pos = (-1, 0.5 ,0)
         )
 
         self.emotibitOn = DirectCheckButton(
@@ -58,7 +58,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, 0.3, 0.25),
+            pos = (-1.3, 0.4, 0.35),
             command = self.setEmotibitOn
         )
 
@@ -67,7 +67,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, 0.3, 0.25),
+            pos = (-0.7, 0.4, 0.35),
             command = self.setEmotibitOff
         )
 
@@ -77,7 +77,7 @@ class settingsMenu:
             scale = 0.1,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, 0.1 ,0)
+            pos = (-1, 0.15 ,0.15)
         )
 
         self.difficultyDesc = OnscreenText(
@@ -86,7 +86,7 @@ class settingsMenu:
             scale = 0.04,
             parent = self.settingsMenu,
             fg = (1,1,1,1),
-            pos = (-1, 0.03 ,0.03)
+            pos = (-1, 0.1 ,0.1)
         )
 
         self.diffEasy = DirectCheckButton(
@@ -94,7 +94,7 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-1.3, 0.0, -0.2),
+            pos = (-1.3, 0.1, -0.1),
             command = self.setDifficultyEasy
         )
 
@@ -103,8 +103,35 @@ class settingsMenu:
             text_font = self.manager.font,
             parent = self.settingsMenu,
             scale = 0.1,
-            pos = (-0.7, 0.0, -0.2),
+            pos = (-0.7, 0.1, -0.1),
             command = self.setDifficultyHard
+        )
+
+        self.fontText = OnscreenText(
+            text = 'Font',
+            font = self.manager.font,
+            scale = 0.1,
+            parent = self.settingsMenu,
+            fg = (1,1,1,1),
+            pos = (-1, -0.3 , -0.3)
+        )
+
+        self.fontStylized = DirectCheckButton(
+            text = "Stylized",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-1.3, -0.45, -0.45),
+            command = self.setFontLime
+        )
+
+        self.fontNormal = DirectCheckButton(
+            text = "Normal",
+            text_font = self.manager.font,
+            parent = self.settingsMenu,
+            scale = 0.1,
+            pos = (-0.7, -0.45, -0.45),
+            command = self.setFontNormal
         )
 
         self.backButton = DirectButton(
@@ -112,7 +139,7 @@ class settingsMenu:
             text_font = self.manager.font,
             text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(-1, -0.9, -0.9),
+            pos=(-1, -0.875, -0.875),
             parent=self.settingsMenu,
             command=self.moveToMain,
             frameColor = (0,0,0,0)
@@ -123,7 +150,7 @@ class settingsMenu:
             text_font = self.manager.font,
             text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(-1, -0.7, -0.7),
+            pos=(-1, -0.675, -0.675),
             command=self.moveToAudio,
             parent=self.settingsMenu,
             frameColor = (0,0,0,0)
@@ -139,6 +166,7 @@ class settingsMenu:
             settings = json.load(file)
 
         self.setUserSettingsValues(settings)
+        self.updateFont()
 
     def moveToMain(self):
         self.hide()
@@ -212,6 +240,29 @@ class settingsMenu:
         with open(self.manager.userSettings, 'w') as file:
             json.dump(settings, file)
 
+    def setFontLime(self, state):
+        self.manager.setFontLime()
+        self.fontStylized["indicatorValue"] = True
+        self.fontNormal["indicatorValue"] = False
+        self.fontStylized.setIndicatorValue
+        self.fontNormal.setIndicatorValue
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["font"] = "stylized"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)        
+
+    def setFontNormal(self, state):
+        self.manager.setFontNormal()
+        self.fontStylized["indicatorValue"] = False
+        self.fontNormal["indicatorValue"] = True
+        self.fontStylized.setIndicatorValue
+        self.fontNormal.setIndicatorValue
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["font"] = "normal"
+        with open(self.manager.userSettings, 'w') as file:
+            json.dump(settings, file)   
 
     def getUseEmotibit(self):
         return self.useEmotibit
@@ -229,3 +280,23 @@ class settingsMenu:
             self.setDifficultyEasy(True)
         elif self.settings["difficulty"] == "hard":
             self.setDifficultyHard(True)
+        if self.settings["font"] == "stylized":
+            self.setFontLime(True)
+        elif self.settings["font"] == "normal":
+            self.setFontNormal(True)
+
+    def updateFont(self):
+        self.emotibitOn["text_font"] = self.manager.font
+        self.emotibitOff["text_font"] = self.manager.font
+        self.diffEasy["text_font"] = self.manager.font
+        self.diffHard["text_font"] = self.manager.font
+        self.fontStylized["text_font"] = self.manager.font
+        self.fontNormal["text_font"] = self.manager.font
+        self.backButton["text_font"] = self.manager.font
+        self.audioButton["text_font"] = self.manager.font
+        self.topText.font = self.manager.font
+        self.difficultyText.font = self.manager.font
+        #self.difficultyDesc.font = self.manager.font        
+        self.useEmotibitText.font = self.manager.font   
+        self.fontText.font = self.manager.font 
+          

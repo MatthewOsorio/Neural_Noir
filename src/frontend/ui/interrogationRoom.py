@@ -73,6 +73,8 @@ class InterrogationRoom:
 
         self.currentLine = 0
         
+        self.currentEvidence = None
+        
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == True and not self.Overlay.connectionError):
@@ -324,6 +326,8 @@ class InterrogationRoom:
         if response != False:
             #Update the overlay to show the response
             #taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
+            #self.currentEvidence = self.game._aiController.getCurrentEvidence()
             self.currentLine = 0
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
             
@@ -337,6 +341,8 @@ class InterrogationRoom:
             self.state.setOverlay(self.Overlay)
             self.state.setUseEmotibit(self.useEmotibit)
             response = self.state.begin()
+            #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
+            #self.currentEvidence = self.game._aiController.getCurrentEvidence()
             print("New state response")
             self.currentLine = 0
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
@@ -353,6 +359,9 @@ class InterrogationRoom:
             self.Overlay.subtitles.setResponse(subtitlesString)
             self.Overlay.subtitles.updateSubtitles()
             self.Overlay.showSubtitlesBox()
+
+        #Probably put detective animation call here 
+        #self.animationTest(speakers[count], sentiment[count])
 
         self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
 

@@ -23,7 +23,7 @@ import threading
 class main(ShowBase):
     def __init__(self):
         super().__init__()
-
+        self.interrogationRoom = None
         self.start = False
         self.warning = Warning(self)
         self.warning.show()
@@ -32,7 +32,7 @@ class main(ShowBase):
     def continueSetUp(self):
         self.warning.hide()
         self.menuManager = menuManager(self, self.start)
-        self.interrogationRoom = None
+        
 
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         self.roomLoaded = False

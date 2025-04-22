@@ -4,13 +4,15 @@ from textwrap import dedent
 from .AI import AI
 
 class AIInterrogation(AI):
-    def __init__(self, storyGraph, history, phase):
+    def __init__(self, storyGraph, history, phase, verdictController ):
         super().__init__(history)
         self._storyGraph = storyGraph
         self._phase = phase
+        self._verdictController = verdictController
 
         self._currentEvidence = None
         self._introducedEvidence = False
+        self._doneWithCurrentEvidence = False
 
         self._aiResponse = None
         self._evidenceConversation = []
@@ -19,6 +21,8 @@ class AIInterrogation(AI):
 
         self._verdictKeyword = None
         self._verdict = {}
+
+        self.currentVerdict = None
 
     # Requesting evidence based on phase, 
     def receiveEvidence(self):
@@ -33,6 +37,8 @@ class AIInterrogation(AI):
     def introduceEvidence(self):
         if self._currentEvidence is None:
             self.receiveEvidence()
+            print("Reset")
+            self._verdictController.currentVerdict = None
 
             if self._finish:
                 return False
@@ -49,13 +55,17 @@ class AIInterrogation(AI):
                     - Respond as either or both detectives, staying fully in character.
                     - Both detectives may speak, but they must stay focused on this specific item.
                     - Do NOT discuss any other evidence or unrelated topics.
-                    - Be concise.''')
+                    - Be concise.
+                    - Only ask UP TO three follow up questions per piece of evidence. There can be less if a verdict is possible before hitting three, but DO NOT go over three''')
         
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
         gptResponse = self.sendToGPT(gptInput)
+        for response in gptResponse:
+            self._evidenceConversation.append("Detective " + response["Speaker"] + ": " + response["Text"])
         self._introducedEvidence = True
         return gptResponse
+            
     # def sendConversationToStoryGraph(self):
     #     if self._storyGraph == None:
     #         raise Exception("Story Graph reference has not been set")
@@ -65,21 +75,35 @@ class AIInterrogation(AI):
 
     # This code returns a response after a verdict has been decided. That is not supposed to happen. 
     def generateResponse(self): 
+        if self._finish: 
+            self.generateVerdict()
+            self._verdictController.callbackF()
+            return False
+
         if not self._introducedEvidence:
             return self.introduceEvidence()
-        else:
-            if self._counter == 3:
-                self.generateVerdict()
-                self.moveOnToNextTopic()
-                return self.introduceEvidence()
-            else:
-                return self._aiResponse
+        
+        if self._counter == 3:
+            self.generateVerdict()
+            self._verdictController.callbackF()
+            self.moveOnToNextTopic()
+            
+            return self.introduceEvidence()
+        
+        return self._aiResponse
 
 
     def processResponse(self, userResponse):
         gptInput = self._aiHistory.getHistory()[:]
-        preppedResponse = "[MARK] " + userResponse
+        preppedResponse = "[MARK]: " + userResponse
         self._aiHistory.addUserInput(preppedResponse)
+        self._evidenceConversation.append(preppedResponse)
+
+        if self._counter == 2:
+            self._counter += 1
+            print("Halting further GPT responses.")
+            return
+
         instruction = dedent(f"""[INSTRUCTION] The suspect gave the following response: "{preppedResponse}"
                     The suspect appeared {'nervous' if self.userNervous else 'not nervous'} while responding.
 
@@ -90,29 +114,35 @@ class AIInterrogation(AI):
                     - First, react to the suspect's explanation (skepticism, encouragement, or confrontation based on character).
                     - Then, ask exactly ONE follow-up question about this piece of evidence.
                     - Both detectives may speak — either together or back-to-back — but they must stay on the same topic.
-                    - Do NOT ask two separate questions in the same response.
+                    - Do NOT ask two separate questions.
                     - If the suspect seemed nervous, acknowledge it in your tone or commentary.
-                    - If the suspect’s response is dishonest, evasive, or contradictory, point it out.
+                    - If the suspect's response is dishonest, evasive, or contradictory, point it out.
                     - DO NOT reference other evidence, the suspect's injuries, or the night of the murder.
                     - Stay fully in character: Harris is aggressive and skeptical; Miller is empathetic and calm.
                     - Be concise.
-                    - End your turn after the question. Wait for the suspect’s next reply before continuing.
+                    - End your turn after the question. Wait for the suspect's next reply before continuing.
                     """)
         
         gptInput.append({"role": 'user', 'content': instruction})
 
         gptResponse = self.sendToGPT(gptInput)
+
+        for response in gptResponse:
+            self._evidenceConversation.append("Detective " + response["Speaker"] + ": " + response["Text"])
+
         self._aiResponse = gptResponse
         self._counter += 1
-
+    
     def generateVerdict(self):
-        print("getting stuff done mayne")
+        self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
+        self.setCurrentVerdict()
         # verdict = self.getVerdictFromConvo()
         # self._verdictKeyword = verdict
 
         # evidenceList = self._storyGraph.getEvidenceListByPhase(self._phase)
         # curEvidenceIndex = evidenceList.index(self._currentEvidence) + 1
         # self.recordVerdict(curEvidenceIndex, verdict)
+
 
     def getVerdictFromConvo(self):
         convo = self._evidenceConversation[:]
@@ -139,22 +169,21 @@ class AIInterrogation(AI):
     def recordVerdict(self, index, verdict):
         self._verdict[index] = verdict
 
-    def reset(self):
-        self._currentEvidence = None
-        self._introducedEvidence = False
-        self._evidenceConversation.clear()
-
-    def addUserStatementToConvo(self, statement):
-        temp = {'role': 'user', 'content': statement}
-        self._evidenceConversation.append(temp)
-
-    def addAIResponseToConvo(self, statement):
-        temp = {'role': 'assistant', 'content': statement}
-        self._evidenceConversation.append(temp)
-
     def moveOnToNextTopic(self):
         print("Movin one manyne")
         self._currentEvidence = None
         self._counter = 0
-        self._introducedEvidence = False\
-        
+        self._introducedEvidence = False
+        self._evidenceConversation.clear()
+
+    def setCurrentVerdict(self):
+        #print(f"Current verdict: {self._verdictController.currentVerdict}")
+        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', self._verdictController.currentVerdict.lower())
+        if match:
+            self.currentVerdict = match.group(1)
+        else:
+            self.currentVerdict = "inconclusive"
+
+    def getCurrentVerdict(self):
+        print(f"Getting verdict from AI interrogation - {self.currentVerdict}")
+        return self.currentVerdict

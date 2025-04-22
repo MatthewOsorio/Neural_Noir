@@ -13,6 +13,8 @@ class AIInitialPhase(AI):
         self._finished = False
         self._currentQuestion = 0
         self._startedInstruction = False
+        self._currentEvidence = None
+        self.currentVerdict = None
 
     def askQuestion(self):
         if not self._startedInstruction:
@@ -27,7 +29,7 @@ class AIInitialPhase(AI):
             return self._questions[self._currentQuestion]
 
     def processResponse(self, userResponse):
-        preppedResponse = "[MARK] " + userResponse
+        preppedResponse = "[MARK]: " + userResponse
         self._aiHistory.addUserInput(preppedResponse)
 
         gptResponse = self.evaluateResponse(userResponse)

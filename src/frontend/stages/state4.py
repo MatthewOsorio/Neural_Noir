@@ -22,6 +22,8 @@ class State4:
         self.texts = []
         self.audioFilePaths = []
 
+        self.currentEvidence = None
+
     def testPrint(self):
         print("This is state 4")
     
@@ -40,17 +42,25 @@ class State4:
         self.overlay.flashback.setImage(self.image)
         self.overlay.flashback.show()
         self.overlay.hideBioData()
+        self.passToVerdict()
 
         flashback = self.overlay.flashback.getActive()
         while flashback == True:
+            self.overlay.evidenceBox.hide()
             flashback = self.overlay.flashback.getActive()
 
         if self.useEmotibit:
             self.overlay.showBioData()
             
         self.response = self.game.generateAIResponse()
+
+
         if self.response is not False:
-            self.parseResponse(self.response)
+            self.parseResponse(self.response)        
+            self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
+            self.overlay.base.currentEvidence = self.evidenceString()
+            self.overlay.evidenceBoxSetText()
+            self.overlay.evidenceBoxPopOut() 
         return self.response
         
     def convert(self):
@@ -58,7 +68,10 @@ class State4:
     
     def generateResponse(self):
         print("Generating response")
+        self.game._aiController._verdictController.currentVerdict == None
         self.response = self.game.generateAIResponse()
+
+        self.setEvidenceVerdict()
 
         if self.response == False:
             print("Ending phase")
@@ -66,6 +79,11 @@ class State4:
 
         if self.response is not False:
             self.parseResponse(self.response)
+        
+            self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
+            self.overlay.base.currentEvidence = self.evidenceString()        
+            self.overlay.evidenceBoxSetText()
+
         return self.response
     
     def introduceEvidence(self):
@@ -85,3 +103,27 @@ class State4:
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+
+    def evidenceString(self):
+        evidence = self.currentEvidence.split("–")
+        evidenceStr = evidence[0]
+        return evidenceStr
+    
+    def setEvidenceVerdict(self):
+        print("Changing color for verdict")
+        verdict = self.game._aiController._verdictController.currentVerdict
+        if verdict == None:
+            self.overlay.evidenceText.fg = (1, 1 , 1, 1)
+            print("Verdict is none")
+        if verdict == "untruthful":
+            self.overlay.evidenceText.fg = (1, 0, 0, 1)
+            print("Verdict is untruthful")
+        if verdict == "truthful": 
+            self.overlay.evidenceText.fg = (0, 1, 0, 1)
+            print("verdict is truthful")
+        if verdict == "inconclusive":
+            self.overlay.evidenceText.fg = (1, 1, 0, 1)
+            print("verdict is inconclusive")
+
+    def passToVerdict(self):
+        self.game._aiController._verdictController.verdictCallback(self.setEvidenceVerdict)
