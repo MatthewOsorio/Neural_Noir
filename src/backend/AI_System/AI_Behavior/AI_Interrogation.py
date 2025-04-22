@@ -1,5 +1,3 @@
-# Bad cop scenario
-import re
 from textwrap import dedent
 from .AI import AI
 
@@ -18,8 +16,6 @@ class AIInterrogation(AI):
         self._evidenceConversation = []
         self._counter = 0
         self._finish = False
-
-        self._verdictKeyword = None
 
     # Purpose: Requesting evidence from story graph based on the current phase of the AI
     def receiveEvidence(self):
