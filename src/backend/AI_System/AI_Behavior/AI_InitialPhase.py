@@ -14,6 +14,7 @@ class AIInitialPhase(AI):
         self._currentQuestion = 0
         self._startedInstruction = False
         self._currentEvidence = None
+        self.currentVerdict = None
 
     def askQuestion(self):
         if not self._startedInstruction:

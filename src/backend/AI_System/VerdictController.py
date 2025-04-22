@@ -1,8 +1,12 @@
 from openai import OpenAI
 from textwrap import dedent
+import re
+
 class VerdictController:
     def __init__(self):
         self._gpt= OpenAI()
+        self.currentVerdict = None
+        self.callbackF = None
 
     def deriveVerdict(self, interrogation, evidenceConvo, evidence):
         cleanEvidenceConvo = '\n'.join(line.strip() for line in evidenceConvo)
@@ -38,4 +42,13 @@ class VerdictController:
         )
 
         cleanResponse = gptResponse.choices[0].message.content
+        print(f"Verdict controller clean Response: {cleanResponse}")
+        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', cleanResponse.lower())
+        if match:
+            self.currentVerdict = match.group(1)
+        else:
+            self.currentVerdict = "inconclusive"
         print(cleanResponse)
+    
+    def verdictCallback(self, callback):
+        self.callbackF = callback

@@ -37,3 +37,4 @@ class AIController:
 
     def getCurrentEvidence(self):
         return self._ai.getCurrentEvidence()
+    

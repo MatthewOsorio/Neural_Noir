@@ -28,3 +28,4 @@ class AIContext():
             return self._state._currentEvidence
         else:
             return None
+        

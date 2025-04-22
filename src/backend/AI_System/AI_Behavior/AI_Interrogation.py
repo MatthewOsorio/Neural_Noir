@@ -22,6 +22,8 @@ class AIInterrogation(AI):
         self._verdictKeyword = None
         self._verdict = {}
 
+        self.currentVerdict = None
+
     # Requesting evidence based on phase, 
     def receiveEvidence(self):
         if self._storyGraph == None:
@@ -35,6 +37,7 @@ class AIInterrogation(AI):
     def introduceEvidence(self):
         if self._currentEvidence is None:
             self.receiveEvidence()
+            self._verdictController.currentVerdict = None
 
             if self._finish:
                 return False
@@ -51,7 +54,8 @@ class AIInterrogation(AI):
                     - Respond as either or both detectives, staying fully in character.
                     - Both detectives may speak, but they must stay focused on this specific item.
                     - Do NOT discuss any other evidence or unrelated topics.
-                    - Be concise.''')
+                    - Be concise.
+                    - Only ask UP TO three follow up questions per piece of evidence.''')
         
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
@@ -78,6 +82,7 @@ class AIInterrogation(AI):
         
         if self._counter == 3:
             self.generateVerdict()
+            self._verdictController.callbackF()
             self.moveOnToNextTopic()
             
             return self.introduceEvidence()
@@ -127,6 +132,7 @@ class AIInterrogation(AI):
     
     def generateVerdict(self):
         self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
+        self.setCurrentVerdict()
         # verdict = self.getVerdictFromConvo()
         # self._verdictKeyword = verdict
 
@@ -166,3 +172,15 @@ class AIInterrogation(AI):
         self._counter = 0
         self._introducedEvidence = False
         self._evidenceConversation.clear()
+
+    def setCurrentVerdict(self):
+        #print(f"Current verdict: {self._verdictController.currentVerdict}")
+        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', self._verdictController.currentVerdict.lower())
+        if match:
+            self.currentVerdict = match.group(1)
+        else:
+            self.currentVerdict = "inconclusive"
+
+    def getCurrentVerdict(self):
+        print(f"Getting verdict from AI interrogation - {self.currentVerdict}")
+        return self.currentVerdict

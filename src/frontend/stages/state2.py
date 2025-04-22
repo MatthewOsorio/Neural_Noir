@@ -42,6 +42,7 @@ class State2:
         self.overlay.flashback.setImage(self.image)
         self.overlay.flashback.show()
         self.overlay.hideBioData()
+        self.passToVerdict()
 
         flashback = self.overlay.flashback.getActive()
         while flashback == True:
@@ -69,6 +70,8 @@ class State2:
     def generateResponse(self):
         print("Generating response")
         self.response = self.game.generateAIResponse()
+
+        self.setEvidenceVerdict()
 
         if self.response == False:
             print("Ending phase")
@@ -105,3 +108,23 @@ class State2:
         evidence = self.currentEvidence.split("–")
         evidenceStr = evidence[0]
         return evidenceStr
+    
+    def setEvidenceVerdict(self):
+        print("Changing color for verdict")
+        verdict = self.game._aiController._verdictController.currentVerdict
+        if verdict == None:
+            self.overlay.evidenceText.fg = (1, 1 , 1, 1)
+            print("Verdict is none")
+        if verdict == "untruthful":
+            self.overlay.evidenceText.fg = (1, 0, 0, 1)
+            print("Verdict is untruthful")
+        if verdict == "truthful": 
+            self.overlay.evidenceText.fg = (0, 1, 0, 1)
+            print("verdict is truthful")
+        if verdict == "inconclusive":
+            self.overlay.evidenceText.fg = (1, 1, 0, 1)
+            print("verdict is inconclusive")
+
+    def passToVerdict(self):
+        self.game._aiController._verdictController.verdictCallback(self.setEvidenceVerdict)
+
