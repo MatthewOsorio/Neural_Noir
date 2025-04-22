@@ -51,4 +51,5 @@ class VerdictController:
         print(cleanResponse)
     
     def verdictCallback(self, callback):
+        self.callbackF = None
         self.callbackF = callback

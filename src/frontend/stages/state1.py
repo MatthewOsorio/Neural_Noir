@@ -41,7 +41,8 @@ class State1:
         self.game.convertTTS(self.response)
     
     def generateResponse(self):
-        self.response = False
+        #self.response = self.game.generateAIResponse()
+        self.response = False #JUST FOR TESTING PURPOSES DO NOT LEAVE IT FALSE
 
         if self.response == False:
             self.getAverageHeartRate()

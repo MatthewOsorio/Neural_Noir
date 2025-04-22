@@ -66,9 +66,11 @@ class State2:
         
     def convert(self):
         self.game.convertTTS(self.response)
+        pass
     
     def generateResponse(self):
         print("Generating response")
+        self.game._aiController._verdictController.currentVerdict == None
         self.response = self.game.generateAIResponse()
 
         self.setEvidenceVerdict()

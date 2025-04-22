@@ -37,6 +37,7 @@ class AIInterrogation(AI):
     def introduceEvidence(self):
         if self._currentEvidence is None:
             self.receiveEvidence()
+            print("Reset")
             self._verdictController.currentVerdict = None
 
             if self._finish:
@@ -55,7 +56,7 @@ class AIInterrogation(AI):
                     - Both detectives may speak, but they must stay focused on this specific item.
                     - Do NOT discuss any other evidence or unrelated topics.
                     - Be concise.
-                    - Only ask UP TO three follow up questions per piece of evidence.''')
+                    - Only ask UP TO three follow up questions per piece of evidence. There can be less if a verdict is possible before hitting three, but DO NOT go over three''')
         
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
@@ -75,6 +76,8 @@ class AIInterrogation(AI):
     # This code returns a response after a verdict has been decided. That is not supposed to happen. 
     def generateResponse(self): 
         if self._finish: 
+            self.generateVerdict()
+            self._verdictController.callbackF()
             return False
 
         if not self._introducedEvidence:
