@@ -1,6 +1,7 @@
 from openai import OpenAI
 from textwrap import dedent
 from ast import literal_eval
+import re
 
 class VerdictController:
     def __init__(self):
@@ -40,6 +41,20 @@ class VerdictController:
         )
 
         cleanResponse = gptResponse.choices[0].message.content
+
+        #For the evidence text color change 
+        print(f"Verdict controller clean Response: {cleanResponse}")
+        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', cleanResponse.lower())
+        if match:
+            self.currentVerdict = match.group(1)
+        else:
+            self.currentVerdict = "inconclusive"
+
         responseDict = literal_eval(cleanResponse)
 
         return responseDict["verdict"]
+    
+    #For the evidence text color change
+    def verdictCallback(self, callback):
+        self.callbackF = None
+        self.callbackF = callback
