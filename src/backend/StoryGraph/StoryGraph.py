@@ -25,7 +25,6 @@ class StoryGraph:
 
         self._criticalEvidenceSet = {1, 4, 5, 9, 10}
 
-        self._convoAboutEvidence = []
         self._verdictsByEvidence = {}
         self._finalVerdict = None
 
@@ -59,12 +58,18 @@ class StoryGraph:
         elif phase == "FINAL":
             return self._finalEvidence
 
-    def receiveConversation(self, convo):
-        self._convoAboutEvidence.append(convo)
 
-    def receiveVerdict(self, evidenceKey, verdict):
+    '''
+    Notes from Matt:
+        I changed the recieve verdict a bit. Here we find the index of the current evidence and save it into the self._verdictsByEvidence dict.
+        This is exaclty what is being stored in there:
+            {EARLY-1': 'INCONCLUSIVE', 'EARLY-2': 'UNTRUTHFUL', 'EARLY-3': 'UNTRUTHFUL', ....}
+    '''
+    def receiveVerdict(self, currentEvidence, verdict, phase):
         verdict = verdict.upper()
-        self._verdictsByEvidence[evidenceKey] = verdict
+        currentEvidenceList = self.getEvidenceListByPhase(phase)
+        currentEvidenceIndex = currentEvidenceList.index(currentEvidence) + 1
+        self._verdictsByEvidence[f"{phase}-{currentEvidenceIndex}"] = verdict
 
     def determineFinalVerdict(self):
         guilty = 0

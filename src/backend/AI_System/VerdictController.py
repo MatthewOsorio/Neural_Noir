@@ -1,6 +1,6 @@
 from openai import OpenAI
 from textwrap import dedent
-import re
+from ast import literal_eval
 
 class VerdictController:
     def __init__(self):
@@ -21,11 +21,9 @@ class VerdictController:
 
         {cleanEvidenceConvo}
 
-        Return only ONE of the following verdicts:
-
-        [[verdict: truthful]]  
-        [[verdict: untruthful]]  
-        [[verdict: inconclusive]]  
+        Return a JSON object with two fields:
+        - "verdict": Must be one of the following strings: "truthful", "untruthful", or "inconclusive"
+        - "reasoning": A concise explanation (1-3 sentences) justifying the verdict
 
         **RULES**
         - Please expain your reasoning.
@@ -42,14 +40,6 @@ class VerdictController:
         )
 
         cleanResponse = gptResponse.choices[0].message.content
-        print(f"Verdict controller clean Response: {cleanResponse}")
-        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', cleanResponse.lower())
-        if match:
-            self.currentVerdict = match.group(1)
-        else:
-            self.currentVerdict = "inconclusive"
-        print(cleanResponse)
-    
-    def verdictCallback(self, callback):
-        self.callbackF = None
-        self.callbackF = callback
+        responseDict = literal_eval(cleanResponse)
+
+        return responseDict["verdict"]

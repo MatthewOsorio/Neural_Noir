@@ -9,7 +9,7 @@ finished = False
 while(not finished):
     ai_response = gameManager.generateAIResponse()
     if ai_response == False:
-        finished = True
+        gameManager.updateGameState(3)
     else:
         print(ai_response)
         user_statement = input('> ')

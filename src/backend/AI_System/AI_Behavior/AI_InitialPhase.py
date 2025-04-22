@@ -35,7 +35,6 @@ class AIInitialPhase(AI):
         gptResponse = self.evaluateResponse(userResponse)
 
         if gptResponse == "Correct":
-            # print("VALID")
             self._currentQuestion += 1
             self.askedAllQuestions()
             self._startedInstruction = False
