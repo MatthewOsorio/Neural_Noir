@@ -4,7 +4,7 @@ from ast import literal_eval
 
 class VerdictController:
     def __init__(self):
-        self._gpt= OpenAI()
+        self._gpt = OpenAI()
         self.currentVerdict = None
         self.callbackF = None
 
@@ -26,7 +26,7 @@ class VerdictController:
         - "reasoning": A concise explanation (1-3 sentences) justifying the verdict
 
         **RULES**
-        - Please expain your reasoning.
+        - Please explain your reasoning.
         - DO NOT roleplay or speak as a character.
         - DO NOT include anything except the verdict tag.
         - Only judge the suspect's honesty about the listed evidence.

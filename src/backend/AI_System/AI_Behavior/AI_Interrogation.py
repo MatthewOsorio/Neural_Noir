@@ -2,11 +2,12 @@ from textwrap import dedent
 from .AI import AI
 
 class AIInterrogation(AI):
-    def __init__(self, storyGraph, history, phase, verdictController):
+    def __init__(self, storyGraph, history, phase, verdictController, sentimentAnalyzer):
         super().__init__(history)
         self._storyGraph = storyGraph
         self._phase = phase
         self._verdictController = verdictController
+        self._sentimentAnalyzer = sentimentAnalyzer
 
         self._currentEvidence = None
         self._introducedEvidence = False
@@ -57,6 +58,8 @@ class AIInterrogation(AI):
         gptResponse = self.sendToGPT(gptInput)
         self.addAIResponsesToEvidenceCono(gptResponse)
         self._introducedEvidence = True
+        self.classifyDetectivesSentiment()
+
         return gptResponse
             
     # Purpose: Store the AI responses in the evidence conversation list in a transcript format
@@ -126,12 +129,20 @@ class AIInterrogation(AI):
         self.addAIResponsesToEvidenceCono(gptResponse)
         self._aiResponse = gptResponse
         self._counter += 1
+
+        self.classifyDetectivesSentiment()
+
     
     # Purpose: Calling the deriveVerdict method in the verdictController to send to GPT to get a verdict on current evidence conversation
     #   Then we send the verdict and the necessary information to store it in the story graph
     def generateVerdict(self):
         verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
         self._storyGraph.receiveVerdict(self._currentEvidence, verdict, self._phase)
+
+    # Purpose: Classifies sentiment of the detective response to the player's response to the evidence
+    def classifyDetectivesSentiment (self):
+        lastTwoResponses = self._aiResponse[-2:]
+        self.sentiment = self._sentimentAnalyzer.classifyEachDetective(lastTwoResponses)
 
     # Purpose: Once we have finsihed talking about our current evidence we will begin the process of talking about another piece of evidence by reseting the counter and states thats responsible for evidence mangagement
     def moveOnToNextTopic(self):
