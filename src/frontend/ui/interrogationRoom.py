@@ -320,7 +320,7 @@ class InterrogationRoom:
               
     #Response processing part
     def processResponse(self):
-        
+        self.game.sendUserResponseToAI()
         response = self.state.generateResponse()
 
         if response != False:
