@@ -11,7 +11,6 @@ from direct.task.TaskManagerGlobal import taskMgr
 import threading
 
 from panda3d.core import *
-import time
 
 import os
 from panda3d.core import Filename
