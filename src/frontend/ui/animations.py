@@ -66,7 +66,7 @@ class Animations:
 
     def playHarrisLean(self):
         self.harris.loop("lean")
-        self.harris.setPos(0.6, 2.2, -1) #(leftright, forwardbackward, updown)
+        self.harris.setPos(0.6, 2.2, -1.1) #(leftright, forwardbackward, updown)
         self.harris.setH(-23)
         self.harris.reparentTo(self.base.render)
 
