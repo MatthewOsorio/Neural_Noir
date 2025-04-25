@@ -152,20 +152,20 @@ class InterrogationRoom:
                 "skeptical": self.animation.playHarrisLean,
                 "dismissive": self.animation.playHarrisLean,
                 "incredulous": self.animation.playHarrisLaugh,
-                "accusatory": self.animation.playHarrisLean
+                "accusatory": self.animation.playHarrisIdle
             },
             "Miller": {
                 "neutral": self.animation.playMillerIdle,
                 "sympathetic": self.animation.playMillerTalk,
-                "serious": self.animation.playMillerLean,
+                "serious": self.animation.playMillerIdle,
                 "concerned": self.animation.playMillerLean,
                 "reassuring": self.animation.playMillerTalk,
                 "disappointed": self.animation.playMillerLean,
-                "accusatory": self.animation.playMillerLean
+                "accusatory": self.animation.playMillerIdle
             }
         }
         
-        # Test Animation class
+        # Test Animations class
         # self.animation.playHarrisIdle()
         # self.animation.playMillerIdle()
 
@@ -299,7 +299,7 @@ class InterrogationRoom:
               
     #Response processing part
     def processResponse(self):
-        
+        self.game.sendUserResponseToAI()
         response = self.state.generateResponse()
 
         if response != False:
@@ -328,7 +328,8 @@ class InterrogationRoom:
 
             print("End")
 
-    #Updates subtitles if applicable
+    # Updates subtitles if applicable
+    # Also gets sentiment for each animation prior to playing the next response
     def responseUI(self, task):
         count = self.currentLine
         #print(f"Response: {response}")

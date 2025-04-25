@@ -9,8 +9,8 @@ class TextToSpeechController:
         self.gpt = OpenAI()
         self.audio= ac()
         self._voices = {
-            "Harris": 'onyx',
-            "Miller": 'echo'
+            "Harris": 'ash',
+            "Miller": 'onyx'
         }
 
     def generateTTS(self, responses):

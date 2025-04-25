@@ -61,11 +61,14 @@ class GameManager:
         if responseText is None:
             print("Warning: No speech detected. Asking player to repeat.")
             responseText = "I didn't hear that, can you repeat?"
+        return responseText
         
+
+    def sendUserResponseToAI(self):
         #possibly spin another thread for the db
         #self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
-        self.processUserResponse(responseText)
-        return responseText
+        self.processUserResponse(self.userResponse)
+        
 
     def processUserResponse(self, userResponse):
         if not self._gameIsReady:

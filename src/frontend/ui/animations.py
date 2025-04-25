@@ -85,32 +85,32 @@ class Animations:
     def playMillerIdle(self):
         self.miller.loop("idle")
         self.miller.setPos(-0.35, 2.3, -1.1) #(leftright, forwardbackward, updown)
-        self.miller.setH(7)
+        self.miller.setH(4)
         self.miller.reparentTo(self.base.render)
 
     def playMillerTalk(self):
         self.miller.loop("talk")
         self.miller.setPos(-0.35, 2.2, -1.14) #(leftright, forwardbackward, updown)
-        self.miller.setH(7)
+        self.miller.setH(4)
         self.miller.reparentTo(self.base.render)
 
     def playMillerLean(self):
         self.miller.loop("lean")
         self.miller.setScale(1)
         self.miller.setPos(-0.35, 2.2, -1.1) #(leftright, forwardbackward, updown)
-        self.miller.setH(7)
+        self.miller.setH(4)
         self.miller.reparentTo(self.base.render)
 
     def playMillerSit(self):
         self.miller.loop("sit")
         self.miller.setPos(-0.35, 1.9, -1.1) #(leftright, forwardbackward, updown)
-        self.miller.setH(7)
+        self.miller.setH(4)
         self.miller.reparentTo(self.base.render)
 
     def playMillerStand(self):
         self.miller.loop("stand")
         self.miller.setPos(-0.35, 2.3, -1.1) #(leftright, forwardbackward, updown)
-        self.miller.setH(7)
+        self.miller.setH(4)
         self.miller.reparentTo(self.base.render)
 
     def resetHarris(self):

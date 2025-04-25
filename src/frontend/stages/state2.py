@@ -53,9 +53,6 @@ class State2:
         
         self.response = self.game.generateAIResponse() 
 
-        self.sentiment = self.game._aiController.getSentiment()
-
-
         print ("State 2 response: ", self.response)
         if self.response is not False:
             self.parseResponse(self.response)        

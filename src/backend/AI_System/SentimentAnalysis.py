@@ -1,14 +1,17 @@
+import json
+import re
 from openai import OpenAI
 from textwrap import dedent
-from ast import literal_eval
 
 class SentimentAnalysis:
     def __init__(self):
         self._gpt = OpenAI()
         self._allowedTones = {
-            "Harris": ["aggressive", "accusatory", "mocking", "skeptical", "incredulous", "dismissive", "neutral"],
-            "Miller": ["sympathetic", "concerned", "serious", "neutral", "reassuring", "disappointed", "accusatory"]
-        } 
+            "Harris": ["aggressive", "accusatory", "mocking", "skeptical", "incredulous", "dismissive"],
+            "Miller": ["sympathetic", "concerned", "serious", "reassuring", "disappointed", "accusatory"]
+        }
+        self._harrisSentiment = "neutral"
+        self._millerSentiment = "neutral"
 
     def classifySentiment(self, detectiveResponses, allowedTones):
         latestResponse = " ".join(r["Text"] for r in detectiveResponses if "Text" in r)
@@ -34,7 +37,8 @@ class SentimentAnalysis:
 
         [RESPONSE] {latestResponse}
 
-        You must classify the **emotional tone** or **interrogation style** used by the detective. Choose only one of the following tones, based on this specific character's behavior: {toneList}
+        You must classify the **emotional tone** or **interrogation style** used by the detective. Choose only one of the following tones, based on this specific character's behavior:
+        {toneList}
 
         **CONTEXT**
         - Harris is aggressive, cynical, skeptical, or mocking. His lines may sound accusatory, dismissive, or sarcastic.
@@ -42,21 +46,25 @@ class SentimentAnalysis:
 
         **RULES**
         - Your response MUST be a JSON object like: {{ "sentiment": "mocking" }}
-        - If the line uses sarcasm, suspicion, disbelief, or blunt confrontation — DO NOT mark it as "neutral".
-        - Use "neutral" ONLY if the line is purely factual and emotionally flat.
-        - Never include explanation — just return the JSON.
-
-        Output:
+        - Do NOT return Markdown or explanation.
         """)
 
-        gptResponse = self._gpt.chat.completions.create(
+        response = self._gpt.chat.completions.create(
             model='gpt-4o-mini',
             messages=[{"role": "user", "content": gptInput}]
-        )
+        ).choices[0].message.content.strip()
 
-        responseText = gptResponse.choices[0].message.content
-        return literal_eval(responseText)["sentiment"]
-    
+        cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", response, flags=re.IGNORECASE | re.MULTILINE)
+
+        try:
+            return json.loads(cleaned)["sentiment"]
+        except Exception as e:
+            print(f"Sentiment parsing failed:\nRaw: {response}\nCleaned: {cleaned}\nError: {e}")
+            match = re.search(r'"sentiment"\s*:\s*"(\w+)"', cleaned)
+            if match:
+                return match.group(1).strip()
+            return "neutral"
+
     def classifyEachDetective(self, responseList):
         results = {}
         for line in responseList:
@@ -65,11 +73,22 @@ class SentimentAnalysis:
             if speaker and text:
                 allowedTones = self._allowedTones.get(speaker, ["neutral"])
                 sentiment = self.classifySentiment([{"Text": text}], allowedTones)
-                results[speaker] = sentiment if sentiment else "neutral"
 
-                if isinstance(sentiment, list):
-                    results[speaker] = sentiment[0] if sentiment else "neutral"
-                else:
-                    results[speaker] = sentiment if sentiment else "neutral"
+                if not isinstance(sentiment, str):
+                    sentiment = "neutral"
 
+                results[speaker] = sentiment
+
+                if speaker == "Harris":
+                    self._harrisSentiment = sentiment
+                elif speaker == "Miller":
+                    self._millerSentiment = sentiment
+
+        print(f"[Sentiment Results] {results}")
         return results
+
+    def getSentiment(self):
+        return {
+            "Harris": self._harrisSentiment,
+            "Miller": self._millerSentiment
+        }
