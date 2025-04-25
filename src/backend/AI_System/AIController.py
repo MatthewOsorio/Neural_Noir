@@ -2,6 +2,7 @@ from .AI_Behavior import AIInterrogation, AIContext, AIInitialPhase
 from backend.StoryGraph.StoryGraph import StoryGraph
 from .AI_History import AIHistory
 from .VerdictController import VerdictController
+from .SentimentAnalysis import SentimentAnalysis
 
 class AIController:
     def __init__(self):
@@ -10,13 +11,14 @@ class AIController:
         self._aiHistory = AIHistory() 
         self._storyGraph = StoryGraph()
         self._verdictController = VerdictController()
+        self._sentimentAnalyzer = SentimentAnalysis()
 
     def setAIBehavior(self, state):
         match state.value:
             case 1:
                 self._ai = AIContext(AIInitialPhase(self._aiHistory))
             case 2:
-                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="EARLY", verdictController=self._verdictController))
+                self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="EARLY", verdictController=self._verdictController, sentimentAnalyzer=self._sentimentAnalyzer))
             case 3:
                 self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="MID", verdictController=self._verdictController))
             case 4:
@@ -37,4 +39,10 @@ class AIController:
 
     def getCurrentEvidence(self):
         return self._ai.getCurrentEvidence()
+    
+    def getSentiment(self):
+        if hasattr(self._ai, "sentiment"):
+            return self._ai.sentiment
+        else:
+            return {} 
     

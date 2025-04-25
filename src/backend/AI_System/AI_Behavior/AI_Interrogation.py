@@ -9,6 +9,8 @@ class AIInterrogation(AI):
         self._verdictController = verdictController
         self._sentimentAnalyzer = sentimentAnalyzer
 
+        self.sentiment = "neutral"
+
         self._currentEvidence = None
         self._introducedEvidence = False
         self._doneWithCurrentEvidence = False
@@ -56,6 +58,7 @@ class AIInterrogation(AI):
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
         gptResponse = self.sendToGPT(gptInput)
+        self._aiResponse = gptResponse
         self.addAIResponsesToEvidenceCono(gptResponse)
         self._introducedEvidence = True
         self.classifyDetectivesSentiment()

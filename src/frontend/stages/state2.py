@@ -51,7 +51,9 @@ class State2:
         if self.useEmotibit:
             self.overlay.showBioData()
         
-        self.response = self.game.generateAIResponse()  
+        self.response = self.game.generateAIResponse() 
+
+        self.sentiment = self.game._aiController.getSentiment()
 
 
         print ("State 2 response: ", self.response)

@@ -144,10 +144,30 @@ class InterrogationRoom:
         self.room.setHpr(0, 0, 0)
 
         # Play animations based on sentiment keyword
+        self.sentimentToAnimation = {
+            "Harris": {
+                "neutral": self.animation.playHarrisIdle,
+                "aggressive": self.animation.playHarrisBang,
+                "mocking": self.animation.playHarrisLaugh,
+                "skeptical": self.animation.playHarrisLean,
+                "dismissive": self.animation.playHarrisLean,
+                "incredulous": self.animation.playHarrisLaugh,
+                "accusatory": self.animation.playHarrisLean
+            },
+            "Miller": {
+                "neutral": self.animation.playMillerIdle,
+                "sympathetic": self.animation.playMillerTalk,
+                "serious": self.animation.playMillerLean,
+                "concerned": self.animation.playMillerLean,
+                "reassuring": self.animation.playMillerTalk,
+                "disappointed": self.animation.playMillerLean,
+                "accusatory": self.animation.playMillerLean
+            }
+        }
         
         # Test Animation class
-        self.animation.playHarrisIdle()
-        self.animation.playMillerIdle()
+        # self.animation.playHarrisIdle()
+        # self.animation.playMillerIdle()
 
     def unloadModels(self):
         self.room.detachNode()
@@ -321,8 +341,17 @@ class InterrogationRoom:
 
         #Probably put detective animation call here 
         #self.animationTest(speakers[count], sentiment[count])
-
         self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
+
+        # Get speaker and sentiment for animation
+        speaker = self.state.speakers[count]
+        sentiment = self.game._aiController.getSentiment().get(speaker, "neutral")
+
+        # Play animation based on sentiment
+        if speaker in self.sentimentToAnimation and sentiment in self.sentimentToAnimation[speaker]:
+            print(f"Playing {speaker}'s animation for sentiment: {sentiment}")
+            self.sentimentToAnimation[speaker][sentiment]()
+
 
         print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
         #self.game._tts.speak(self.state.audioFilePaths[count])
