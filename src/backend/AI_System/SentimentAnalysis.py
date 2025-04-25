@@ -46,6 +46,7 @@ class SentimentAnalysis:
 
         **RULES**
         - Your response MUST be a JSON object like: {{ "sentiment": "mocking" }}
+        - You can only use the 'aggressive' tag for Harris when it is absolutely appropriate.
         - Do NOT return Markdown or explanation.
         """)
 

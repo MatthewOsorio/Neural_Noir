@@ -32,27 +32,50 @@ class VerdictController:
         - DO NOT include anything except the verdict tag.
         - Only judge the suspect's honesty about the listed evidence.
         """)
-        
-        interrogation.append({'role': 'user', 'content': gptInput})
 
+        interrogation.append({'role': 'user', 'content': gptInput})
         gptResponse = self._gpt.chat.completions.create(
             model='gpt-4o-mini',
-            messages= interrogation
+            messages=interrogation
         )
 
-        cleanResponse = gptResponse.choices[0].message.content
+        raw = gptResponse.choices[0].message.content
+        print(f"[Verdict Raw Response] {raw}")
 
-        #For the evidence text color change 
-        print(f"Verdict controller clean Response: {cleanResponse}")
-        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', cleanResponse.lower())
-        if match:
-            self.currentVerdict = match.group(1)
-        else:
-            self.currentVerdict = "inconclusive"
+        # Remove markdown code fences if present
+        cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw.strip(), flags=re.IGNORECASE | re.MULTILINE)
 
-        responseDict = literal_eval(cleanResponse)
+        # Try parsing as proper JSON first
+        try:
+            responseDict = json.loads(cleaned)
+            self.currentVerdict = responseDict.get("verdict", "inconclusive").lower()
+            return self.currentVerdict
+        except Exception as e:
+            print(f"[Verdict Parsing Error] {e}\nCleaned: {cleaned}")
 
-        return responseDict["verdict"]
+            # Fallback regex to extract verdict manually
+            match = re.search(r'"verdict"\s*:\s*"?(truthful|untruthful|inconclusive)"?', cleaned.lower())
+            if match:
+                self.currentVerdict = match.group(1)
+                return self.currentVerdict
+
+        # If everything fails, return inconclusive
+        self.currentVerdict = "inconclusive"
+        return "inconclusive"
+
+        # cleanResponse = gptResponse.choices[0].message.content
+
+        # #For the evidence text color change 
+        # print(f"Verdict controller clean Response: {cleanResponse}")
+        # match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', cleanResponse.lower())
+        # if match:
+        #     self.currentVerdict = match.group(1)
+        # else:
+        #     self.currentVerdict = "inconclusive"
+
+        # responseDict = literal_eval(cleanResponse)
+
+        # return responseDict["verdict"]
     
     #For the evidence text color change
     def verdictCallback(self, callback):
