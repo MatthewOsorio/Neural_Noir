@@ -53,13 +53,13 @@ class Animations:
         self.harris.reparentTo(self.base.render)
 
     def playHarrisLaugh(self):
-        self.harris.loop("laugh")
+        self.harris.play("laugh")
         self.harris.setPos(0.6, 2.4, -1.1) #(leftright, forwardbackward, updown)
         self.harris.setH(-15)
         self.harris.reparentTo(self.base.render)
 
     def playHarrisBang(self):
-        self.harris.loop("bang")
+        self.harris.play("bang")
         self.harris.setPos(0.5, 2.2, -1.16) #(-leftright+, -forwardbackward+, updown)
         self.harris.setH(-15)
         self.harris.reparentTo(self.base.render)
@@ -71,13 +71,13 @@ class Animations:
         self.harris.reparentTo(self.base.render)
 
     def playHarrisStand(self):
-        self.harris.loop("stand")
+        self.harris.play("stand")
         self.harris.setPos(0.6, 2.55, -1.1) #(leftright, forwardbackward, updown)
         self.harris.setH(-15)
         self.harris.reparentTo(self.base.render)
 
     def playHarrisSit(self):
-        self.harris.loop("sit")
+        self.harris.play("sit")
         self.harris.setPos(0.5, 2, -1.1) #(leftright, forwardbackward, updown)
         self.harris.setH(-15)
         self.harris.reparentTo(self.base.render)
@@ -89,7 +89,7 @@ class Animations:
         self.miller.reparentTo(self.base.render)
 
     def playMillerTalk(self):
-        self.miller.loop("talk")
+        self.miller.play("talk")
         self.miller.setPos(-0.35, 2.2, -1.14) #(leftright, forwardbackward, updown)
         self.miller.setH(4)
         self.miller.reparentTo(self.base.render)
@@ -102,13 +102,13 @@ class Animations:
         self.miller.reparentTo(self.base.render)
 
     def playMillerSit(self):
-        self.miller.loop("sit")
+        self.miller.play("sit")
         self.miller.setPos(-0.35, 1.9, -1.1) #(leftright, forwardbackward, updown)
         self.miller.setH(4)
         self.miller.reparentTo(self.base.render)
 
     def playMillerStand(self):
-        self.miller.loop("stand")
+        self.miller.play("stand")
         self.miller.setPos(-0.35, 2.3, -1.1) #(leftright, forwardbackward, updown)
         self.miller.setH(4)
         self.miller.reparentTo(self.base.render)

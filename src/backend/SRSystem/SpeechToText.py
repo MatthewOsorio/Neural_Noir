@@ -11,7 +11,7 @@ class SpeechToText:
 
     def listen(self):
         # Increase the time to from end of audio input to processing
-        self.recognizer.pause_threshold = 3.0
+        #self.recognizer.pause_threshold = 1.0
         now = datetime.now()
         self.startTime = now.strftime("%H:%M:%S")
 
