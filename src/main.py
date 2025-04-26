@@ -65,11 +65,13 @@ class main(ShowBase):
     def checkForGameStart(self, task):
         self.connections()
         def on_success():
-
-            self.playMovie()
-
             self.connectionDisplay.destroyConnectionStatus()
             
+            #Slight delay so that video doesn't play before the connection screen disappears
+            taskMgr.doMethodLater(0.5, self.playMovie, "movieTask1")
+
+            #Kept this here so that models and all that could load during the video but if you want to load it after the video for things like animations
+            #Move whatever you need to "StartAfterMovie" method
             self.interrogationRoom = InterrogationRoom(self, self.menuManager)
             #print("Main - True")
             self.interrogationRoom.cameraSetUp()
@@ -128,7 +130,8 @@ class main(ShowBase):
             print("Joining initial thread")
             self.interrogationThread.join(timeout = 2)
 
-    def playMovie(self):
+    def playMovie(self, task):
+        #print("Play movie")
         self.movie = MovieTexture("name")
         v = self.movie.read(video)
         self.movie.setLoop(False)
@@ -140,6 +143,7 @@ class main(ShowBase):
         cm.setFrame(-1.315*hSize, 1.315*hSize, -1, 1)
         self.card = aspect2d.attachNewNode(cm.generate())
         self.card.setTexture(self.movie)
+        self.card.setBin('fixed', 1)
 
         self.card.setTexScale(TextureStage.getDefault(), self.movie.getTexScale()[0], self.movie.getTexScale()[1])
         self.card.setTexOffset(TextureStage.getDefault(), 0, 0)
@@ -147,6 +151,7 @@ class main(ShowBase):
         self.skipButton()
 
         taskMgr.add(self.checkEndOfMovie, "movieTask")
+        return task.done
 
     def checkEndOfMovie(self, task): 
         #print("Check for end of movie")
@@ -159,6 +164,7 @@ class main(ShowBase):
 
     def startAfterMovie(self):
         taskMgr.remove("movieTask")
+        taskMgr.remove("movieTask1")
         self.button.hide()
         self.skipMovie = False
         self.roomLoaded = True   
