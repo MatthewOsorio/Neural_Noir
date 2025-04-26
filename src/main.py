@@ -22,7 +22,7 @@ from panda3d.core import MovieTexture, CardMaker, TextureStage
 import os
 from panda3d.core import Filename
 current_dir = os.path.dirname(os.path.abspath(__file__))
-video = os.path.join(current_dir, "..", "Assets", "Video", "intro_video.ogv")
+video = os.path.join(current_dir, "..", "Assets", "Video", "video_intro.mp4")
 video = os.path.normpath(video)
 video = Filename.fromOsSpecific(video).getFullpath()
 
@@ -31,10 +31,12 @@ import threading
 class main(ShowBase):
     def __init__(self):
         super().__init__()
+        self.base = ShowBase
         self.interrogationRoom = None
         self.start = False
         self.movie = None
         self.card = None
+        self.skipMovie = False
         self.warning = Warning(self)
         self.warning.show()
         self.warning.button['command'] = self.continueSetUp
@@ -128,24 +130,27 @@ class main(ShowBase):
 
     def playMovie(self):
         self.movie = MovieTexture("name")
-        success = self.movie.read(video)
+        v = self.movie.read(video)
         self.movie.setLoop(False)
         self.movie.play()
 
         hSize = self.getAspectRatio()
 
         cm = CardMaker("movieCard")
-        cm.setFrame(-2*hSize, 2*hSize, -1, 1)
+        cm.setFrame(-1.315*hSize, 1.315*hSize, -1, 1)
         self.card = aspect2d.attachNewNode(cm.generate())
         self.card.setTexture(self.movie)
 
         self.card.setTexScale(TextureStage.getDefault(), self.movie.getTexScale()[0], self.movie.getTexScale()[1])
         self.card.setTexOffset(TextureStage.getDefault(), 0, 0)
+
+        self.skipButton()
+
         taskMgr.add(self.checkEndOfMovie, "movieTask")
 
     def checkEndOfMovie(self, task): 
         #print("Check for end of movie")
-        if self.movie.getTime() >= self.movie.getVideoLength():
+        if self.movie.getTime() >= self.movie.getVideoLength() or self.skipMovie is True:
             self.card.removeNode()  
             self.startAfterMovie()
             #print("Ending movie")
@@ -154,11 +159,34 @@ class main(ShowBase):
 
     def startAfterMovie(self):
         taskMgr.remove("movieTask")
+        self.button.hide()
+        self.skipMovie = False
         self.roomLoaded = True   
         self.interrogationRoom.game.begin = True
         self.interrogationThread = threading.Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
         print("Start thread")
         self.interrogationThread.start()
+
+    def skipButton(self):
+        #I put the button on the left for now so it doesn't cover the sora logo
+        self.button = DirectButton(
+            text = "Skip",
+            command = self.setSkipMovie,
+            sortOrder = 1,
+            text_font = self.menuManager.font,
+            text_fg = (1, 1, 1, 1),
+            frameColor = (0, 0, 0, 0.8),
+            pos = (-1.7, -0.9, -0.9),
+            scale = 0.1
+        )
+
+        self.button.show()
+
+        self.button.bind(DGG.ENTER, lambda event: self.menuManager.setColorHover(self.button))  
+        self.button.bind(DGG.EXIT, lambda event: self.menuManager.setColorDefault(self.button)) 
+
+    def setSkipMovie(self):
+        self.skipMovie = True
 
 app = main()
 app.run()
