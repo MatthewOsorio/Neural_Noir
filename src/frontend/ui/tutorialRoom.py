@@ -229,6 +229,7 @@ class TutorialRoom:
         pttActive = self.Overlay.ptt.getPTTActive()
         if pttActive == False: 
             self.pausable = False
+            self.Overlay.tutorials.hideTutorialBox()
             self.Overlay.ptt.hidePTTButton()
             print("talk")
             self.thread = threading.Thread(target=self.processSpeech, daemon=True)
@@ -265,16 +266,30 @@ class TutorialRoom:
         elif self.redoable is False:
             self.Overlay.redoSpeechButton.hide()
 
+        self.setTutorialBox(
+            (0, 0, 0.1), 
+            (0.5, 0, 0.3), 
+            "Your transcribed reply will show up here. If you are happy with it, you can accept it."
+            "If not, you are given one retry per question. Click accept to move onto the next question or retry to redo your reply to this question.",
+            15)
+        
+        if self.tutorialEvents["Accept"] is False:
+            self.Overlay.tutorials.showTutorialBox(False)
+
         userInputActive = self.Overlay.userSpeech.getActive()
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
+            self.tutorialEvents["PTT"] = True
             self.Overlay.hideUserInputBox()
             self.game.insertInteractionInDB(speech, "Player")
+            self.Overlay.tutorials.hideTutorialBox()
+            self.tutorialEvents["Accept"] = True
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
             if self.threadEvent.is_set() == False:
                 self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
             self.redoable = False
+            self.Overlay.tutorials.hideTutorialBox()
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
             taskMgr.add(self.speechUI, "UpdateSpeechTask")
@@ -352,6 +367,16 @@ class TutorialRoom:
     #Hides subtitles
     def updateResponse(self, task):
         self.Overlay.hideSubtitlesBox()
+
+        self.setTutorialBox(
+            (1.5, 0, 0), 
+            (0.4, 0, 0.3), 
+            "After the detective asks you a question, a Push-to-Talk button will appear here. "
+            "Press it to start recording your response. The recording will stop when you stop talking.",
+            15)
+    
+        if self.tutorialEvents["PTT"] == False:
+            self.Overlay.tutorials.showTutorialBox(False)
 
         #If the game has not been quit, restart the process
         if self.ended == False and not self.Overlay.connectionError:
