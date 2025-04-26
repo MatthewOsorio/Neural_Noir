@@ -1,12 +1,14 @@
 from textwrap import dedent
+import re
 from .AI import AI
 
 class AIInterrogation(AI):
-    def __init__(self, storyGraph, history, phase, verdictController):
+    def __init__(self, storyGraph, history, phase, verdictController, sentimentAnalyzer):
         super().__init__(history)
         self._storyGraph = storyGraph
         self._phase = phase
         self._verdictController = verdictController
+        self._sentimentAnalyzer = sentimentAnalyzer
 
         self._currentEvidence = None
         self._introducedEvidence = False
@@ -47,16 +49,28 @@ class AIInterrogation(AI):
                     - Then, ask the suspect what they know about this specific piece of evidence.
                     - If the evidence was found at the crime scene, briefly mention that.
                     - Respond as either or both detectives, staying fully in character.
+                    - Harris should challenge or press the suspect based on this evidence.
+                    - Miller may support or sympathize with the suspect, but still ask questions.
+                    - Show emotional tone — suspicion, concern, sarcasm, or doubt — clearly in the dialogue.
                     - Both detectives may speak, but they must stay focused on this specific item.
                     - Do NOT discuss any other evidence or unrelated topics.
                     - Be concise.
-                    - Only ask UP TO three follow up questions per piece of evidence. There can be less if a verdict is possible before hitting three, but DO NOT go over three''')
-        
+                    - Only ask UP TO three follow up questions per piece of evidence. There can be less if a verdict is possible before hitting three, but DO NOT go over three
+                    - Format output as a Python list of dictionaries. Format MUST be:
+                        [
+                        {{ "Speaker": "Miller", "Text": "..." }},
+                        {{ "Speaker": "Harris", "Text": "..." }}
+                        ]
+                    ''')
+                    
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
         gptResponse = self.sendToGPT(gptInput)
+        self._aiResponse = gptResponse
         self.addAIResponsesToEvidenceCono(gptResponse)
         self._introducedEvidence = True
+        self.classifyDetectivesSentiment()
+
         return gptResponse
             
     # Purpose: Store the AI responses in the evidence conversation list in a transcript format
@@ -113,10 +127,18 @@ class AIInterrogation(AI):
                     - Do NOT ask two separate questions.
                     - If the suspect seemed nervous, acknowledge it in your tone or commentary.
                     - If the suspect's response is dishonest, evasive, or contradictory, point it out.
+                    - If the suspect seemed nervous, acknowledge it in your tone or commentary (e.g., “You’re shaking, Mark. What are you hiding?”).
+                    - Respond in a way that clearly reflects the detective's emotional tone (concern, disbelief, sarcasm, aggression).
+                    - Use short, emotionally charged sentences when appropriate.
                     - DO NOT reference other evidence, the suspect's injuries, or the night of the murder.
                     - Stay fully in character: Harris is aggressive and skeptical; Miller is empathetic and calm.
                     - Be concise.
                     - End your turn after the question. Wait for the suspect's next reply before continuing.
+                    - Format output as a Python list of dictionaries. Format MUST be:
+                        [
+                        {{ "Speaker": "Miller", "Text": "..." }},
+                        {{ "Speaker": "Harris", "Text": "..." }}
+                        ]
                     """)
         
         gptInput.append({"role": 'user', 'content': instruction})
@@ -126,12 +148,23 @@ class AIInterrogation(AI):
         self.addAIResponsesToEvidenceCono(gptResponse)
         self._aiResponse = gptResponse
         self._counter += 1
+
+        self.classifyDetectivesSentiment()
+
     
     # Purpose: Calling the deriveVerdict method in the verdictController to send to GPT to get a verdict on current evidence conversation
     #   Then we send the verdict and the necessary information to store it in the story graph
     def generateVerdict(self):
         verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
         self._storyGraph.receiveVerdict(self._currentEvidence, verdict, self._phase)
+
+    # Purpose: Classifies sentiment of the detective response to the player's response to the evidence
+    def classifyDetectivesSentiment (self):
+        lastTwoResponses = self._aiResponse[-2:]
+        sentiments = self._sentimentAnalyzer.classifyEachDetective(lastTwoResponses)
+
+        self._sentimentAnalyzer._millerSentiment = sentiments.get("Miller", "neutral")
+        self._sentimentAnalyzer._harrisSentiment = sentiments.get("Harris", "neutral")
 
     # Purpose: Once we have finsihed talking about our current evidence we will begin the process of talking about another piece of evidence by reseting the counter and states thats responsible for evidence mangagement
     def moveOnToNextTopic(self):

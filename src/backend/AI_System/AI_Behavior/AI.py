@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
@@ -61,6 +62,19 @@ class AI(ABC):
     
     # Creates the dictionary we return from generateResponse
     def formatResponse(self, response):
+        try:
+            parsed = json.loads(response)
+            if isinstance(parsed, list):
+                result = []
+                for item in parsed:
+                    speaker = item.get("Speaker")
+                    text = item.get("Text")
+                    if speaker and text:
+                        result.append({"Speaker": speaker, "Text": text})
+                return result
+        except Exception:
+            pass  # Fall back to legacy format if not valid JSON
+        
         lines = [line.strip() for line in response.split("\n") if line.strip()]
         responses = []
 
@@ -86,12 +100,23 @@ class AI(ABC):
         )
 
         cleanResponse = gptResponse.choices[0].message.content
+        print(cleanResponse)
 
         # Strictly for initial phase
-        if cleanResponse == 'Correct':
-            return cleanResponse
+        # if cleanResponse == 'Correct':
+        #     return cleanResponse
 
-        detectiveResponses = self.formatResponse(cleanResponse)
+        if cleanResponse.lower() in ['correct', 'incorrect']:
+            return cleanResponse
+        
+        try:
+            detectiveResponses = self.formatResponse(cleanResponse)
+        except Exception as e:
+            print("Failed to parse GPT response with formatResponse")
+            print("GPT returned:", cleanResponse)
+            raise Exception("UNKNOWN RESPONSE FROM GPT") from e
+
+        #detectiveResponses = self.formatResponse(cleanResponse)
         self.makeSpeechFile(detectiveResponses)
         self.addAIResponses(detectiveResponses) # Adds AI response to the aiHistory or the context list
         return detectiveResponses

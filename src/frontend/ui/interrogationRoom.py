@@ -1,4 +1,5 @@
 from frontend.ui.menu.PauseMenu import PauseMenu
+from frontend.ui.animations import Animations
 from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
 from frontend.stages.state1 import State1
@@ -51,6 +52,7 @@ class InterrogationRoom:
         self.menu.pauseMenu.hide()
         self.menu.pauseMenu.hideImage()
 
+        self.animation = Animations(self.base)
         
         self.Overlay = Overlay(self)      
         self.Overlay.show()
@@ -89,7 +91,7 @@ class InterrogationRoom:
         #Moved the camera back slightly so that it does not clip the table
         self.base.camera.setPos(0, -0.18 , 0)
         #Test print for the camera position if we need to change it
-        #print(self.base.camera.getPos())
+        print(self.base.camera.getPos())
 
         self.cameraSensitivity = 10
         self.horizontal = 0
@@ -98,15 +100,19 @@ class InterrogationRoom:
         #Updates the camera angle
         self.base.taskMgr.add(self.moveCamera, "Move Camera")
 
-        # # CAMERA AT LEFT SIDE OF ROOM FOR DEBUGGING
+        ##################################################
+        # # CAMERA AT LEFT SIDE FACING MILLER
         # self.base.camera.setPos(-3, 1, -0.1)
-
-        # # Rotate the camera to look toward detectives' side
         # self.base.camera.setHpr(295, -5, 0)
+
+        # # CAMERA AT RIGHT SIDE OF ROOM FACING HARRIS
+        # self.base.camera.setPos(2.75, 1, -0.5)
+        # self.base.camera.setHpr(70, 4, 1)
         
         # self.cameraSensitivity = 10
         # self.horizontal = 0
         # self.vertical = 0
+        ##################################################
         
     #Allows users to rotate the camera slightly to "look around"
     def moveCamera(self, base):
@@ -136,59 +142,32 @@ class InterrogationRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
-        # Load in Harris
-        self.harris = Actor(
-            "../blender/converted_animations/harris.bam",
-            {
-
-                "idle": "../blender/converted_animations/harris_sitting_idle.bam",
-                "laugh": "../blender/converted_animations/harris_sitting_laughing.bam",
-                "bang": "../blender/converted_animations/harris_banging_fist.bam",
-                "lean": "../blender/converted_animations/harris_male_sitting_back_pose.bam",
-                "stand": "../blender/converted_animations/harris_sit_to_stand.bam",
-                "sit": "../blender/converted_animations/harris_stand_to_sit.bam"
+        # Play animations based on sentiment keyword
+        self.sentimentToAnimation = {
+            "Harris": {
+                "neutral": self.animation.playHarrisIdle,
+                "aggressive": self.animation.playHarrisBang,
+                "mocking": self.animation.playHarrisLaugh,
+                "skeptical": self.animation.playHarrisLean,
+                "dismissive": self.animation.playHarrisLean,
+                "incredulous": self.animation.playHarrisLaugh,
+                "accusatory": self.animation.playHarrisIdle
+            },
+            "Miller": {
+                "neutral": self.animation.playMillerIdle,
+                "sympathetic": self.animation.playMillerTalk,
+                "serious": self.animation.playMillerIdle,
+                "concerned": self.animation.playMillerLean,
+                "reassuring": self.animation.playMillerTalk,
+                "disappointed": self.animation.playMillerLean,
+                "accusatory": self.animation.playMillerIdle
             }
-        )
-        self.harris.setScale(1)
-        self.harris.setPos(0.5, 2.5, -1.1)
-        #self.harris.setPos(-0.40, 2.5, -1.1) #(leftright, forwardbackward, updown)
-        self.harris.reparentTo(self.base.render)
-        self.harris.loop("idle")
+        }
+        
+        # Test Animations class
+        # self.animation.playHarrisIdle()
+        # self.animation.playMillerIdle()
 
-        # debug visibility for harris
-        self.harris.setLightOff()
-        self.harris.setColor((1, 1, 1, 1))
-        self.harris.show()
-        self.harris.setBin("opaque", 10)
-        self.harris.setDepthTest(True)
-        self.harris.setDepthWrite(True)
-    
-        self.miller = Actor(
-            "../blender/converted_animations/miller.bam",
-            {
-                "idle": "../blender/converted_animations/miller_sitting_idle.bam",
-                "talk": "../blender/converted_animations/miller_talking.bam",
-                "lean": "../blender/converted_animations/miller_male_sitting_back_pose.bam",
-                "sit": "../blender/converted_animations/miller_stand_to_sit.bam",
-                "stand": "../blender/converted_animations/miller_sit_to_stand.bam"
-            }
-        )
-        self.miller.setScale(1)
-        #self.miller.setPos(0.5, 2.5, -1.1)
-        self.miller.setPos(-0.40, 2, -1.1) #(leftright, forwardbackward, updown)
-        self.miller.reparentTo(self.base.render)
-        self.miller.loop("lean")
-
-        # debug visibility for miller
-        self.miller.setLightOff()
-        self.miller.setColor((1, 1, 1, 1))
-        #self.miller.show()
-        self.miller.setBin("fixed", 150)
-        self.miller.setDepthTest(True)
-        self.miller.setDepthWrite(True)
-        self.miller.setTransparency(False)
-        self.miller.setTwoSided(True)
-    
     def unloadModels(self):
         self.room.detachNode()
         self.room.removeNode()
@@ -348,7 +327,8 @@ class InterrogationRoom:
 
             print("End")
 
-    #Updates subtitles if applicable
+    # Updates subtitles if applicable
+    # Also gets sentiment for each animation prior to playing the next response
     def responseUI(self, task):
         count = self.currentLine
         #print(f"Response: {response}")
@@ -361,8 +341,17 @@ class InterrogationRoom:
 
         #Probably put detective animation call here 
         #self.animationTest(speakers[count], sentiment[count])
-
         self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
+
+        # Get speaker and sentiment for animation
+        speaker = self.state.speakers[count]
+        sentiment = self.game._aiController.getSentiment().get(speaker, "neutral")
+
+        # Play animation based on sentiment
+        if speaker in self.sentimentToAnimation and sentiment in self.sentimentToAnimation[speaker]:
+            print(f"Playing {speaker}'s animation for sentiment: {sentiment}")
+            self.sentimentToAnimation[speaker][sentiment]()
+
 
         print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
         #self.game._tts.speak(self.state.audioFilePaths[count])

@@ -1,20 +1,22 @@
 from .AI import AI
 from textwrap import dedent
+from backend.AI_System.SentimentAnalysis import SentimentAnalysis
 
 class AIInitialPhase(AI):
-    def __init__(self, history):
+    def __init__(self, history, sentimentAnalyzer):
         super().__init__(history)
         self._questions = [
             "[INSTRUCTION] Ask the suspect for what their name is.",
             "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
             "[INSTRUCTION] Ask if Mark worked as a photographer at Reno Media Company.",
-            "[INSTRUCTION] Ask if the Mark worked under Vinh Davis."
+            "[INSTRUCTION] Ask if Mark worked under Vinh Davis."
         ]
         self._finished = False
         self._currentQuestion = 0
         self._startedInstruction = False
         self._currentEvidence = None
-        self.currentVerdict = None
+        self._sentimentAnalyzer = sentimentAnalyzer
+        #self.currentVerdict = None
 
     def askQuestion(self):
         if not self._startedInstruction:
@@ -24,6 +26,10 @@ class AIInitialPhase(AI):
 
             response = self.sendToGPT(gptInput)
             self._startedInstruction = True
+
+            if isinstance(response, list):
+                self._sentimentAnalyzer.classifyEachDetective(response)
+
             return response
         else:
             return self._questions[self._currentQuestion]
@@ -40,6 +46,20 @@ class AIInitialPhase(AI):
             self._startedInstruction = False
         else:
             self._questions[self._currentQuestion] = gptResponse
+
+    # Purpose: Classifies sentiment of the detective response to the player's response to the evidence
+    def classifyDetectivesSentiment (self):
+        lastTwoResponses = self._aiResponse[-2:]
+        sentiments = self._sentimentAnalyzer.classifyEachDetective(lastTwoResponses)
+
+        self._sentimentAnalyzer._millerSentiment = sentiments.get("Miller", "neutral")
+        self._sentimentAnalyzer._harrisSentiment = sentiments.get("Harris", "neutral")
+
+    def getSentiment(self):
+        return {
+            "Harris": getattr(self._sentimentAnalyzer, "_harrisSentiment", "neutral"),
+            "Miller": getattr(self._sentimentAnalyzer, "_millerSentiment", "neutral")
+        }
 
     def evaluateResponse(self, user_response):
         gptInput = self._aiHistory.getHistory()[:]
