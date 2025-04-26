@@ -18,6 +18,14 @@ from frontend.ui.connectionDisplay import ConnectionDisplay
 from frontend.ui.tutorialRoom import TutorialRoom
 from frontend.ui.warnings.dataUsageWarning import Warning
 
+from panda3d.core import MovieTexture, CardMaker, TextureStage
+import os
+from panda3d.core import Filename
+current_dir = os.path.dirname(os.path.abspath(__file__))
+video = os.path.join(current_dir, "..", "Assets", "Video", "intro_video.ogv")
+video = os.path.normpath(video)
+video = Filename.fromOsSpecific(video).getFullpath()
+
 import threading
 
 class main(ShowBase):
@@ -25,6 +33,8 @@ class main(ShowBase):
         super().__init__()
         self.interrogationRoom = None
         self.start = False
+        self.movie = None
+        self.card = None
         self.warning = Warning(self)
         self.warning.show()
         self.warning.button['command'] = self.continueSetUp
@@ -32,7 +42,6 @@ class main(ShowBase):
     def continueSetUp(self):
         self.warning.hide()
         self.menuManager = menuManager(self, self.start)
-        
 
         self.taskMgr.add(self.checkForGameStart, "Check for Game Start")
         self.roomLoaded = False
@@ -54,6 +63,9 @@ class main(ShowBase):
     def checkForGameStart(self, task):
         self.connections()
         def on_success():
+
+            self.playMovie()
+
             self.connectionDisplay.destroyConnectionStatus()
             
             self.interrogationRoom = InterrogationRoom(self, self.menuManager)
@@ -61,11 +73,7 @@ class main(ShowBase):
             self.interrogationRoom.cameraSetUp()
             self.interrogationRoom.loadModels()
             self.interrogationRoom.loadLighting()
-            self.roomLoaded = True   
-            self.interrogationRoom.game.begin = True
-            #Stars interrogation api calls on a separate thread once the game is started
-            self.interrogationThread = threading.Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
-            self.interrogationThread.start()
+
 
         def on_successTutorial():
             self.connectionDisplay.destroyConnectionStatus()
@@ -117,6 +125,40 @@ class main(ShowBase):
         if self.interrogationThread is not None:
             print("Joining initial thread")
             self.interrogationThread.join(timeout = 2)
-        
+
+    def playMovie(self):
+        self.movie = MovieTexture("name")
+        success = self.movie.read(video)
+        self.movie.setLoop(False)
+        self.movie.play()
+
+        hSize = self.getAspectRatio()
+
+        cm = CardMaker("movieCard")
+        cm.setFrame(-2*hSize, 2*hSize, -1, 1)
+        self.card = aspect2d.attachNewNode(cm.generate())
+        self.card.setTexture(self.movie)
+
+        self.card.setTexScale(TextureStage.getDefault(), self.movie.getTexScale()[0], self.movie.getTexScale()[1])
+        self.card.setTexOffset(TextureStage.getDefault(), 0, 0)
+        taskMgr.add(self.checkEndOfMovie, "movieTask")
+
+    def checkEndOfMovie(self, task): 
+        #print("Check for end of movie")
+        if self.movie.getTime() >= self.movie.getVideoLength():
+            self.card.removeNode()  
+            self.startAfterMovie()
+            #print("Ending movie")
+            return task.done
+        return task.cont
+
+    def startAfterMovie(self):
+        taskMgr.remove("movieTask")
+        self.roomLoaded = True   
+        self.interrogationRoom.game.begin = True
+        self.interrogationThread = threading.Thread(target=(self.interrogationRoom.beginInterrogation), daemon = True)
+        print("Start thread")
+        self.interrogationThread.start()
+
 app = main()
 app.run()
