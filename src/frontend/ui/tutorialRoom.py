@@ -2,10 +2,16 @@ from frontend.ui.menu.PauseMenu import PauseMenu
 from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
 from frontend.stages.state1 import State1
-
+from frontend.ui.animations import Animations
 from direct.task import Task
 from direct.task.TaskManagerGlobal import taskMgr 
 import threading
+
+from direct.actor.Actor import Actor
+from direct.task import Task
+from direct.task.TaskManagerGlobal import taskMgr
+import threading
+
 
 from panda3d.core import *
 import time
@@ -47,7 +53,7 @@ class TutorialRoom:
         self.menu.pauseMenu.hide()
         self.menu.pauseMenu.hideImage()
 
-        
+        self.animation = Animations(self.base)        
         self.Overlay = Overlay(self)      
         self.Overlay.show()
         
@@ -72,7 +78,8 @@ class TutorialRoom:
             "NextQuestion": False
         }
 
-        
+        self.currentLine = 0
+
         
     def pauseGame(self):
         #Requires the game to not be paused, not be on a menu, and not be the player's turn to reply 
@@ -110,7 +117,10 @@ class TutorialRoom:
             self.horizontal = (self.x * self.cameraSensitivity) * -1
             self.vertical = self.y * self.cameraSensitivity
 
-            self.base.camera.setHpr(self.horizontal, self.vertical, 0)
+            clamped_horizontal = max(min(self.horizontal, 60), -60)  # Left/right limit
+            clamped_vertical = max(min(self.vertical, 60), -0.8)      # Up/down limit
+
+            self.base.camera.setHpr(clamped_horizontal, clamped_vertical, 0)
 
             #Test for x and y coordinates 
             #print("X: ", self.x, " ", "Y: ", self.y)
@@ -125,22 +135,40 @@ class TutorialRoom:
         self.room.setPos(5.6, 6, 0.2)
         self.room.setHpr(0, 0, 0)
 
-        # load policeman
-        self.policeman = self.base.loader.loadModel("../blender/policeman/converted/policeman_converted.bam")
-        self.policeman.setScale(0.5)
-        self.policeman.setPos(-0.43, 2, -1.5)
-        self.room.setHpr(0, 0, 0)
-        self.policeman.reparentTo(self.base.render)
+        # Play animations based on sentiment keyword
+        self.sentimentToAnimation = {
+            "Harris": {
+                "neutral": self.animation.playHarrisIdle,
+                "aggressive": self.animation.playHarrisBang,
+                "mocking": self.animation.playHarrisLaugh,
+                "skeptical": self.animation.playHarrisLean,
+                "dismissive": self.animation.playHarrisLean,
+                "incredulous": self.animation.playHarrisLaugh,
+                "accusatory": self.animation.playHarrisIdle
+            },
+            "Miller": {
+                "neutral": self.animation.playMillerIdle,
+                "sympathetic": self.animation.playMillerTalk,
+                "serious": self.animation.playMillerIdle,
+                "concerned": self.animation.playMillerLean,
+                "reassuring": self.animation.playMillerTalk,
+                "disappointed": self.animation.playMillerLean,
+                "accusatory": self.animation.playMillerIdle
+            }
+        }
         
     def unloadModels(self):
         self.room.detachNode()
         self.room.removeNode()
         self.room = None
 
-        self.policeman.detachNode()
-        self.policeman.removeNode()
-        self.policeman = None
-        #print("Unload models")
+        self.animation.harris.cleanup()
+        self.animation.harris.removeNode()
+        self.animation.harris = None
+
+        self.animation.miller.cleanup()
+        self.animation.miller.removeNode()
+        self.animation.miller = None
 
     def loadLighting(self):
         # Point lighting
@@ -162,7 +190,7 @@ class TutorialRoom:
         self.menu.audioMenu.setVoiceVolumeSlider(self.voiceVolume)
         self.menu.audioMenu.setSFXVolumeSlider(self.sfxVolume)
 
-        self.pausable = True
+        self.pausable = False
         self.ended = False
         self.current = 0
         self.Overlay.flashback.setImage(self.prompt)
@@ -171,49 +199,41 @@ class TutorialRoom:
         flashback = self.Overlay.flashback.getActive()
         while flashback == True:
             flashback = self.Overlay.flashback.getActive()
-
-        self.tutorialEvents["Intro"] = True
               
         if self.useEmotibit == True:
+            self.game._bioController.incrementError = True
+            self.Overlay.startEmotiBitCheck()
             self.Overlay.showBioData()
         
-        self.state = State1()
+        self.testStates = [State1()]
+
+        self.state = self.testStates[0]
     
         self.state.setGame(self.game)
 
         self.state.testPrint()
 
         response = self.state.begin()
+        self.currentLine = 0
+        taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
         self.state.convert()
-
-        self.setTutorialBox(
-            (1.5, 0, 0), 
-            (0.4, 0, 0.3), 
-            "After the detective asks you a question, a Push-to-Talk button will appear here. "
-            "Press it to start recording your response. The recording will stop when you stop talking.",
-            15)
-    
-        if self.tutorialEvents["PTT"] == False:
-            self.Overlay.tutorials.showTutorialBox(False)
-
-        self.Overlay.ptt.showPTTButton()
-        self.redoable = True
+        #self.Overlay.ptt.showPTTButton()
+       # self.redoable = True
         #Get the speech input
-        taskMgr.add(self.speechUI, "UpdateSpeechTask")
-        
-       
+        #taskMgr.add(self.speechUI, "UpdateSpeechTask")
+  
+
     #Updates the overlay to show the PTT Button
     def speechUI(self, task):
-        
+        self.pausable = True
         pttActive = self.Overlay.ptt.getPTTActive()
         if pttActive == False: 
-            self.pausible = False
-            self.Overlay.tutorials.hideTutorialBox()
+            self.pausable = False
             self.Overlay.ptt.hidePTTButton()
             print("talk")
-            self.tutorialEvents["PTT"] = True
             self.thread = threading.Thread(target=self.processSpeech, daemon=True)
-            self.thread.start()
+            if self.threadEvent.is_set() == False:
+                self.thread.start()
             return task.done 
 
         return task.cont
@@ -223,7 +243,7 @@ class TutorialRoom:
         
         self.Overlay.hideSubtitlesBox()
         speech = self.game.listenToUser()
-        self.game.insertInteractionInDB()
+        
         self.Overlay.userSpeech.active = True
         self.Overlay.userSpeech.redo = False
 
@@ -238,16 +258,6 @@ class TutorialRoom:
         self.Overlay.userSpeech.setSpeech(speech)
         self.Overlay.showUserInputBox()
 
-        self.setTutorialBox(
-            (0, 0, 0.1), 
-            (0.5, 0, 0.3), 
-            "Your transcribed reply will show up here. If you are happy with it, you can accept it."
-            "If not, you are given one retry per question. Click accept to move onto the next question or retry to redo your reply to this question.",
-            15)
-        
-        if self.tutorialEvents["Accept"] == False:
-            self.Overlay.tutorials.showTutorialBox(False)
-
         if self.redoable is True:
             self.Overlay.acceptSpeechButton.show()
             self.Overlay.redoSpeechButton.show()
@@ -258,101 +268,79 @@ class TutorialRoom:
         userInputActive = self.Overlay.userSpeech.getActive()
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
             self.Overlay.hideUserInputBox()
-            self.Overlay.tutorials.hideTutorialBox()
-            self.Overlay.tutorials.tutorialActive = True
-            self.tutorialEvents["Accept"] = True
+            self.game.insertInteractionInDB(speech, "Player")
             self.thread = threading.Thread(target=self.processResponse, daemon=True)
-            self.thread.start()
+            if self.threadEvent.is_set() == False:
+                self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
             self.redoable = False
             self.Overlay.hideUserInputBox()
-            self.Overlay.tutorials.hideTutorialBox()
             self.Overlay.ptt.showPTTButton()
             taskMgr.add(self.speechUI, "UpdateSpeechTask")
+            self.pausable = True
             return task.done
         
         return task.cont
               
     #Response processing part
     def processResponse(self):
-        self.pausable = True
-        
+        self.game.sendUserResponseToAI()
         response = self.state.generateResponse()
 
-        taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+        if response != False:
+            #Update the overlay to show the response
+            #taskMgr.add(lambda task: self.responseUI(response, task), "UpdateResponseTask")
+            #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
+            #self.currentEvidence = self.game._aiController.getCurrentEvidence()
+            self.currentLine = 0
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+            
 
-    #Updates subtitles if applicable
-    def responseUI(self, response, task):
-
-        self.setTutorialBox(
-            (0, 0, 0.1), 
-            (0.5, 0, 0.3), 
-            "Press ESC to enter the pause menu. "
-            "From the pause menu, you can view the script containing all of the dialogue between you and the detective, change your settings, or quit to the main menu.",
-            15
-        )
-
-        if self.tutorialEvents["Pause"] == False:
-            self.Overlay.tutorials.showTutorialBox(True)
-
-        if self.tutorialEvents["Pause"] == True:
-            self.Overlay.tutorials.setInactive()
-            taskMgr.add(lambda task: self.answerNextQuestion(response, task), "nextQuestionTask")
-            return task.done
-
-        active = self.Overlay.tutorials.getActive()
-        if active is False:
-            self.Overlay.tutorials.hideTutorialBox()
-            self.Overlay.tutorials.tutorialActive = True
-            self.tutorialEvents["Pause"] = True
-            taskMgr.add(lambda task: self.answerNextQuestion(response, task), "nextQuestionTask")
-            return task.done
-        elif active is True:
-            return task.cont
-        
-    def answerNextQuestion(self, response, task):
-        
-        self.setTutorialBox(
-            (0, 0, 0.1), 
-            (0.5, 0, 0.3), 
-            "Try answering the next question on your own!",
-            15
-        )
-
-        print(f"Tutorial active: {self.Overlay.tutorials.tutorialActive}")
-
-        if self.tutorialEvents["NextQuestion"] == False:
-            self.Overlay.tutorials.showTutorialBox(True)
-
-        if self.tutorialEvents["NextQuestion"] == True:
-            self.Overlay.tutorials.setInactive()
-            taskMgr.add(lambda task: self.subtitles(response, task), "nextQuestionTask")
-            return task.done
-
-        active = self.Overlay.tutorials.getActive()
-        if active is False:
-            print("False")
-            self.Overlay.tutorials.hideTutorialBox()
-            self.tutorialEvents["NextQuestion"] = True
-            taskMgr.add(lambda task: self.subtitles(response, task), "nextQuestionTask")
-            return task.done
-        elif active is True:
-            print("Truye")
-            return task.again
-
-    def subtitles(self, response, task):    
-
-        print(response)
+    # Updates subtitles if applicable
+    # Also gets sentiment for each animation prior to playing the next response
+    def responseUI(self, task):
+        count = self.currentLine
+        #print(f"Response: {response}")
         if (self.menu.subtitles == True):
-            self.Overlay.subtitles.setResponse(response)
+            subtitlesString = f"{self.state.speakers[count]}: {self.state.texts[count]}"
+            print(f"Sub string {count}: {subtitlesString}")
+            self.Overlay.subtitles.setResponse(subtitlesString)
             self.Overlay.subtitles.updateSubtitles()
             self.Overlay.showSubtitlesBox()
-        
-        #Convert the response to speech
-        self.thread = threading.Thread(target=self.responseToSpeech, daemon=True)
-        self.thread.start()
+
+        #Probably put detective animation call here 
+        #self.animationTest(speakers[count], sentiment[count])
+        self.game.insertInteractionInDB(self.state.texts[count], self.state.speakers[count])
+
+        # Get speaker and sentiment for animation
+        speaker = self.state.speakers[count]
+        sentiment = self.game._aiController.getSentiment().get(speaker, "neutral")
+
+        # Play animation based on sentiment
+        if speaker in self.sentimentToAnimation and sentiment in self.sentimentToAnimation[speaker]:
+            print(f"Playing {speaker}'s animation for sentiment: {sentiment}")
+            self.sentimentToAnimation[speaker][sentiment]()
+
+
+        print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
+        #self.game._tts.speak(self.state.audioFilePaths[count])
+        self.thread = threading.Thread(target=self.playAudio, args=(self.state.audioFilePaths[count],), daemon=True)
+        if self.threadEvent.is_set() == False:
+            self.thread.start()
+
         return task.done
+    
+    def playAudio(self, audioPath):
+        self.game._tts.speak(audioPath)
+
+        if self.currentLine < len(self.state.audioFilePaths) - 1:
+            self.currentLine = self.currentLine + 1
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+        else:
+            self.state.resetResponse()
+            taskMgr.add(self.updateResponse, "Update")
+
 
     #TTS process
     def responseToSpeech(self):
@@ -366,7 +354,7 @@ class TutorialRoom:
         self.Overlay.hideSubtitlesBox()
 
         #If the game has not been quit, restart the process
-        if self.ended == False:
+        if self.ended == False and not self.Overlay.connectionError:
             self.Overlay.ptt.showPTTButton()
             #threading.Thread(target=self.processSpeech, daemon=True).start()
             self.processNext()
@@ -383,7 +371,6 @@ class TutorialRoom:
         taskMgr.remove("UpdateSpeech")
         taskMgr.remove("UpdateSpeechTask")
         taskMgr.remove("UpdateSpeechTask2")
-        taskMgr.remove("nextQuestionTask")
         self.Overlay.cleanUpTasks()
 
     def cleanUpThreads(self):
@@ -391,8 +378,14 @@ class TutorialRoom:
         if self.thread is not None and self.thread.is_alive():
             print("Joining game thread")
             self.thread.join(timeout = 2)
+
+        if self.useEmotibit == True:
+            self.game._bioController.cleanThread()
+
         self.Overlay.cleanUpThreads()
         self.base.cleanUpThreads()
+        
+
         
     def setTutorialBox(self, position, scale, text, wordWrap):
         self.Overlay.tutorials.moveBox(position, scale)

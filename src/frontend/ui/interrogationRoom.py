@@ -173,13 +173,13 @@ class InterrogationRoom:
         self.room.removeNode()
         self.room = None
 
-        self.harris.cleanup()
-        self.harris.removeNode()
-        self.harris = None
+        self.animation.harris.cleanup()
+        self.animation.harris.removeNode()
+        self.animation.harris = None
 
-        self.miller.cleanup()
-        self.miller.removeNode()
-        self.miller = None
+        self.animation.miller.cleanup()
+        self.animation.miller.removeNode()
+        self.animation.miller = None
 
         #print("Unload models")
 
