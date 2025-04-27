@@ -1,14 +1,16 @@
 from openai import OpenAI
 from textwrap import dedent
-from ast import literal_eval
+from threading import Thread
+import json
 import re
 
 class VerdictController:
-    def __init__(self):
+    def __init__(self, sessionController):
         self._gpt = OpenAI()
-        self.currentVerdict = None
         self.callbackF = None
+        self._sessionController = sessionController
 
+    # Purpose: requesting GPT to dervice a verdict from the conversation
     def deriveVerdict(self, interrogation, evidenceConvo, evidence):
         cleanEvidenceConvo = '\n'.join(line.strip() for line in evidenceConvo)
 
@@ -39,45 +41,21 @@ class VerdictController:
             messages=interrogation
         )
 
-        raw = gptResponse.choices[0].message.content
-        print(f"[Verdict Raw Response] {raw}")
+        rawResponse = gptResponse.choices[0].message.content
+        cleanedResponse = re.sub(r"^```(?:json)?\s*|\s*```$", "", rawResponse.strip(), flags=re.IGNORECASE | re.MULTILINE)
 
-        # Remove markdown code fences if present
-        cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw.strip(), flags=re.IGNORECASE | re.MULTILINE)
+        responseDict = json.loads(cleanedResponse)
+        currentVerdict = responseDict.get("verdict", "inconclusive").lower()
+        self.sendVerdictToDB(evidence, currentVerdict)
+        return currentVerdict
 
-        # Try parsing as proper JSON first
-        try:
-            responseDict = json.loads(cleaned)
-            self.currentVerdict = responseDict.get("verdict", "inconclusive").lower()
-            return self.currentVerdict
-        except Exception as e:
-            print(f"[Verdict Parsing Error] {e}\nCleaned: {cleaned}")
-
-            # Fallback regex to extract verdict manually
-            match = re.search(r'"verdict"\s*:\s*"?(truthful|untruthful|inconclusive)"?', cleaned.lower())
-            if match:
-                self.currentVerdict = match.group(1)
-                return self.currentVerdict
-
-        # If everything fails, return inconclusive
-        self.currentVerdict = "inconclusive"
-        return "inconclusive"
-
-        # cleanResponse = gptResponse.choices[0].message.content
-
-        # #For the evidence text color change 
-        # print(f"Verdict controller clean Response: {cleanResponse}")
-        # match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', cleanResponse.lower())
-        # if match:
-        #     self.currentVerdict = match.group(1)
-        # else:
-        #     self.currentVerdict = "inconclusive"
-
-        # responseDict = literal_eval(cleanResponse)
-
-        # return responseDict["verdict"]
     
     #For the evidence text color change
     def verdictCallback(self, callback):
         self.callbackF = None
         self.callbackF = callback
+
+    # Purpose: Sending verdict to database on a separate thread
+    def sendVerdictToDB(self, evidence, verdict):
+        databaseThread = Thread(target=self._sessionController.databaseAPI.insertVerdict, args=(self._sessionController.getSessionID(), evidence, verdict), daemon=True)
+        databaseThread.start()

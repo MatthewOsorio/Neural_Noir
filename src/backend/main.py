@@ -8,9 +8,11 @@ finished = False
 
 while(not finished):
     ai_response = gameManager.generateAIResponse()
+    print(ai_response)
     if ai_response == False:
-        gameManager.updateGameState(3)
+        finished = True
     else:
-        print(ai_response)
         user_statement = input('> ')
         gameManager.processUserResponse(user_statement)
+
+print(gameManager.getVerdictsFromDB(gameManager.getSessionID()))

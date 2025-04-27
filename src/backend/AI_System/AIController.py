@@ -1,16 +1,16 @@
 from .AI_Behavior import AIInterrogation, AIContext, AIInitialPhase
-from backend.StoryGraph.StoryGraph import StoryGraph
+from StoryGraph.StoryGraph import StoryGraph
 from .AI_History import AIHistory
 from .VerdictController import VerdictController
 from .SentimentAnalysis import SentimentAnalysis
 
 class AIController:
-    def __init__(self):
+    def __init__(self, sessionController):
         self._ai = None     
         self._userNervous = None
         self._aiHistory = AIHistory() 
         self._storyGraph = StoryGraph()
-        self._verdictController = VerdictController()
+        self._verdictController = VerdictController(sessionController)
         self._sentimentAnalyzer = SentimentAnalysis()
 
     def setAIBehavior(self, state):
