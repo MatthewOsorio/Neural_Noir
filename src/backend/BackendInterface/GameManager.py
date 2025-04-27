@@ -1,11 +1,11 @@
-from ..AI_System.AIController import AIController
-from ..BiometricSystem.BiometricController import BiometricController
-from ..Conversation.ConversationModel import ConversationModel
-from ..GameStateSystem.GameStateManager import GameStateManager
-from ..SRSystem.SpeechToText import SpeechToText
-from ..TTSSystem.TextToSpeechController import TextToSpeechController
-from ..Database.DatabaseController import DatabaseController
-from ..Database.SessionController import SessionController
+from AI_System.AIController import AIController
+from BiometricSystem.BiometricController import BiometricController
+from Conversation.ConversationModel import ConversationModel
+from GameStateSystem.GameStateManager import GameStateManager
+from SRSystem.SpeechToText import SpeechToText
+from TTSSystem.TextToSpeechController import TextToSpeechController
+from Database.DatabaseController import DatabaseController
+from Database.SessionController import SessionController
 
 class GameManager:
     def __init__(self):
@@ -26,7 +26,7 @@ class GameManager:
         self._database = DatabaseController()
         self._sessionController = SessionController(self._database)
         self._conversation = ConversationModel(self._database, self._sessionController)
-        self._aiController = AIController()
+        self._aiController = AIController(self._sessionController)
         self._gameState = GameStateManager()
         self._sr = SpeechToText()
         self._tts = TextToSpeechController()
@@ -63,12 +63,10 @@ class GameManager:
             responseText = "I didn't hear that, can you repeat?"
         return responseText
         
-
     def sendUserResponseToAI(self):
         #possibly spin another thread for the db
         #self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(self.userResponse)
-        
 
     def processUserResponse(self, userResponse):
         if not self._gameIsReady:
@@ -152,3 +150,9 @@ class GameManager:
     def resetConversation(self):
         self._conversation.resetConversation()
 
+    def getVerdictsFromDB(self, sessionID):
+        return self._sessionController.databaseAPI.fetchVerdict(sessionID)
+
+    # Purpose: Gets sessionID from the sessionController interactions with the database
+    def getSessionID(self):
+        return self._sessionController.getSessionID()

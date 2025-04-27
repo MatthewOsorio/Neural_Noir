@@ -2,7 +2,9 @@ import json
 import re
 from openai import OpenAI
 from textwrap import dedent
+import threading
 
+# class written by Christine 
 class SentimentAnalysis:
     def __init__(self):
         self._gpt = OpenAI()
@@ -10,12 +12,8 @@ class SentimentAnalysis:
             "Harris": ["aggressive", "accusatory", "mocking", "skeptical", "incredulous", "dismissive"],
             "Miller": ["sympathetic", "concerned", "serious", "reassuring", "disappointed", "accusatory"]
         }
-        self._harrisSentiment = "neutral"
-        self._millerSentiment = "neutral"
 
-    def classifySentiment(self, detectiveResponses, allowedTones):
-        latestResponse = " ".join(r["Text"] for r in detectiveResponses if "Text" in r)
-
+    def classifySentiment(self, response, allowedTones):
         toneDescriptions = {
             "aggressive": "Direct, forceful, confrontational",
             "accusatory": "Blaming, pressing guilt",
@@ -35,7 +33,7 @@ class SentimentAnalysis:
 
         gptInput = dedent(f"""[INSTRUCTION] You are conducting sentiment analysis on a detective's dialogue in a crime investigation scene.
 
-        [RESPONSE] {latestResponse}
+        [RESPONSE] {response}
 
         You must classify the **emotional tone** or **interrogation style** used by the detective. Choose only one of the following tones, based on this specific character's behavior:
         {toneList}
@@ -56,7 +54,7 @@ class SentimentAnalysis:
         ).choices[0].message.content.strip()
 
         cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", response, flags=re.IGNORECASE | re.MULTILINE)
-
+        
         try:
             return json.loads(cleaned)["sentiment"]
         except Exception as e:
@@ -67,26 +65,24 @@ class SentimentAnalysis:
             return "neutral"
 
     def classifyEachDetective(self, responseList):
-        results = {}
-        for line in responseList:
-            speaker = line.get("Speaker")
-            text = line.get("Text")
-            if speaker and text:
-                allowedTones = self._allowedTones.get(speaker, ["neutral"])
-                sentiment = self.classifySentiment([{"Text": text}], allowedTones)
+        threads = []
 
-                if not isinstance(sentiment, str):
-                    sentiment = "neutral"
+        for index, response in enumerate(responseList):
+            thread = threading.Thread(target=self.classifyWorker, args= (index, response["Speaker"], response["Text"], responseList))
+            thread.start()
+            threads.append(thread)
+        
+        for thread in threads: 
+            thread.join()
+    
+    def classifyWorker(self, index, speaker, text, responseList):
+        allowedTones = self._allowedTones.get(speaker, ["neutral"])
+        sentiment = self.classifySentiment(text, allowedTones)
 
-                results[speaker] = sentiment
+        if not isinstance(sentiment, str):
+            sentiment = "neutral"
 
-                if speaker == "Harris":
-                    self._harrisSentiment = sentiment
-                elif speaker == "Miller":
-                    self._millerSentiment = sentiment
-
-        print(f"[Sentiment Results] {results}")
-        return results
+        responseList[index]["Sentiment"] = sentiment
 
     def getSentiment(self):
         return {

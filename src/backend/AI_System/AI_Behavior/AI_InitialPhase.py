@@ -1,10 +1,9 @@
 from .AI import AI
 from textwrap import dedent
-from backend.AI_System.SentimentAnalysis import SentimentAnalysis
 
 class AIInitialPhase(AI):
     def __init__(self, history, sentimentAnalyzer):
-        super().__init__(history)
+        super().__init__(history, sentimentAnalyzer)
         self._questions = [
             "[INSTRUCTION] Ask the suspect for what their name is.",
             "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
@@ -16,7 +15,6 @@ class AIInitialPhase(AI):
         self._startedInstruction = False
         self._currentEvidence = None
         self._sentimentAnalyzer = sentimentAnalyzer
-        #self.currentVerdict = None
 
     def askQuestion(self):
         if not self._startedInstruction:
@@ -64,7 +62,6 @@ class AIInitialPhase(AI):
     def evaluateResponse(self, user_response):
         gptInput = self._aiHistory.getHistory()[:]
         originalQuestion = self._questions[self._currentQuestion]
-        instruction = ''
 
         if self._currentQuestion == 3:
             instruction = dedent(f'''
