@@ -94,13 +94,24 @@ class State3:
     def parseResponse(self, response):
 
         print (response)
-
         for line in response:
-            self.speakers.append(line.get("Speaker"))
-            self.texts.append(line.get("Text"))
-            self.audioFilePaths.append(line.get("AudioFilepath"))
-            self.sentiments.append(line.get("Sentiment"))
-            print(f"audio path: {line.get('AudioFilepath')}")
+            speaker = line.get("Speaker")
+            text = line.get("Text")
+            audioF = line.get("AudioFilepath")
+            sentiment = line.get("Sentiment")
+
+            if speaker is not None:
+                self.speakers.append(speaker)
+            
+            if text is not None:
+                self.texts.append(text)
+
+            if audioF is not None:
+                self.audioFilePaths.append(audioF)
+
+            if sentiment is not None:
+                self.sentiments.append(sentiment)
+           # print(f"audio path: {line.get('AudioFilepath')}")
     
     def resetResponse(self):
         self.speakers = []

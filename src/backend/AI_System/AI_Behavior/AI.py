@@ -3,7 +3,7 @@ import json
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
-from TTSSystem import TextToSpeechController
+from backend.TTSSystem import TextToSpeechController
 from threading import Thread
 
 if TYPE_CHECKING:
