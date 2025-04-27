@@ -75,7 +75,7 @@ class TutorialRoom:
             "PTT": False,
             "Accept": False,
             "Pause": False,
-            "NextQuestion": False
+            "End": False
         }
 
         self.currentLine = 0
@@ -90,6 +90,9 @@ class TutorialRoom:
             self.game._tts.audio.pauseSpeech()
             self.Overlay.hide()
             self.Overlay.tutorials.hideTutorialBox()
+            if self.tutorialEvents["PTT"] is True and self.tutorialEvents["Pause"] is False:
+                print("Setting events pause to true")
+                self.tutorialEvents["Pause"] = True
         if(self.gameState == 'gameplay' and self.menu.gameState == 'gameplay' and self.pausable == False):
             self.base.menuManager.audio.playSound("errorSound")
         
@@ -156,6 +159,17 @@ class TutorialRoom:
                 "accusatory": self.animation.playMillerIdle
             }
         }
+
+        self.loadAndStopAnimations()
+
+    #Pre load all animations and stop them to prevent thread blocking later
+    def loadAndStopAnimations(self):
+        for speaker, animations in self.sentimentToAnimation.items():
+            for sentiment, playAnimation in animations.items():
+                playAnimation()
+
+        self.animation.harris.stop()
+        self.animation.miller.stop()        
         
     def unloadModels(self):
         self.room.detachNode()
@@ -269,7 +283,7 @@ class TutorialRoom:
         self.setTutorialBox(
             (0, 0, 0.1), 
             (0.5, 0, 0.3), 
-            "Your transcribed reply will show up here. If you are happy with it, you can accept it."
+            "Your transcribed reply will show up here. If you are happy with it, you can accept it. "
             "If not, you are given one retry per question. Click accept to move onto the next question or retry to redo your reply to this question.",
             15)
         
@@ -372,13 +386,47 @@ class TutorialRoom:
                 (1.5, 0, 0), 
                 (0.4, 0, 0.3), 
                 "After the detective asks you a question, a Push-to-Talk button will appear here. "
-                "Press it to start recording your response. The recording will stop when you stop talking.",
+                "Press it to start recording your response. The recording will stop when you stop talking. ",
                 15)
         
             self.Overlay.tutorials.showTutorialBox(False)
 
+        if self.tutorialEvents["PTT"] is True and self.tutorialEvents["Pause"] is False:
+            print("Showing PTT tutorial Box")
+            self.setTutorialBox(
+                (0, 0, 0.1), 
+                (0.5, 0, 0.3), 
+                "Press ESC to enter the pause menu. "
+                "From the pause menu, you can view the script containing all of the dialogue between you and the detective, change your settings, or quit to the main menu. " \
+                "NOTE: You can only pause the game when the push-to-talk button is shown.",
+                15
+                )
+        
+            self.Overlay.tutorials.showTutorialBox(False)            
+
+        if self.tutorialEvents["Pause"] is True and self.tutorialEvents["End"] is False:
+            print("Showing End tutorial box")
+            self.setTutorialBox(
+                (0, 0, 0.1), 
+                (0.5, 0, 0.3), 
+                "Congratulations! You've made it through the tutorial. You can continue to talk to the detectives here, or you can " \
+                "exit to the main menu from the pause screen whenever you are ready.",
+                15
+                )
+        
+            self.Overlay.tutorials.showTutorialBox(False)   
+
         #If the game has not been quit, restart the process
-        if self.ended == False and not self.Overlay.connectionError:
+        if self.ended == False and not self.Overlay.connectionError:            
+            if self.tutorialEvents["Pause"] is True and self.tutorialEvents["End"] is False:
+                print("setting events end to true")
+                self.tutorialEvents["End"] = True
+
+            if self.tutorialEvents["PTT"] is True and self.tutorialEvents["Pause"] is False:
+                print("Setting events pause to true")
+                self.tutorialEvents["Pause"] = True
+
+
             self.Overlay.ptt.showPTTButton()
             #threading.Thread(target=self.processSpeech, daemon=True).start()
             self.processNext()
