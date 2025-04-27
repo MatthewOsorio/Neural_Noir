@@ -164,9 +164,20 @@ class InterrogationRoom:
             }
         }
         
+        self.loadAndStopAnimations()
+
         # Test Animations class
         # self.animation.playHarrisIdle()
         # self.animation.playMillerIdle()
+
+    #Pre load all animations and stop them to prevent thread blocking later
+    def loadAndStopAnimations(self):
+        for speaker, animations in self.sentimentToAnimation.items():
+            for sentiment, playAnimation in animations.items():
+                playAnimation()
+
+        self.animation.harris.stop()
+        self.animation.miller.stop()        
 
     def unloadModels(self):
         self.room.detachNode()
