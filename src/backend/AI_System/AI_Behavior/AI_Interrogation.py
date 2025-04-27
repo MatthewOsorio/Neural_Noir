@@ -33,8 +33,6 @@ class AIInterrogation(AI):
     def introduceEvidence(self):
         if self._currentEvidence is None:
             self.receiveEvidence()
-            print("Reset")
-            self._verdictController.currentVerdict = None
 
             if self._finish:
                 return False
@@ -92,7 +90,6 @@ class AIInterrogation(AI):
         
         if self._counter == 3:
             self.generateVerdict()
-            # self._verdictController.callbackF()
             self.moveOnToNextTopic()
             
             return self.introduceEvidence()
@@ -146,13 +143,12 @@ class AIInterrogation(AI):
         self._aiResponse = gptResponse
         self._counter += 1
 
-        self.classifyDetectivesSentiment()
-
     # Purpose: Calling the deriveVerdict method in the verdictController to send to GPT to get a verdict on current evidence conversation
     #   Then we send the verdict and the necessary information to store it in the story graph
     def generateVerdict(self):
         verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
         self._storyGraph.receiveVerdict(self._currentEvidence, verdict, self._phase)
+        
 
     # Purpose: Once we have finsihed talking about our current evidence we will begin the process of talking about another piece of evidence by reseting the counter and states thats responsible for evidence mangagement
     def moveOnToNextTopic(self):

@@ -9,6 +9,7 @@ class VerdictController:
         self._gpt = OpenAI()
         self.callbackF = None
         self._sessionController = sessionController
+        self.currentV = None
 
     # Purpose: requesting GPT to dervice a verdict from the conversation
     def deriveVerdict(self, interrogation, evidenceConvo, evidence):
@@ -46,7 +47,11 @@ class VerdictController:
 
         responseDict = json.loads(cleanedResponse)
         currentVerdict = responseDict.get("verdict", "inconclusive").lower()
+
         self.sendVerdictToDB(evidence, currentVerdict)
+        print(f"Verdict control verdict for {evidence} = {currentVerdict}")
+        self.currentV = currentVerdict
+        self.callbackF()
         return currentVerdict
 
     

@@ -310,6 +310,7 @@ class InterrogationRoom:
     #Response processing part
     def processResponse(self):
         self.game.sendUserResponseToAI()
+
         response = self.state.generateResponse()
 
         if response != False:
@@ -320,23 +321,31 @@ class InterrogationRoom:
             self.currentLine = 0
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
             
-
         else:
-            self.current = self.current + 1
-            print(f"State {self.current}")
-            self.state = self.testStates[self.current]
+            taskMgr.doMethodLater(1.0, self.startNextStateTask, "StartNextTask")
 
-            self.state.setGame(self.game)
-            self.state.setOverlay(self.Overlay)
-            self.state.setUseEmotibit(self.useEmotibit)
-            response = self.state.begin()
-            #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
-            #self.currentEvidence = self.game._aiController.getCurrentEvidence()
-            print("New state response")
-            self.currentLine = 0
-            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+    def startNextStateTask(self, task):
+        self.current = self.current + 1
+        print(f"State {self.current}")
+        self.state = self.testStates[self.current]
 
-            print("End")
+        self.state.setGame(self.game)
+        self.state.setOverlay(self.Overlay)
+        self.state.setUseEmotibit(self.useEmotibit)
+        self.thread = threading.Thread(target = self.beginNextState, daemon = True)
+        if self.threadEvent.is_set() is False:
+            self.thread.start()
+        return task.done
+
+    def beginNextState(self):
+        response = self.state.begin()
+        #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
+        #self.currentEvidence = self.game._aiController.getCurrentEvidence()
+        print("New state response")
+        self.currentLine = 0
+        taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+
+        print("End")                           
 
     # Updates subtitles if applicable
     # Also gets sentiment for each animation prior to playing the next response

@@ -113,7 +113,7 @@ class DatabaseController:
                         SELECT evidence, verdict
                         FROM Verdicts
                         WHERE sessionID = ?
-                    """, (str(sessionID)))
+                    """, (str(sessionID),))
 
                 return cur.fetchall()
         except sqlite3.Error as e:

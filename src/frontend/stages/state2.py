@@ -25,6 +25,9 @@ class State2:
 
         self.currentEvidence = None
 
+        self.evidenceVerdicts = None
+
+
     def testPrint(self):
         print("This is state 2")  
     
@@ -43,11 +46,12 @@ class State2:
         self.overlay.flashback.setImage(self.image)
         self.overlay.flashback.show()
         self.overlay.hideBioData()
-        self.passToVerdict()
 
         flashback = self.overlay.flashback.getActive()
         while flashback == True:
             flashback = self.overlay.flashback.getActive()
+
+        self.passToVerdict()
 
         if self.useEmotibit:
             self.overlay.showBioData()
@@ -70,16 +74,14 @@ class State2:
     
     def generateResponse(self):
         print("Generating response")
-        self.game._aiController._verdictController.currentVerdict == None
         self.response = self.game.generateAIResponse()
-
-        self.setEvidenceVerdict()
 
         if self.response == False:
             print("Ending phase")
             self.endPhase = True
 
         if self.response is not False:
+            self.setEvidenceVerdict(None)
             self.parseResponse(self.response)
 
             self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
@@ -113,9 +115,8 @@ class State2:
         evidenceStr = evidence[0]
         return evidenceStr
     
-    def setEvidenceVerdict(self):
+    def setEvidenceVerdict(self, verdict):
         print("Changing color for verdict")
-        verdict = self.game._aiController._verdictController.currentVerdict
         if verdict == None:
             self.overlay.evidenceText.fg = (1, 1 , 1, 1)
             print("Verdict is none")
@@ -129,6 +130,9 @@ class State2:
             self.overlay.evidenceText.fg = (1, 1, 0, 1)
             print("verdict is inconclusive")
 
-    def passToVerdict(self):
-        self.game._aiController._verdictController.verdictCallback(self.setEvidenceVerdict)
+    def getEvidenceVerdicts(self):
+        self.setEvidenceVerdict(self.game._aiController._verdictController.currentV)
+        return True
 
+    def passToVerdict(self):
+        self.game._aiController._verdictController.verdictCallback(self.getEvidenceVerdicts)
