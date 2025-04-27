@@ -25,7 +25,7 @@ class AIContext():
         print("Getting Evidence")
         if self._state._currentEvidence is not None:
             print("Evidence exists")
-            return self._state._currentEvidence
+            return self._state._currentEvidence[0]
         else:
             return None
         
