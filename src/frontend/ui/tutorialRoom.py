@@ -367,15 +367,14 @@ class TutorialRoom:
     #Hides subtitles
     def updateResponse(self, task):
         self.Overlay.hideSubtitlesBox()
-
-        self.setTutorialBox(
-            (1.5, 0, 0), 
-            (0.4, 0, 0.3), 
-            "After the detective asks you a question, a Push-to-Talk button will appear here. "
-            "Press it to start recording your response. The recording will stop when you stop talking.",
-            15)
-    
         if self.tutorialEvents["PTT"] == False:
+            self.setTutorialBox(
+                (1.5, 0, 0), 
+                (0.4, 0, 0.3), 
+                "After the detective asks you a question, a Push-to-Talk button will appear here. "
+                "Press it to start recording your response. The recording will stop when you stop talking.",
+                15)
+        
             self.Overlay.tutorials.showTutorialBox(False)
 
         #If the game has not been quit, restart the process
