@@ -83,9 +83,3 @@ class SentimentAnalysis:
             sentiment = "neutral"
 
         responseList[index]["Sentiment"] = sentiment
-
-    def getSentiment(self):
-        return {
-            "Harris": self._harrisSentiment,
-            "Miller": self._millerSentiment
-        }

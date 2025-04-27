@@ -40,16 +40,3 @@ class AIController:
     def getCurrentEvidence(self):
         return self._ai.getCurrentEvidence()
     
-    def getSentiment(self):
-        state = self._ai._state
-        if hasattr(state, "_sentimentAnalyzer"):
-            return {
-                "Harris": getattr(state._sentimentAnalyzer, "_harrisSentiment", "neutral"),
-                "Miller": getattr(state._sentimentAnalyzer, "_millerSentiment", "neutral")
-            }
-    
-        return {
-            "Harris": "neutral",
-            "Miller": "neutral"
-        }
-    

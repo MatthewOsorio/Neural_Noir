@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
 from TTSSystem import TextToSpeechController
-# from SentimentAnalysis import SentimentAnalysis
+from threading import Thread
 
 if TYPE_CHECKING:
     from AI_Context import AIContext
@@ -110,7 +110,6 @@ class AI(ABC):
         if cleanResponse.lower() in ['correct', 'incorrect']:
             return cleanResponse
         
-        
         try:
             detectiveResponses = self.formatResponse(cleanResponse)
         except Exception as e:
@@ -118,8 +117,15 @@ class AI(ABC):
             print("GPT returned:", cleanResponse)
             raise Exception("UNKNOWN RESPONSE FROM GPT") from e
         
-        self.classifySentiment(detectiveResponses)
-        self.makeSpeechFile(detectiveResponses)
+        sentimentThread = Thread(target=self.classifySentiment, args=(detectiveResponses,))
+        ttsThread = Thread(target=self.makeSpeechFile, args=(detectiveResponses,))
+
+        sentimentThread.start()
+        ttsThread.start()
+
+        sentimentThread.join()
+        ttsThread.join()
+        
         self.addAIResponses(detectiveResponses) # Adds AI response to the aiHistory or the context list
         return detectiveResponses
     

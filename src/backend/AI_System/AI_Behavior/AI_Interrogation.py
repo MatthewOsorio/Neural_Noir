@@ -146,8 +146,6 @@ class AIInterrogation(AI):
         self._aiResponse = gptResponse
         self._counter += 1
 
-        self.classifyDetectivesSentiment()
-
     # Purpose: Calling the deriveVerdict method in the verdictController to send to GPT to get a verdict on current evidence conversation
     #   Then we send the verdict and the necessary information to store it in the story graph
     def generateVerdict(self):
