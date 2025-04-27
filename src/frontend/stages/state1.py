@@ -20,6 +20,7 @@ class State1:
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+        self.sentiments = []
 
     def testPrint(self):
         print("This is state 1")
@@ -118,10 +119,12 @@ class State1:
             self.speakers.append(line.get("Speaker"))
             self.texts.append(line.get("Text"))
             self.audioFilePaths.append(line.get("AudioFilepath"))
-            print(f"audio path: {line.get('AudioFilepath')}")
+            self.sentiments.append(line.get("Sentiment"))
+           # print(f"audio path: {line.get('AudioFilepath')}")
     
     def resetResponse(self):
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+        self.sentiments = []
 

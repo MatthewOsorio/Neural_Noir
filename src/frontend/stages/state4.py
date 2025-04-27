@@ -21,6 +21,7 @@ class State4:
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+        self.sentiments = []
 
         self.currentEvidence = None
 
@@ -97,12 +98,14 @@ class State4:
             self.speakers.append(line.get("Speaker"))
             self.texts.append(line.get("Text"))
             self.audioFilePaths.append(line.get("AudioFilepath"))
+            self.sentiments.append(line.get("Sentiment"))
             print(f"audio path: {line.get('AudioFilepath')}")
     
     def resetResponse(self):
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+        self.sentiments = []
 
     def evidenceString(self):
         evidence = self.currentEvidence.split("–")
