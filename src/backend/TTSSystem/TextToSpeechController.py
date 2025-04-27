@@ -28,7 +28,7 @@ class TextToSpeechController:
         voice = self._voices.get(speaker)
         
         tts = self.gpt.audio.speech.create(
-            model='tts-1',
+            model="tts-1",
             voice=voice,
             response_format="mp3",
             input=text

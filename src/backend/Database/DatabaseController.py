@@ -26,12 +26,12 @@ class DatabaseController:
         with conn:
             cur = conn.cursor()
             cur.executescript("""
-               CREATE TABLE IF NOT EXISTS GameSession(
+            CREATE TABLE IF NOT EXISTS GameSession(
                     sessionID TEXT PRIMARY KEY,
                     sessionStartTime TEXT,
                     sessionEndTime TEXT
                 );
- 
+
                 CREATE TABLE IF NOT EXISTS Interaction(
                     interactionID TEXT PRIMARY KEY,
                     startTime TEXT,
@@ -43,7 +43,7 @@ class DatabaseController:
                     FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
                     FOREIGN KEY (feedbackID) REFERENCES BiometricFeedback(feedbackID)
                 );
-                              
+                            
                 CREATE TABLE IF NOT EXISTS Verdicts(
                     verdictID TEXT PRIMARY KEY,
                     evidence TEXT,
@@ -55,14 +55,6 @@ class DatabaseController:
             )
         conn.close()
 
-  #  def alterTable(self):
-     #   conn = self.getConnection()
-     #   with conn:
-          #  cur = conn.cursor()
-          #  cur.execute("""
-          #      DROP TABLE IF EXISTS Interaction
-          #  """)
-      #  conn.close()
         
     def insertStartSession(self, sessionID, startTime):
         try:

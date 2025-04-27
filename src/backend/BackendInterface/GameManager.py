@@ -150,9 +150,5 @@ class GameManager:
     def resetConversation(self):
         self._conversation.resetConversation()
 
-    def getVerdictsFromDB(self, sessionID):
-        return self._sessionController.databaseAPI.fetchVerdict(sessionID)
-
-    # Purpose: Gets sessionID from the sessionController interactions with the database
-    def getSessionID(self):
-        return self._sessionController.getSessionID()
+    def getVerdictsFromDB(self):
+        return self._sessionController.databaseAPI.fetchVerdict(self._sessionController.getSessionID())
