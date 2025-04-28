@@ -3,14 +3,13 @@ from BackendInterface.GameManager import GameManager
 
 gameManager = GameManager()
 gameManager.setupGame(False)
-gameManager.updateGameState(2)
+gameManager.updateGameState(1)
 finished = False
 
 while(not finished):
     ai_response = gameManager.generateAIResponse()
     if ai_response == False:
-        finished = True
-        print("Game is finished")
+        gameManager.updateGameState(2)
 
     else:
         print(ai_response)

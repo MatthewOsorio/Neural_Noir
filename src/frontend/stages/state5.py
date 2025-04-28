@@ -1,5 +1,13 @@
 from backend.BackendInterface.GameManager import GameManager
 from backend.StoryGraph.EndGame import EndGame
+from direct.showbase.ShowBase import ShowBase
+from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
+from panda3d.core import TextNode
+from direct.gui.OnscreenImage import OnscreenImage
+from direct.interval.IntervalGlobal import *
+from direct.gui.OnscreenText import OnscreenText
+from direct.gui.DirectGui import *
+from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 
 class State5:
     def __init__(self):
@@ -7,9 +15,18 @@ class State5:
         self.state = None
         self.endPhase = False
         self.verdict = None
+        self.overlay = None
+        self.useEmotbit = None
+        self.verdictsList = []
 
     def setGame(self, game):
         self.game = game
+
+    def setUseEmotibit(self, useEmotibit):
+        self.useEmotibit = useEmotibit
+
+    def setOverlay(self, overlay):
+        self.overlay = overlay
 
     def begin(self):
         self.game._gameState.updateState(5)
@@ -17,13 +34,93 @@ class State5:
         endgame = EndGame(self.game._aiController._storyGraph)
 
         self.verdict = endgame.determineEnding()
-        self.endPhase = True
+        self.endPhase = self.overlay.base.ended = True
+
+        if self.overlay is not None:
+            self.endingScreen()
+
+    def endingScreen(self):
+        print("Show ending screen")
+
+        self.endFrame = DirectFrame(
+        frameColor=(0, 0, 0, 1),
+        frameSize=(-1, 1, -1, 1),
+        parent = self.overlay.base.base.aspect2d
+        )
+
+        self.endBackground = OnscreenImage(
+            self.overlay.base.base.menuManager.backGroundBlack,
+            parent=self.endFrame,
+            scale=(3),
+            pos=(0 , 0, 0),
+        )
+
+        self.verdictText = OnscreenText(
+            parent = self.endFrame,
+            text = "Verdict",
+            fg = (1, 1, 1, 1),
+            scale = 0.25
+        )
+
+        self.endFrame.show()
+
+        
+
+        verdicts = self.getVerdicts()
+
+        for verdict in verdicts:
+            verdictStr = f"{verdict[0]} : {verdict[1]}"
+            self.verdictsList.append(verdictStr)
+            
+        print(self.verdictsList)
+
+        verdictCount = len(self.verdictsList)
+        spacing = 0.15  # vertical space for each line
+        height = verdictCount * spacing
+
+        self.scrollableFrame = DirectScrolledFrame(
+            parent= self.endFrame,
+            frameSize= (-1.5, 1.5, -0.70, 0.70),
+            frameColor= (0, 0, 0, 0),
+            pos= (0, 0, 0),
+            scrollBarWidth= 0.05,
+            canvasSize=(-1.5, 1.5, 0.1-height , 0.1)    ,
+            horizontalScroll_decButton_relief=None,
+            horizontalScroll_incButton_relief=None,
+            horizontalScroll_frameSize=(0, 0, 0, 0),
+            sortOrder = 2
+            )
+        
+        textYPos = 0
+        for text in self.verdictsList:
+            DirectLabel(
+                parent= self.scrollableFrame.getCanvas(),
+                text= text,
+                text_align= TextNode.ALeft,
+                text_scale= 0.05,
+                pos=(-1.4, 0, textYPos),
+                frameColor=(0, 0, 0, 0),
+                text_fg=(1, 1, 1, 1),
+                text_wordwrap= 55
+            )
+            textYPos -= spacing
+        
+        self.button = DirectButton(
+            text = "Skip",
+            command = self.returnToMain,
+            sortOrder = 1,
+            text_font = self.overlay.base.menu.font,
+            text_fg = (1, 1, 1, 1),
+            frameColor = (0, 0, 0, 0.8),
+            pos = (-1.7, -0.9, -0.9),
+            scale = 0.1,
+            parent = self.endFrame
+        )
 
         self.displayEndingScreen()
 
-        return self.verdict
-    
     def displayEndingScreen(self):
+
         if self.verdict == "GUILTY":
             # call method to pull up Guilty ending screen and monologue
             #test
@@ -35,4 +132,16 @@ class State5:
         elif self.verdict == "INCONCLUSIVE":
             # call method to pull up Inconclusive ending screen and monologue
             print("THE INTERROGATION HAS FAILED TO PROVE YOU INNOCENT OR GUILTY")
+
+        vText = str(self.verdict)
+        self.verdictText.setText(vText)
+
+    def getVerdicts(self):
+        verdicts = self.game.getVerdictsFromDB()
+        return verdicts
+    
+    def returnToMain(self):
+        self.endFrame.hide()
+        self.overlay.evidenceBox.hide()
+        self.overlay.base.menu.pauseMenu.returnToMain()
 

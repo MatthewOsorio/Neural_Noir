@@ -308,12 +308,12 @@ class Overlay:
 
     #check connection to OpenAI API if there is internet 
     def checkGPTConnection(self):
-        status = self.connection.checkOpenai()
-
-        if not status and not self.connectionError:
-            self.connectionError = True
+      #  status = self.connection.checkOpenai()
+        pass
+      #  if not status and not self.connectionError:
+          #  self.connectionError = True
             
-            taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
+           # taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
         
     def handleConnectionError(self, task):
         self.hideAll()

@@ -102,7 +102,7 @@ class AIInterrogation(AI):
     #   If we have processed the users response three times it will not generate another response because we will begin the process of moving on to the next piece of evidence and verdict generation
     def processResponse(self, userResponse):
         gptInput = self._aiHistory.getHistory()[:]
-        preppedResponse = "[MARK]: " + userResponse
+        preppedResponse = f"[{self._aiHistory.getPlayerName()}]: " + userResponse
         self._aiHistory.addUserInput(preppedResponse)
         self._evidenceConversation.append(preppedResponse)
 
@@ -123,7 +123,7 @@ class AIInterrogation(AI):
                     - Do NOT ask two separate questions.
                     - If the suspect seemed nervous, acknowledge it in your tone or commentary.
                     - If the suspect's response is dishonest, evasive, or contradictory, point it out.
-                    - If the suspect seemed nervous, acknowledge it in your tone or commentary (e.g., “You’re shaking, Mark. What are you hiding?”).
+                    - If the suspect seemed nervous, acknowledge it in your tone or commentary (e.g., “You’re shaking, {self._aiHistory.getPlayerName()}. What are you hiding?”).
                     - Respond in a way that clearly reflects the detective's emotional tone (concern, disbelief, sarcasm, aggression).
                     - Use short, emotionally charged sentences when appropriate.
                     - DO NOT reference other evidence, the suspect's injuries, or the night of the murder.
@@ -148,7 +148,7 @@ class AIInterrogation(AI):
     # Purpose: Calling the deriveVerdict method in the verdictController to send to GPT to get a verdict on current evidence conversation
     #   Then we send the verdict and the necessary information to store it in the story graph
     def generateVerdict(self):
-        verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence[0])
+        verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence[0], self._aiHistory.getPlayerName())
         self._storyGraph.receiveVerdict(self._currentEvidence, verdict, self._phase)
 
     # Purpose: Once we have finsihed talking about our current evidence we will begin the process of talking about another piece of evidence by reseting the counter and states thats responsible for evidence mangagement

@@ -146,7 +146,7 @@ class PauseMenu():
 
     def returnToMain(self):
         self.quitClicked = False
-
+        print("Return to main meny")
         for thread in threading.enumerate():
             print(f"🧵 Thread Name: {thread.name}, Alive: {thread.is_alive()}, Daemon: {thread.daemon}")
 
