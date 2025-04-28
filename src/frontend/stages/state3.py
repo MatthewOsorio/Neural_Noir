@@ -55,7 +55,7 @@ class State3:
         self.response = self.game.generateAIResponse()
 
 
-        print ("State 2 response: ", self.response)
+        print ("State 3 response: ", self.response)
         if self.response is not False:        
             self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
             self.overlay.base.currentEvidence = self.evidenceString()

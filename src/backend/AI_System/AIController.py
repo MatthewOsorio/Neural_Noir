@@ -23,6 +23,8 @@ class AIController:
                 self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="MID", verdictController=self._verdictController, sentimentAnalyzer=self._sentimentAnalyzer))
             case 4:
                 self._ai = AIContext(AIInterrogation(storyGraph= self._storyGraph, history= self._aiHistory, phase="FINAL", verdictController= self._verdictController, sentimentAnalyzer=self._sentimentAnalyzer))
+            case 5:
+                self._ai = None
 
     def update(self, state):
         self.setAIBehavior(state)

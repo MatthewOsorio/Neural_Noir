@@ -28,9 +28,6 @@ class StoryGraph:
         self._verdictsByEvidence = {}
         self._finalVerdict = None
 
-        # Timer, future implementation
-        #self._timeElapsed = 0
-
         self._aiReference = None
 
     def setAIReference(self, ai):
@@ -58,7 +55,6 @@ class StoryGraph:
         elif phase == "FINAL":
             return self._finalEvidence
 
-
     '''
     Notes from Matt:
         I changed the recieve verdict a bit. Here we find the index of the current evidence and save it into the self._verdictsByEvidence dict.
@@ -74,56 +70,52 @@ class StoryGraph:
     def determineFinalVerdict(self):
         guilty = 0
         notGuilty = 0
+        inconclusive = 0
 
         # Count for each verdict type
         for verdict in self._verdictsByEvidence.values():
-            if verdict == "GUILTY":
+            if verdict == "UNTRUTHFUL":
                 guilty += 1
-            elif verdict == "NOT GUILTY":
+            elif verdict == "TRUTHFUL":
                 notGuilty += 1
+            elif verdict == "INCONCLUSIVE":
+                inconclusive += 1
+
+        criticalFailure = 0
+        criticalSuccess = 0
+
+        for phase in ["EARLY", "MID", "FINAL"]:
+            for id in self._criticalEvidenceSet:
+                key = f"{phase}-{id}"
+                if key in self._verdictsByEvidence:
+                    verdict = self._verdictsByEvidence[key]
+                    if verdict == "UNTRUTHFUL":
+                        criticalFailure += 1
+                    elif verdict == "TRUTHFUL":
+                        criticalSuccess += 1
 
         # Defines the automatic loss ending for failing all critical evidence
-        failedCriticalEvidence = 0 
-        for index in self._criticalEvidenceSet:
-            if self._verdictPerEvidence.get(index) == "GUILTY":
-                failedCriticalEvidence += 1
-
-        if failedCriticalEvidence == len(self._criticalEvidenceSet):
+        if criticalFailure == len(self._criticalEvidenceSet):
             self._finalVerdict = "GUILTY"
-            return self._finalVerdict
+            return "GUILTY"
         
         # Loss by failing 6+ pieces of evidence
         if guilty >= 6:
             self._finalVerdict = "GUILTY"
-            return self._finalVerdict
+            return "GUILTY"
         
-        # Defines the the automatic win ending for sucessfully denying all critical
+        # Defines the the automatic win ending for successfully denying all critical
         # evidence and an additional evidence from the set
-        deniedCritical = 0
-        for index in self._criticalEvidenceSet:
-            if self._verdictsByEvidence.get(index) == "NOT GUILTY":
-                deniedCritical += 1
-
-        if deniedCritical == len(self._criticalEvidenceSet) and guilty >= (len(self._criticalEvidenceSet) + 1):
+        if criticalSuccess == len(self._criticalEvidenceSet) and notGuilty>= 6:
             self._finalVerdict = "NOT GUILTY"
-            return self._finalVerdict
-
-        # Not guilty win condition for denying 7+ pieces of evidence
-        if guilty >= 7:
-            self._finalVerdict = "NOT GUILTY"
-            return self._finalVerdict
-
-        # If 30 minutes elapse without reaching a conclusion
-        # if self._timeElapsed >= 30:
-        #     self._finalVerdict = "INCONCLUSIVE"
-        #     return "INCONCLUSIVE"
-
-        return None 
+            return "NOT GUILTY"
         
-    def reset(self):
-        random.shuffle(self._evidenceList)
-        self._currentEvidenceIndex = 0
-        self._verdictPerEvidence = {}
-        self._finalVerdict = None
-        #self._timeElapsed = 0
+        # Not guilty win condition for denying 7+ pieces of evidence
+        if notGuilty >= 7:
+            self._finalVerdict = "NOT GUILTY"
+            return "NOT GUILTY"
+
+        # No conditions met results in inconclusive
+        self._finalVerdict = "INCONCLUSIVE"
+        return "INCONCLUSIVE"
         

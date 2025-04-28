@@ -1,5 +1,7 @@
 import os
+import openai
 from openai import OpenAI
+client = OpenAI()
 import requests
 
 class Connection:
@@ -20,7 +22,9 @@ class Connection:
         except requests.RequestException: # Send a report
            # print("An error occurred while checking the internet connection.")
             return False
-        
+    
+    # OpenAI authentication testing and error handling code snippet from API documentation
+    # https://platform.openai.com/docs/guides/error-codes
     def checkOpenai(self):
         client = OpenAI(
             api_key = os.environ.get("OPENAI_API_KEY")
@@ -38,19 +42,15 @@ class Connection:
             print(completion)
             print("OpenAI API connection successful.")
             return True
-        # write out error messages to JSON file later
-        except client.error.AuthenticationError:
-            print("Authentication error: Cannot establish a connection with the current API key.")
+        except openai.APIError as e:
+            #Handle API error here, e.g. retry or log
+            print(f"OpenAI API returned an API Error: {e}")
             return False
-        except client.error.APIConnectionError:
-            print("API connection error: Unable to reach OpenAI servers.")
+        except openai.APIConnectionError as e:
+            #Handle connection error here
+            print(f"Failed to connect to OpenAI API: {e}")
             return False
-        except client.error.RateLimitError:
-            print("Rate limit exceeded: Too many requests.")
-            return False
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return False
-        except:
-            print("OpenAI API connection failed.")
+        except openai.RateLimitError as e:
+            #Handle rate limit error (we recommend using exponential backoff)
+            print(f"OpenAI API request exceeded rate limit: {e}")
             return False
