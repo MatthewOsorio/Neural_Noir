@@ -22,6 +22,8 @@ class State2:
         self.texts = []
         self.audioFilePaths = []
         self.sentiments = []
+        self.introduce = []
+        self.photos = []
 
         self.currentEvidence = None
 
@@ -102,6 +104,8 @@ class State2:
             text = line.get("Text")
             audioF = line.get("AudioFilepath")
             sentiment = line.get("Sentiment")
+            introducing = line.get("IntroducingEvidence")
+            photo = line.get("EvidencePhoto")
 
             if speaker is not None:
                 self.speakers.append(speaker)
@@ -114,6 +118,12 @@ class State2:
 
             if sentiment is not None:
                 self.sentiments.append(sentiment)
+
+            if introducing is not None:
+                self.introduce.append(introducing)
+
+            if photo is not None:
+                self.photos.append(photo)
            # print(f"audio path: {line.get('AudioFilepath')}")
 
         for line in self.speakers:
@@ -125,6 +135,10 @@ class State2:
         self.texts = []
         self.audioFilePaths = []
         self.sentiments = []
+
+    def resetPhotos(self):
+        self.introduce = []
+        self.photos = []
 
     def evidenceString(self):
         evidence = self.currentEvidence.split("–")

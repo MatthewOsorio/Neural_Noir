@@ -14,6 +14,7 @@ from ..overlay.subtitles import Subtitles
 from ..overlay.error import ErrorScreen
 from ..overlay.userSpeech import UserSpeech
 from ..overlay.tutorials import Tutorial
+from ..overlay.evidence import Evidence
 import threading
 from direct.interval.LerpInterval import LerpPosInterval
 
@@ -32,6 +33,8 @@ class Overlay:
 
         self.errorScreen = ErrorScreen(self.base)
         self.tutorials = Tutorial(self.base)
+
+        self.evidence = Evidence(self.base)
 
         self.connectionError = False
         self.initialImageFinished = False

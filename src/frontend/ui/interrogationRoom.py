@@ -391,18 +391,31 @@ class InterrogationRoom:
             self.state.resetResponse()
             taskMgr.add(self.updateResponse, "Update")
 
-
-    #TTS process
-    def responseToSpeech(self):
-        self.state.convert()
-        
-        #Hide the subtitles
-        taskMgr.add(self.updateResponse, "Update")
-    
     #Hides subtitles
     def updateResponse(self, task):
         self.Overlay.hideSubtitlesBox()
 
+        if self.current > 0 and len(self.state.introduce) > 0:
+            if self.state.introduce[0] is True:
+                print(f"Introduce true - {self.state.introduce}")
+                print(f"Current photo: {self.state.photos[0]}")
+                self.Overlay.evidence.setImage(self.state.photos[0])
+                self.Overlay.evidence.show()
+                self.Overlay.evidence.button["command"] = self.evidenceImageCallback
+            else:
+                taskMgr.add(self.processAfterEvidenceImage, "afterImageTask")
+        else:
+            taskMgr.add(self.processAfterEvidenceImage, "afterImageTask")
+        return task.done
+    
+    
+    def evidenceImageCallback(self):
+        self.Overlay.evidence.hide()
+        if self.current > 0:
+            self.state.resetPhotos()
+        taskMgr.add(self.processAfterEvidenceImage, "afterImageTask")
+
+    def processAfterEvidenceImage(self, task):
         #If the game has not been quit, restart the process
         if self.ended == False and not self.Overlay.connectionError:
             self.Overlay.ptt.showPTTButton()
