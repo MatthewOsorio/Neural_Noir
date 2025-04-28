@@ -1,8 +1,3 @@
-# "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
-# "[INSTRUCTION] Ask if Mark worked as a photographer at Reno Media Company.",
-# "[INSTRUCTION] Ask if Mark worked under Vinh Davis."
-# Put back in when done testing***********
-
 from .AI import AI
 from textwrap import dedent
 

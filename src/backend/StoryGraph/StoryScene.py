@@ -42,11 +42,13 @@ class StoryScene:
         self.finalSceneAudio = self.base.loader.loadSfx(final_scene_path)
 
         # Fullscreen movie card
-        cm = CardMaker("cutscene_card")
         hSize = self.base.getAspectRatio()
+        cm = CardMaker("cutscene_card")
         cm.setFrame(-1.315 * hSize, 1.315 * hSize, -1, 1)
         self.cutsceneCard = self.base.aspect2d.attachNewNode(cm.generate())
         self.cutsceneCard.setTransparency(TransparencyAttrib.MAlpha)
+        self.cutsceneCard.setTexture(self.storySceneEarly)
+        self.cutsceneCard.setBin('fixed', 1)
         self.cutsceneCard.hide()
 
         self.currentTexture = None
@@ -61,8 +63,12 @@ class StoryScene:
 
         self.cutsceneCard.setTexture(sceneTexture)
         self.cutsceneCard.show()
-        sceneTexture.play()
 
+        texScale = sceneTexture.getTexScale()
+        self.cutsceneCard.setTexScale(TextureStage.getDefault(), texScale[0], texScale[1])
+        self.cutsceneCard.setTexOffset(TextureStage.getDefault(), 0, 0)
+
+        sceneTexture.play()
         sceneAudio.setTime(0.0)
         sceneAudio.play()
 
