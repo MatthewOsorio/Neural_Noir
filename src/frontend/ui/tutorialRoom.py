@@ -60,7 +60,7 @@ class TutorialRoom:
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = False
 
-        self.current = None
+        self.current = 0
 
         self.prompt = prompt
 

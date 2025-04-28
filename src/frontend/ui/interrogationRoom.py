@@ -60,7 +60,7 @@ class InterrogationRoom:
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = False
 
-        self.current = None
+        self.current = 0
 
         self.prompt = prompt
 
@@ -397,6 +397,7 @@ class InterrogationRoom:
 
         if self.current > 0 and len(self.state.introduce) > 0:
             if self.state.introduce[0] is True:
+                self.Overlay.hideBioData()
                 print(f"Introduce true - {self.state.introduce}")
                 print(f"Current photo: {self.state.photos[0]}")
                 self.Overlay.evidence.setImage(self.state.photos[0])
@@ -417,6 +418,9 @@ class InterrogationRoom:
 
     def processAfterEvidenceImage(self, task):
         #If the game has not been quit, restart the process
+        if self.useEmotibit is True:
+            self.Overlay.showBioData()
+            
         if self.ended == False and not self.Overlay.connectionError:
             self.Overlay.ptt.showPTTButton()
             #threading.Thread(target=self.processSpeech, daemon=True).start()
