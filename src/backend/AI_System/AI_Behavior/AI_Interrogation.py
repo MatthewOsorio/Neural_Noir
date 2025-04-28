@@ -4,7 +4,7 @@ from .AI import AI
 
 class AIInterrogation(AI):
     def __init__(self, storyGraph, history, phase, verdictController, sentimentAnalyzer):
-        super().__init__(history)
+        super().__init__(history, sentimentAnalyzer)
         self._storyGraph = storyGraph
         self._phase = phase
         self._verdictController = verdictController
@@ -25,23 +25,23 @@ class AIInterrogation(AI):
             raise Exception("Story Graph reference has not been set")
 
         self._currentEvidence = self._storyGraph.sendEvidenceToAI(self, self._phase)
-        
+        print("Current Evidence: ", self._currentEvidence)
         if self._currentEvidence == False:
+            print("No more evidence to process")
             self._finish = True
 
     # Purpose: Sending a prompt to GPT to smoothly introduce a peiece of evidence and returning that response
     def introduceEvidence(self):
         if self._currentEvidence is None:
             self.receiveEvidence()
-            print("Reset")
             self._verdictController.currentVerdict = None
 
             if self._finish:
                 return False
         
         gptInput= self._aiHistory.getHistory()[:]
-        
-        prompt= dedent(f'''[INSTRUCTION] Introduce this piece of evidence: {self._currentEvidence}. Follow the rules below:
+
+        prompt= dedent(f'''[INSTRUCTION] Introduce this piece of evidence: {self._currentEvidence[0]}. Follow the rules below:
 
                 **RULES**
                     - If this is the first piece of evidence in the interrogation, begin questioning the suspect about it directly.
@@ -66,11 +66,9 @@ class AIInterrogation(AI):
         instruction = {'role': 'user', 'content': prompt}
         gptInput.append(instruction)
         gptResponse = self.sendToGPT(gptInput)
-        self._aiResponse = gptResponse
         self.addAIResponsesToEvidenceCono(gptResponse)
         self._introducedEvidence = True
-        self.classifyDetectivesSentiment()
-
+        gptResponse.append({"IntroducingEvidence": True, "EvidencePhoto": self._currentEvidence[1]})
         return gptResponse
             
     # Purpose: Store the AI responses in the evidence conversation list in a transcript format
@@ -85,8 +83,7 @@ class AIInterrogation(AI):
     #   When we have exhuasted all the evidence in the current phase we will return false
     def generateResponse(self): 
         if self._finish: 
-            self.generateVerdict()
-            self._verdictController.callbackF()
+            # self._verdictController.callbackF()
             return False
 
         if not self._introducedEvidence:
@@ -94,7 +91,7 @@ class AIInterrogation(AI):
         
         if self._counter == 3:
             self.generateVerdict()
-            self._verdictController.callbackF()
+            # self._verdictController.callbackF()
             self.moveOnToNextTopic()
             
             return self.introduceEvidence()
@@ -111,7 +108,6 @@ class AIInterrogation(AI):
 
         if self._counter == 2:
             self._counter += 1
-            print("Halting further GPT responses.")
             return
 
         instruction = dedent(f"""[INSTRUCTION] The suspect gave the following response: "{preppedResponse}"
@@ -149,22 +145,11 @@ class AIInterrogation(AI):
         self._aiResponse = gptResponse
         self._counter += 1
 
-        self.classifyDetectivesSentiment()
-
-    
     # Purpose: Calling the deriveVerdict method in the verdictController to send to GPT to get a verdict on current evidence conversation
     #   Then we send the verdict and the necessary information to store it in the story graph
     def generateVerdict(self):
-        verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence)
+        verdict = self._verdictController.deriveVerdict(self._aiHistory.getHistory()[:], self._evidenceConversation, self._currentEvidence[0])
         self._storyGraph.receiveVerdict(self._currentEvidence, verdict, self._phase)
-
-    # Purpose: Classifies sentiment of the detective response to the player's response to the evidence
-    def classifyDetectivesSentiment (self):
-        lastTwoResponses = self._aiResponse[-2:]
-        sentiments = self._sentimentAnalyzer.classifyEachDetective(lastTwoResponses)
-
-        self._sentimentAnalyzer._millerSentiment = sentiments.get("Miller", "neutral")
-        self._sentimentAnalyzer._harrisSentiment = sentiments.get("Harris", "neutral")
 
     # Purpose: Once we have finsihed talking about our current evidence we will begin the process of talking about another piece of evidence by reseting the counter and states thats responsible for evidence mangagement
     def moveOnToNextTopic(self):
@@ -172,15 +157,3 @@ class AIInterrogation(AI):
         self._counter = 0
         self._introducedEvidence = False
         self._evidenceConversation.clear()
-
-    def setCurrentVerdict(self):
-        #print(f"Current verdict: {self._verdictController.currentVerdict}")
-        match = re.search(r'\[\[verdict:\s*(truthful|untruthful|inconclusive)\s*\]\]', self._verdictController.currentVerdict.lower())
-        if match:
-            self.currentVerdict = match.group(1)
-        else:
-            self.currentVerdict = "inconclusive"
-
-    def getCurrentVerdict(self):
-        print(f"Getting verdict from AI interrogation - {self.currentVerdict}")
-        return self.currentVerdict

@@ -12,7 +12,6 @@ from direct.task.TaskManagerGlobal import taskMgr
 import threading
 
 from panda3d.core import *
-import time
 
 import os
 from panda3d.core import Filename
@@ -61,7 +60,7 @@ class InterrogationRoom:
         #Game will not be pausable if it is the user's turn to reply
         self.pausable = False
 
-        self.current = None
+        self.current = 0
 
         self.prompt = prompt
 
@@ -165,22 +164,33 @@ class InterrogationRoom:
             }
         }
         
+        self.loadAndStopAnimations()
+
         # Test Animations class
         # self.animation.playHarrisIdle()
         # self.animation.playMillerIdle()
+
+    #Pre load all animations and stop them to prevent thread blocking later
+    def loadAndStopAnimations(self):
+        for speaker, animations in self.sentimentToAnimation.items():
+            for sentiment, playAnimation in animations.items():
+                playAnimation()
+
+        self.animation.harris.stop()
+        self.animation.miller.stop()        
 
     def unloadModels(self):
         self.room.detachNode()
         self.room.removeNode()
         self.room = None
 
-        self.harris.cleanup()
-        self.harris.removeNode()
-        self.harris = None
+        self.animation.harris.cleanup()
+        self.animation.harris.removeNode()
+        self.animation.harris = None
 
-        self.miller.cleanup()
-        self.miller.removeNode()
-        self.miller = None
+        self.animation.miller.cleanup()
+        self.animation.miller.removeNode()
+        self.animation.miller = None
 
         #print("Unload models")
 
@@ -300,6 +310,7 @@ class InterrogationRoom:
     #Response processing part
     def processResponse(self):
         self.game.sendUserResponseToAI()
+
         response = self.state.generateResponse()
 
         if response != False:
@@ -310,23 +321,31 @@ class InterrogationRoom:
             self.currentLine = 0
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
             
-
         else:
-            self.current = self.current + 1
-            print(f"State {self.current}")
-            self.state = self.testStates[self.current]
+            taskMgr.doMethodLater(1.0, self.startNextStateTask, "StartNextTask")
 
-            self.state.setGame(self.game)
-            self.state.setOverlay(self.Overlay)
-            self.state.setUseEmotibit(self.useEmotibit)
-            response = self.state.begin()
-            #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
-            #self.currentEvidence = self.game._aiController.getCurrentEvidence()
-            print("New state response")
-            self.currentLine = 0
-            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+    def startNextStateTask(self, task):
+        self.current = self.current + 1
+        print(f"State {self.current}")
+        self.state = self.testStates[self.current]
 
-            print("End")
+        self.state.setGame(self.game)
+        self.state.setOverlay(self.Overlay)
+        self.state.setUseEmotibit(self.useEmotibit)
+        self.thread = threading.Thread(target = self.beginNextState, daemon = True)
+        if self.threadEvent.is_set() is False:
+            self.thread.start()
+        return task.done
+
+    def beginNextState(self):
+        response = self.state.begin()
+        #print(f"Current Evidence: {self.game._aiController.getCurrentEvidence()}")
+        #self.currentEvidence = self.game._aiController.getCurrentEvidence()
+        print("New state response")
+        self.currentLine = 0
+        taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+
+        print("End")                           
 
     # Updates subtitles if applicable
     # Also gets sentiment for each animation prior to playing the next response
@@ -346,7 +365,7 @@ class InterrogationRoom:
 
         # Get speaker and sentiment for animation
         speaker = self.state.speakers[count]
-        sentiment = self.game._aiController.getSentiment().get(speaker, "neutral")
+        sentiment = self.state.sentiments[count]
 
         # Play animation based on sentiment
         if speaker in self.sentimentToAnimation and sentiment in self.sentimentToAnimation[speaker]:
@@ -372,19 +391,36 @@ class InterrogationRoom:
             self.state.resetResponse()
             taskMgr.add(self.updateResponse, "Update")
 
-
-    #TTS process
-    def responseToSpeech(self):
-        self.state.convert()
-        
-        #Hide the subtitles
-        taskMgr.add(self.updateResponse, "Update")
-    
     #Hides subtitles
     def updateResponse(self, task):
         self.Overlay.hideSubtitlesBox()
 
+        if self.current > 0 and len(self.state.introduce) > 0:
+            if self.state.introduce[0] is True:
+                self.Overlay.hideBioData()
+                print(f"Introduce true - {self.state.introduce}")
+                print(f"Current photo: {self.state.photos[0]}")
+                self.Overlay.evidence.setImage(self.state.photos[0])
+                self.Overlay.evidence.show()
+                self.Overlay.evidence.button["command"] = self.evidenceImageCallback
+            else:
+                taskMgr.add(self.processAfterEvidenceImage, "afterImageTask")
+        else:
+            taskMgr.add(self.processAfterEvidenceImage, "afterImageTask")
+        return task.done
+    
+    
+    def evidenceImageCallback(self):
+        self.Overlay.evidence.hide()
+        if self.current > 0:
+            self.state.resetPhotos()
+        taskMgr.add(self.processAfterEvidenceImage, "afterImageTask")
+
+    def processAfterEvidenceImage(self, task):
         #If the game has not been quit, restart the process
+        if self.useEmotibit is True:
+            self.Overlay.showBioData()
+            
         if self.ended == False and not self.Overlay.connectionError:
             self.Overlay.ptt.showPTTButton()
             #threading.Thread(target=self.processSpeech, daemon=True).start()

@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from openai import OpenAI
 from backend.TTSSystem import TextToSpeechController
+from threading import Thread
 
 if TYPE_CHECKING:
     from AI_Context import AIContext
@@ -32,11 +33,12 @@ Notes from Matt
 """
 
 class AI(ABC):
-    def __init__(self, history):
+    def __init__(self, history, sentimentAnalyzer):
         self.gpt = OpenAI()
         self._aiHistory= history
         self.userNervous = None
         self._tts = TextToSpeechController()
+        self._sentimentAnalyzer = sentimentAnalyzer
 
     @property
     def behavior(self) -> AIContext:
@@ -100,8 +102,7 @@ class AI(ABC):
         )
 
         cleanResponse = gptResponse.choices[0].message.content
-        print(cleanResponse)
-
+        
         # Strictly for initial phase
         # if cleanResponse == 'Correct':
         #     return cleanResponse
@@ -115,9 +116,16 @@ class AI(ABC):
             print("Failed to parse GPT response with formatResponse")
             print("GPT returned:", cleanResponse)
             raise Exception("UNKNOWN RESPONSE FROM GPT") from e
+        
+        sentimentThread = Thread(target=self.classifySentiment, args=(detectiveResponses,))
+        ttsThread = Thread(target=self.makeSpeechFile, args=(detectiveResponses,))
 
-        #detectiveResponses = self.formatResponse(cleanResponse)
-        self.makeSpeechFile(detectiveResponses)
+        sentimentThread.start()
+        ttsThread.start()
+
+        sentimentThread.join()
+        ttsThread.join()
+        
         self.addAIResponses(detectiveResponses) # Adds AI response to the aiHistory or the context list
         return detectiveResponses
     
@@ -127,6 +135,9 @@ class AI(ABC):
     # uses the TTS to create an audio file and adds the audio file directly to the dictionary
     def makeSpeechFile(self, detectiveResponses):
         self._tts.generateTTS(detectiveResponses)
+
+    def classifySentiment(self, detectiveResponses):
+        self._sentimentAnalyzer.classifyEachDetective(detectiveResponses)
 
     def parseDetectiveResponses(self, responseList):
         return '\n'.join(f"Detective {r['Speaker']}: {r['Text']}" for r in responseList)

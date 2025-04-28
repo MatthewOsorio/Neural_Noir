@@ -5,12 +5,12 @@ from .VerdictController import VerdictController
 from .SentimentAnalysis import SentimentAnalysis
 
 class AIController:
-    def __init__(self):
+    def __init__(self, sessionController):
         self._ai = None     
         self._userNervous = None
         self._aiHistory = AIHistory() 
         self._storyGraph = StoryGraph()
-        self._verdictController = VerdictController()
+        self._verdictController = VerdictController(sessionController)
         self._sentimentAnalyzer = SentimentAnalysis()
 
     def setAIBehavior(self, state):
@@ -41,17 +41,4 @@ class AIController:
 
     def getCurrentEvidence(self):
         return self._ai.getCurrentEvidence()
-    
-    def getSentiment(self):
-        state = self._ai._state
-        if hasattr(state, "_sentimentAnalyzer"):
-            return {
-                "Harris": getattr(state._sentimentAnalyzer, "_harrisSentiment", "neutral"),
-                "Miller": getattr(state._sentimentAnalyzer, "_millerSentiment", "neutral")
-            }
-    
-        return {
-            "Harris": "neutral",
-            "Miller": "neutral"
-        }
     

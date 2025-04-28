@@ -1,11 +1,11 @@
-from ..AI_System.AIController import AIController
-from ..BiometricSystem.BiometricController import BiometricController
-from ..Conversation.ConversationModel import ConversationModel
-from ..GameStateSystem.GameStateManager import GameStateManager
-from ..SRSystem.SpeechToText import SpeechToText
-from ..TTSSystem.TextToSpeechController import TextToSpeechController
-from ..Database.DatabaseController import DatabaseController
-from ..Database.SessionController import SessionController
+from backend.AI_System.AIController import AIController
+from backend.BiometricSystem.BiometricController import BiometricController
+from backend.Conversation.ConversationModel import ConversationModel
+from backend.GameStateSystem.GameStateManager import GameStateManager
+from backend.SRSystem.SpeechToText import SpeechToText
+from backend.TTSSystem.TextToSpeechController import TextToSpeechController
+from backend.Database.DatabaseController import DatabaseController
+from backend.Database.SessionController import SessionController
 
 class GameManager:
     def __init__(self):
@@ -26,7 +26,7 @@ class GameManager:
         self._database = DatabaseController()
         self._sessionController = SessionController(self._database)
         self._conversation = ConversationModel(self._database, self._sessionController)
-        self._aiController = AIController()
+        self._aiController = AIController(self._sessionController)
         self._gameState = GameStateManager()
         self._sr = SpeechToText()
         self._tts = TextToSpeechController()
@@ -63,12 +63,10 @@ class GameManager:
             responseText = "I didn't hear that, can you repeat?"
         return responseText
         
-
     def sendUserResponseToAI(self):
         #possibly spin another thread for the db
         #self._conversation.sendUserResponseToDB(self._sr.getStartTime(), self._sr.getEndTime(), responseText)
         self.processUserResponse(self.userResponse)
-        
 
     def processUserResponse(self, userResponse):
         if not self._gameIsReady:
@@ -152,3 +150,5 @@ class GameManager:
     def resetConversation(self):
         self._conversation.resetConversation()
 
+    def getVerdictsFromDB(self):
+        return self._sessionController.databaseAPI.fetchVerdict(self._sessionController.getSessionID())

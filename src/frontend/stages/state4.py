@@ -21,6 +21,9 @@ class State4:
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+        self.sentiments = []
+        self.introduce = []
+        self.photos = []
 
         self.currentEvidence = None
 
@@ -51,7 +54,8 @@ class State4:
 
         if self.useEmotibit:
             self.overlay.showBioData()
-            
+        
+        self.setEvidenceVerdict(None)
         self.response = self.game.generateAIResponse()
 
 
@@ -68,16 +72,14 @@ class State4:
     
     def generateResponse(self):
         print("Generating response")
-        self.game._aiController._verdictController.currentVerdict == None
         self.response = self.game.generateAIResponse()
-
-        self.setEvidenceVerdict()
 
         if self.response == False:
             print("Ending phase")
             self.endPhase = True
 
         if self.response is not False:
+            self.setEvidenceVerdict(None)
             self.parseResponse(self.response)
         
             self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
@@ -94,24 +96,49 @@ class State4:
         print (response)
 
         for line in response:
-            self.speakers.append(line.get("Speaker"))
-            self.texts.append(line.get("Text"))
-            self.audioFilePaths.append(line.get("AudioFilepath"))
-            print(f"audio path: {line.get('AudioFilepath')}")
+            speaker = line.get("Speaker")
+            text = line.get("Text")
+            audioF = line.get("AudioFilepath")
+            sentiment = line.get("Sentiment")
+            introducing = line.get("IntroducingEvidence")
+            photo = line.get("EvidencePhoto")
+
+            if speaker is not None:
+                self.speakers.append(speaker)
+            
+            if text is not None:
+                self.texts.append(text)
+
+            if audioF is not None:
+                self.audioFilePaths.append(audioF)
+
+            if sentiment is not None:
+                self.sentiments.append(sentiment)
+
+            if introducing is not None:
+                self.introduce.append(introducing)
+
+            if photo is not None:
+                self.photos.append(photo)
+           # print(f"audio path: {line.get('AudioFilepath')}")
     
     def resetResponse(self):
         self.speakers = []
         self.texts = []
         self.audioFilePaths = []
+        self.sentiments = []
+
+    def resetPhotos(self):
+        self.introduce = []
+        self.photos = []
 
     def evidenceString(self):
         evidence = self.currentEvidence.split("–")
         evidenceStr = evidence[0]
         return evidenceStr
     
-    def setEvidenceVerdict(self):
+    def setEvidenceVerdict(self, verdict):
         print("Changing color for verdict")
-        verdict = self.game._aiController._verdictController.currentVerdict
         if verdict == None:
             self.overlay.evidenceText.fg = (1, 1 , 1, 1)
             print("Verdict is none")
@@ -125,5 +152,10 @@ class State4:
             self.overlay.evidenceText.fg = (1, 1, 0, 1)
             print("verdict is inconclusive")
 
+    def getEvidenceVerdicts(self):
+        self.setEvidenceVerdict(self.game._aiController._verdictController.currentV)
+        return True
+
     def passToVerdict(self):
-        self.game._aiController._verdictController.verdictCallback(self.setEvidenceVerdict)
+        self.game._aiController._verdictController.verdictCallback(None)
+        self.game._aiController._verdictController.verdictCallback(self.getEvidenceVerdicts)

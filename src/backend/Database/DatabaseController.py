@@ -26,12 +26,12 @@ class DatabaseController:
         with conn:
             cur = conn.cursor()
             cur.executescript("""
-               CREATE TABLE IF NOT EXISTS GameSession(
+            CREATE TABLE IF NOT EXISTS GameSession(
                     sessionID TEXT PRIMARY KEY,
                     sessionStartTime TEXT,
                     sessionEndTime TEXT
                 );
- 
+
                 CREATE TABLE IF NOT EXISTS Interaction(
                     interactionID TEXT PRIMARY KEY,
                     startTime TEXT,
@@ -43,19 +43,18 @@ class DatabaseController:
                     FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID),
                     FOREIGN KEY (feedbackID) REFERENCES BiometricFeedback(feedbackID)
                 );
-                              
+                            
+                CREATE TABLE IF NOT EXISTS Verdicts(
+                    verdictID TEXT PRIMARY KEY,
+                    evidence TEXT,
+                    verdict TEXT,
+                    sessionID TEXT,
+                    FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID)
+                );                                          
             """   
             )
         conn.close()
 
-  #  def alterTable(self):
-     #   conn = self.getConnection()
-     #   with conn:
-          #  cur = conn.cursor()
-          #  cur.execute("""
-          #      DROP TABLE IF EXISTS Interaction
-          #  """)
-      #  conn.close()
         
     def insertStartSession(self, sessionID, startTime):
         try:
@@ -83,6 +82,34 @@ class DatabaseController:
                 conn.commit()
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
+        
+    def insertVerdict(self, sessionID, evidence, verdict):
+        try:
+            conn = self.getConnection()
+            verdictID = str(uuid.uuid4())
+            with conn:
+                cur = conn.cursor()
+                cur.execute("""
+                        INSERT INTO Verdicts(verdictID, evidence, verdict, sessionID)
+                        VALUES (?, ?, ?, ?)
+                            """, (verdictID, evidence, verdict, sessionID))
+        except sqlite3.Error as e:
+            raise Exception("Error executing insert statement", e)
+
+    def fetchVerdict(self, sessionID):
+        try: 
+            conn = self.getConnection()
+            with conn:
+                cur = conn.cursor()
+                cur.execute("""
+                        SELECT evidence, verdict
+                        FROM Verdicts
+                        WHERE sessionID = ?
+                    """, (str(sessionID),))
+
+                return cur.fetchall()
+        except sqlite3.Error as e:
+            raise Exception("Error retrieving conversation", e)
         
     def fetchConversation(self, sessionID):
         try:
