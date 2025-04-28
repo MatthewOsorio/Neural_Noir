@@ -118,4 +118,56 @@ class StoryGraph:
         # No conditions met results in inconclusive
         self._finalVerdict = "INCONCLUSIVE"
         return "INCONCLUSIVE"
+    
+    def determineFinalVerdictHardMode(self):
+        guilty = 0
+        notGuilty = 0
+        inconclusive = 0
+
+        # Count for each verdict type
+        for verdict in self._verdictsByEvidence.values():
+            if verdict == "UNTRUTHFUL":
+                guilty += 1
+            elif verdict == "TRUTHFUL":
+                notGuilty += 1
+            elif verdict == "INCONCLUSIVE":
+                inconclusive += 1
+
+        criticalFailure = 0
+        criticalSuccess = 0
+
+        for phase in ["EARLY", "MID", "FINAL"]:
+            for id in self._criticalEvidenceSet:
+                key = f"{phase}-{id}"
+                if key in self._verdictsByEvidence:
+                    verdict = self._verdictsByEvidence[key]
+                    if verdict == "UNTRUTHFUL":
+                        criticalFailure += 1
+                    elif verdict == "TRUTHFUL":
+                        criticalSuccess += 1
+
+        # Defines the automatic loss ending for failing all critical evidence
+        if criticalFailure == len(self._criticalEvidenceSet):
+            self._finalVerdict = "GUILTY"
+            return "GUILTY"
+        
+        # Loss by failing 4+ pieces of evidence
+        if guilty >= 4:
+            self._finalVerdict = "GUILTY"
+            return "GUILTY"
+        
+        # Defines the the automatic win ending for successfully denying all critical
+        # evidence and an additional evidence from the set
+        if criticalSuccess == len(self._criticalEvidenceSet) and notGuilty>= 4:
+            self._finalVerdict = "NOT GUILTY"
+            return "NOT GUILTY"
+        
+        # Not guilty win condition for denying 8+ pieces of evidence
+        if notGuilty >= 8:
+            self._finalVerdict = "NOT GUILTY"
+            return "NOT GUILTY"
+
+        # No conditions met results in inconclusive
+        self._finalVerdict = "INCONCLUSIVE"
+        return "INCONCLUSIVE"
         
