@@ -6,6 +6,7 @@ from frontend.stages.state1 import State1
 from frontend.stages.state2 import State2
 from frontend.stages.state3 import State3
 from frontend.stages.state4 import State4
+from frontend.stages.state5 import State5
 from direct.actor.Actor import Actor
 from direct.task import Task
 from direct.task.TaskManagerGlobal import taskMgr
@@ -229,7 +230,7 @@ class InterrogationRoom:
             self.Overlay.startEmotiBitCheck()
             self.Overlay.showBioData()
         
-        self.testStates = [State1(), State2(), State3(), State4()]
+        self.testStates = [State1(), State2(), State3(), State4(), State5()]
 
         self.state = self.testStates[0]
     
@@ -343,7 +344,9 @@ class InterrogationRoom:
         #self.currentEvidence = self.game._aiController.getCurrentEvidence()
         print("New state response")
         self.currentLine = 0
-        taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+
+        if self.ended is False:
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
 
         print("End")                           
 
