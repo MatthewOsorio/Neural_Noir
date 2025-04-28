@@ -57,12 +57,12 @@ class AIInitialPhase(AI):
 
                 **Rules:**
                 - A first name alone is also valid.
-                - If a valid name is provided (but NOT "Vinh Le"), return:
+                - If a valid name is provided (but NOT "Vinh Davis"), return:
                 {{"name": "Full name or first name here" }}
                 - If no valid name is provided:
                 - either Detective Miller or Detective Harris to naturally ask again for the suspect's name.
                 - Return the Detective speaking naturally asking for the name again in a string format
-                - If the name "Vinh Le" is provided, treat it as INVALID and mention its the name of the victim in the response.
+                - If the name "Vinh Davis" is provided, treat it as INVALID and mention its the name of the victim in the response.
 
                 **Important Detective Rules:**
                 - Only one detective speaks at a time.
@@ -99,7 +99,7 @@ class AIInitialPhase(AI):
                 - Both detectives must remain focused on the current question. Do not have them both ask questions at the same time. They may reinforce each other, apply pressure, or rephrase the same question, but never change the topic.
                 - Do NOT change the topic.
                 - Do NOT mention any case details (murder, bruises, arguments, etc.)
-                - Do NOT reveal that you know Mark worked under Vinh — make him admit it.
+                - Do NOT reveal that you know {playerName} worked under Vinh — make him admit it.
                 - Speak naturally, alternating between Harris and Miller.
             ''')
         else:

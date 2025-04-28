@@ -11,10 +11,10 @@ class VerdictController:
         self._sessionController = sessionController
 
     # Purpose: requesting GPT to dervice a verdict from the conversation
-    def deriveVerdict(self, interrogation, evidenceConvo, evidence):
+    def deriveVerdict(self, interrogation, evidenceConvo, evidence, player):
         cleanEvidenceConvo = '\n'.join(line.strip() for line in evidenceConvo)
 
-        gptInput = dedent(f"""[INSTRUCTION] You are evaluating whether the suspect, Mark Coleman, was honest about the following piece of evidence:
+        gptInput = dedent(f"""[INSTRUCTION] You are evaluating whether the suspect, {player}, was honest about the following piece of evidence:
 
         [EVIDENCE] {evidence}
 
