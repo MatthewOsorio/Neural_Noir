@@ -18,7 +18,7 @@ from frontend.ui.connectionDisplay import ConnectionDisplay
 from frontend.ui.tutorialRoom import TutorialRoom
 from frontend.ui.warnings.dataUsageWarning import Warning
 
-from panda3d.core import MovieTexture, CardMaker, TextureStage
+from panda3d.core import MovieTexture, CardMaker, TextureStage, AudioSound
 import os
 from panda3d.core import Filename
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,6 +36,7 @@ class main(ShowBase):
         self.start = False
         self.movie = None
         self.card = None
+        self.introAudio = None
         self.skipMovie = False
         self.warning = Warning(self)
         self.warning.show()
@@ -134,8 +135,12 @@ class main(ShowBase):
         #print("Play movie")
         self.movie = MovieTexture("name")
         v = self.movie.read(video)
-        self.movie.setLoop(False)
+        self.introAudio = self.loader.loadSfx(video)
         self.movie.play()
+
+        self.introAudio.setLoop(False)
+        self.introAudio.play()
+        self.movie.setLoop(False)
 
         hSize = self.getAspectRatio()
 
@@ -156,7 +161,11 @@ class main(ShowBase):
     def checkEndOfMovie(self, task): 
         #print("Check for end of movie")
         if self.movie.getTime() >= self.movie.getVideoLength() or self.skipMovie is True:
-            self.card.removeNode()  
+            self.card.removeNode()
+
+            if self.introAudio and self.introAudio.status() == AudioSound.PLAYING:
+                self.introAudio.stop()
+                
             self.startAfterMovie()
             #print("Ending movie")
             return task.done

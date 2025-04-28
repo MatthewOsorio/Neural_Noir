@@ -7,15 +7,20 @@ prompt = os.path.join(current_dir, "..", "..", "..", "Assets", "Images", "state2
 prompt = os.path.normpath(prompt)
 prompt = Filename.fromOsSpecific(prompt).getFullpath()
 
+from direct.task import Task
+from direct.task.TaskManagerGlobal import taskMgr
+
 #Feel free to change this class as needed. 
 class State2:
     def __init__(self):
+        self.storyScene = None
         self.game = None
         self.state = None
         self.response = None
         self.endPhase = False
         self.overlay = None
         self.image = prompt
+        self.storyScene= None
         self.useEmotibit = False
 
         self.speakers = []
@@ -26,9 +31,7 @@ class State2:
         self.photos = []
 
         self.currentEvidence = None
-
         self.evidenceVerdicts = None
-
 
     def testPrint(self):
         print("This is state 2")  
@@ -42,33 +45,38 @@ class State2:
     def setOverlay(self, overlay):
         self.overlay = overlay
 
+    def setStoryScene(self, scene):
+        self.storyScene = scene
+
     def begin(self):
         self.game._gameState.updateState(2)
-
-        self.overlay.flashback.setImage(self.image)
-        self.overlay.flashback.show()
         self.overlay.hideBioData()
 
-        flashback = self.overlay.flashback.getActive()
-        while flashback == True:
-            flashback = self.overlay.flashback.getActive()
+        self.storyScene.playEarlyScene(onSuccessCallback=self.state2Interrogation)
 
-        self.passToVerdict()
+        return None
+    
+    def state2Interrogation(self):
 
         if self.useEmotibit:
             self.overlay.showBioData()
-        
-        self.response = self.game.generateAIResponse() 
 
-        print ("State 2 response: ", self.response)
+        self.setEvidenceVerdict(None)
+        self.response = self.game.generateAIResponse()
+
+        print("State 2 response:", self.response)
+
         if self.response is not False:
-            self.parseResponse(self.response)        
             self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
             self.overlay.base.currentEvidence = self.evidenceString()
             self.overlay.evidenceBoxSetText()
-            self.overlay.evidenceBoxPopOut() 
+            self.overlay.evidenceBoxPopOut()
+            self.parseResponse(self.response)
 
-        return self.response
+            from direct.task import Task
+            taskMgr.add(lambda task: self.overlay.base.responseUI(task), "UpdateResponseTask")
+
+        return Task.done
         
     def convert(self):
         self.game.convertTTS(self.response)

@@ -1,47 +1,59 @@
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import MovieTexture, CardMaker
-from panda3d.core import TransparencyAttrib
-from panda3d.core import AudioSound
+from panda3d.core import MovieTexture, CardMaker, TransparencyAttrib, AudioSound, TextureStage, Filename
 from direct.task import Task
+import os
 
-class StoryScene(ShowBase):
-    def __init__(self):
-        super().__init__()
+def to_panda_path(path):
+    path = os.path.abspath(path).replace("\\", "/")
+    if path[1] == ":":
+        path = "/" + path[0].lower() + path[2:]
+    return path
 
-        # Movie textures for each scene
-        self.storySceneInitial = MovieTexture("initialScene")
-        if not self.storySceneInitial.read("../Assets/Scenes/initialScene.mp4"):
-            print("Failed to load Initial Scene!")
+class StoryScene:
+    def __init__(self, base):
+        self.base = base
 
+        # Paths
+        early_scene_path = to_panda_path("Assets/Scenes/earlyPhaseScene.mp4")
+        mid_scene_path = to_panda_path("Assets/Scenes/midPhaseScene.mp4")
+        final_scene_path = to_panda_path("Assets/Scenes/finalPhaseScene.mp4")
+
+        # Load movie textures
         self.storySceneEarly = MovieTexture("earlyScene")
-        if not self.storySceneEarly.read("../Assets/Scenes/earlyPhaseScene.mp4"):
-            print("Failed to load Early Scene!")
+        if not self.storySceneEarly.read(early_scene_path):
+            print(f"Failed to load Early Scene from {early_scene_path}")
 
         self.storySceneMid = MovieTexture("midScene")
-        if not self.storySceneMid.read("../Assets/Scenes/midPhaseScene.mp4"):
-            print("Failed to load Mid Scene!")
+        if not self.storySceneMid.read(mid_scene_path):
+            print(f"Failed to load Mid Scene from {mid_scene_path}")
 
         self.storySceneFinal = MovieTexture("finalScene")
-        if not self.storySceneFinal.read("../Assets/Scenes/finalPhaseScene.mp4"):
-            print("Failed to load Final Scene!")
+        if not self.storySceneFinal.read(final_scene_path):
+            print(f"Failed to load Final Scene from {final_scene_path}")
 
-        # Audio files
-        self.initialSceneAudio = self.loader.loadSfx("../Assets/Scenes/initialScene.mp4")
-        self.earlySceneAudio = self.loader.loadSfx("../Assets/Scenes/earlyPhaseScene.mp4")
-        self.midSceneAudio = self.loader.loadSfx("../Assets/Scenes/midPhaseScene.mp4")
-        self.finalSceneAudio = self.loader.loadSfx("../Assets/Scenes/finalPhaseScene.mp4")
+        # Prevent looping
+        self.storySceneEarly.setLoop(False)
+        self.storySceneMid.setLoop(False)
+        self.storySceneFinal.setLoop(False)
 
-        # Card for the movies
+        # Load audio for each scene
+        self.earlySceneAudio = self.base.loader.loadSfx(early_scene_path)
+        self.midSceneAudio = self.base.loader.loadSfx(mid_scene_path)
+        self.finalSceneAudio = self.base.loader.loadSfx(final_scene_path)
+
+        # Fullscreen movie card
         cm = CardMaker("cutscene_card")
-        cm.setFrameFullscreenQuad()
-        self.cutsceneCard = self.render2d.attachNewNode(cm.generate())
+        hSize = self.base.getAspectRatio()
+        cm.setFrame(-1.315 * hSize, 1.315 * hSize, -1, 1)
+        self.cutsceneCard = self.base.aspect2d.attachNewNode(cm.generate())
         self.cutsceneCard.setTransparency(TransparencyAttrib.MAlpha)
         self.cutsceneCard.hide()
 
         self.currentTexture = None
         self.currentAudio = None
+        self.onSuccessCallback = None
 
-    def playScene(self, sceneTexture, sceneAudio):
+    def playScene(self, sceneTexture, sceneAudio, onSuccessCallback=None):
         if self.currentTexture and self.currentTexture.isPlaying():
             self.currentTexture.stop()
         if self.currentAudio and self.currentAudio.status() == AudioSound.PLAYING:
@@ -56,29 +68,32 @@ class StoryScene(ShowBase):
 
         self.currentTexture = sceneTexture
         self.currentAudio = sceneAudio
+        self.onSuccessCallback = onSuccessCallback
 
-        self.taskMgr.add(self.checkMovieDone, "check_movie_done")
+        self.base.taskMgr.add(self.checkMovieDone, "check_movie_done")
 
     def checkMovieDone(self, task):
-        if self.currentTexture and not self.currentTexture.isPlaying():
-            self.cutsceneCard.hide()
+        if self.currentTexture.getTime() >= self.currentTexture.getVideoLength():
+            self.cutsceneCard.removeNode()
 
             if self.currentAudio and self.currentAudio.status() == AudioSound.PLAYING:
                 self.currentAudio.stop()
 
-            self.taskMgr.remove("check_movie_done")
-            print("Cutscene ended.")
-            return Task.done
-        return Task.cont
+            self.afterCutscene()
 
-    def playInitialScene(self):
-        self.playScene(self.storySceneInitial, self.initialSceneAudio)
+            return task.done
+        return task.cont
+    
+    def afterCutscene(self):
+        if self.onSuccessCallback:
+            self.onSuccessCallback()
 
-    def playEarlyScene(self):
-        self.playScene(self.storySceneEarly, self.earlySceneAudio)
+    def playEarlyScene(self,onSuccessCallback=None):
+        self.playScene(self.storySceneEarly, self.earlySceneAudio, onSuccessCallback)
 
-    def playMidScene(self):
-        self.playScene(self.storySceneMid, self.midSceneAudio)
+    def playMidScene(self, onSuccessCallback=None):
+        self.playScene(self.storySceneMid, self.midSceneAudio, onSuccessCallback)
 
-    def playFinalScene(self):
-        self.playScene(self.storySceneFinal, self.finalSceneAudio)
+    def playFinalScene(self, onSuccessCallback=None):
+        self.playScene(self.storySceneFinal, self.finalSceneAudio, onSuccessCallback)
+ 

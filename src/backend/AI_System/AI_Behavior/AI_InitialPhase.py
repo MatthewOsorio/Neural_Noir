@@ -1,3 +1,8 @@
+# "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
+# "[INSTRUCTION] Ask if Mark worked as a photographer at Reno Media Company.",
+# "[INSTRUCTION] Ask if Mark worked under Vinh Davis."
+# Put back in when done testing***********
+
 from .AI import AI
 from textwrap import dedent
 
@@ -6,9 +11,6 @@ class AIInitialPhase(AI):
         super().__init__(history, sentimentAnalyzer)
         self._questions = [
             "[INSTRUCTION] Ask the suspect for what their name is.",
-            "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
-            "[INSTRUCTION] Ask if Mark worked as a photographer at Reno Media Company.",
-            "[INSTRUCTION] Ask if Mark worked under Vinh Davis."
         ]
         self._finished = False
         self._currentQuestion = 0

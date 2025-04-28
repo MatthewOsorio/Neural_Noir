@@ -2,6 +2,7 @@ from frontend.ui.menu.PauseMenu import PauseMenu
 from frontend.ui.animations import Animations
 from backend.BackendInterface.GameManager import GameManager
 from frontend.ui.overlay.Overlay import Overlay
+from backend.StoryGraph.StoryScene import StoryScene
 from frontend.stages.state1 import State1
 from frontend.stages.state2 import State2
 from frontend.stages.state3 import State3
@@ -53,6 +54,8 @@ class InterrogationRoom:
         self.menu.pauseMenu.hideImage()
 
         self.animation = Animations(self.base)
+
+        self.storyScene = StoryScene(self.base)
         
         self.Overlay = Overlay(self)      
         self.Overlay.show()
@@ -332,6 +335,10 @@ class InterrogationRoom:
         self.state.setGame(self.game)
         self.state.setOverlay(self.Overlay)
         self.state.setUseEmotibit(self.useEmotibit)
+
+        if isinstance(self.state, (State2, State3, State4)):
+            self.state.setStoryScene(self.storyScene)
+
         self.thread = threading.Thread(target = self.beginNextState, daemon = True)
         if self.threadEvent.is_set() is False:
             self.thread.start()
@@ -343,9 +350,13 @@ class InterrogationRoom:
         #self.currentEvidence = self.game._aiController.getCurrentEvidence()
         print("New state response")
         self.currentLine = 0
-        taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
 
-        print("End")                           
+        if hasattr(self.state, "storyScene") and self.state.storyScene is not None:
+            self.state.begin()
+        else:
+            taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+
+        print("End")
 
     # Updates subtitles if applicable
     # Also gets sentiment for each animation prior to playing the next response
