@@ -354,7 +354,7 @@ class InterrogationRoom:
 
         if hasattr(self.state, "storyScene") and self.state.storyScene is not None:
             self.state.begin()
-        else:
+        elif(self.ended is False):
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
 
         print("End")

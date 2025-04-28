@@ -50,7 +50,7 @@ class State4:
     def begin(self):
         self.game._gameState.updateState(4)
         self.overlay.hideBioData()
-
+        self.passToVerdict()
         self.storyScene.playFinalScene(onSuccessCallback=self.state4Interrogation)
 
         return None

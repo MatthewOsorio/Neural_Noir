@@ -51,7 +51,7 @@ class State2:
     def begin(self):
         self.game._gameState.updateState(2)
         self.overlay.hideBioData()
-
+        self.passToVerdict()
         self.storyScene.playEarlyScene(onSuccessCallback=self.state2Interrogation)
 
         return None

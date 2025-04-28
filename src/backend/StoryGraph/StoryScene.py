@@ -74,7 +74,7 @@ class StoryScene:
 
     def checkMovieDone(self, task):
         if self.currentTexture.getTime() >= self.currentTexture.getVideoLength():
-            self.cutsceneCard.removeNode()
+            self.cutsceneCard.hide()
 
             if self.currentAudio and self.currentAudio.status() == AudioSound.PLAYING:
                 self.currentAudio.stop()
