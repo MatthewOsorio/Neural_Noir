@@ -89,10 +89,13 @@ class Evidence:
             text_font = self.base.menu.font,
             text_fg = (1, 1, 1, 1),
             frameColor = (0, 0, 0, 0.8),
-            pos = (-1.7, -0.9, -0.9),
+            pos = (1.7, -0.9, -0.9),
             scale = 0.1,
             parent = self.evidence
         )
+
+        self.button.bind(DGG.ENTER, lambda event: self.base.menu.setColorHover(self.button))  
+        self.button.bind(DGG.EXIT, lambda event: self.base.menu.setColorDefault(self.button)) 
 
         self.hide()
 
