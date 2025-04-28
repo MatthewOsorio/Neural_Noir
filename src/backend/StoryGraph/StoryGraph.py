@@ -2,19 +2,19 @@ class StoryGraph:
     def __init__(self):
         self._earlyEvidence = [
             ("Crime Scene Photo of Vinh Davis – A police photograph of Vinh Davis’ body with a gunshot wound.", "early1.png"),
-            ("Witness Testimonies – Several written statements from bar patrons who saw the employee and the CEO drinking together, with some recalling an argument.", "early2.png"),
-            ("Bar Receipt – A receipt from the bar, proving that the employee and the CEO were drinking heavily on the night of the murder.", "early3.png")
+            #("Witness Testimonies – Several written statements from bar patrons who saw the employee and the CEO drinking together, with some recalling an argument.", "early2.png"),
+            #("Bar Receipt – A receipt from the bar, proving that the employee and the CEO were drinking heavily on the night of the murder.", "early3.png")
         ]
         self._midEvidence = [
             ("Blood-Stained Clothing – The police found the employee’s shirt and jacket with blood stains. They ask if he remembers how it got there.", "mid1.png"),
-            ("Photo of the Alleyway – A police photograph of the alleyway where the employee was seen walking home, looking disoriented and covered in blood.", "mid2.png"),
-            ("Neighbors’ Statements – People living near the employee’s apartment reported seeing them return home in a confused and unstable state.", "mid3.png")
+            #("Photo of the Alleyway – A police photograph of the alleyway where the employee was seen walking home, looking disoriented and covered in blood.", "mid2.png"),
+            #("Neighbors’ Statements – People living near the employee’s apartment reported seeing them return home in a confused and unstable state.", "mid3.png")
         ]
         self._finalEvidence = [
             ("Gun Matching the Bullet Wound – The murder weapon is found near the crime scene, and detectives claim it matches employee’s fingerprints.", "final1.png"),
-            ("Johnny’s Last Notes – A notebook belonging to Johnny, containing scribbled messages about Vinh Davis’s crimes. It also mentions the employee’s name, suggesting Johnny trusted the employee to help him.", "final2.png"),
-            ("The employee’s Own Camera Film – The detectives show a developed film roll from the employee’s camera found at the crime scene, possibly containing a blurred or distorted photo from the altercation.", "final3.png"),
-            ("Police Ballistics Report – The gunshot report confirms that the weapon was fired at close range, suggesting a struggle before the CEO was shot.", "final4.png")
+            #("Johnny’s Last Notes – A notebook belonging to Johnny, containing scribbled messages about Vinh Davis’s crimes. It also mentions the employee’s name, suggesting Johnny trusted the employee to help him.", "final2.png"),
+            #("The employee’s Own Camera Film – The detectives show a developed film roll from the employee’s camera found at the crime scene, possibly containing a blurred or distorted photo from the altercation.", "final3.png"),
+            #("Police Ballistics Report – The gunshot report confirms that the weapon was fired at close range, suggesting a struggle before the CEO was shot.", "final4.png")
         ]
 
         self._evidencePhase = {
