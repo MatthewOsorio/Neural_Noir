@@ -8,6 +8,7 @@ from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
+import json
 
 class State5:
     def __init__(self):
@@ -33,7 +34,10 @@ class State5:
 
         endgame = EndGame(self.game._aiController._storyGraph)
 
-        self.verdict = endgame.determineEnding()
+        with open("src/frontend/ui/userSettings.json", "r") as file:
+            user_settings = json.load(file)
+
+        self.verdict = endgame.determineEnding(user_settings)
         self.endPhase = self.overlay.base.ended = True
 
         if self.overlay is not None:
@@ -63,8 +67,6 @@ class State5:
         )
 
         self.endFrame.show()
-
-        
 
         verdicts = self.getVerdicts()
 
