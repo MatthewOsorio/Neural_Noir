@@ -95,17 +95,21 @@ class AI(ABC):
 
         return responses
 
-    def sendToGPT(self, prompt):
+    def sendToGPT(self, gptInput):
         gptResponse = self.gpt.chat.completions.create(
             model= 'gpt-4o-mini',
-            messages= prompt
+            messages= gptInput
         )
 
         cleanResponse = gptResponse.choices[0].message.content
-        
-        # Strictly for initial phase
-        # if cleanResponse == 'Correct':
-        #     return cleanResponse
+
+        # For getting the players name
+        try:
+            parsed = json.loads(cleanResponse)
+            if isinstance(parsed, dict):
+                return ("Correct", parsed["name"])
+        except:
+            pass
 
         if cleanResponse.lower() in ['correct', 'incorrect']:
             return cleanResponse

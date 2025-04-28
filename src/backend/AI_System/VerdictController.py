@@ -57,5 +57,5 @@ class VerdictController:
 
     # Purpose: Sending verdict to database on a separate thread
     def sendVerdictToDB(self, evidence, verdict):
-        databaseThread = Threakd(target=self._sessionController.databaseAPI.insertVerdict, args=(self._sessionController.getSessionID(), evidence, verdict), daemon=True)
+        databaseThread = Thread(target=self._sessionController.databaseAPI.insertVerdict, args=(self._sessionController.getSessionID(), evidence, verdict), daemon=True)
         databaseThread.start()

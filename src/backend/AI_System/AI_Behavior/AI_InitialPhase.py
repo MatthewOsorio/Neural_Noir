@@ -5,16 +5,14 @@ class AIInitialPhase(AI):
     def __init__(self, history, sentimentAnalyzer):
         super().__init__(history, sentimentAnalyzer)
         self._questions = [
-            "[INSTRUCTION] Ask the suspect for what their name is.",
+            "[INSTRUCTION] Ask the suspect for what their name is. DO NOT MENTION THEIR NAME.",
             "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
-            "[INSTRUCTION] Ask if Mark worked as a photographer at Reno Media Company.",
-            "[INSTRUCTION] Ask if Mark worked under Vinh Davis."
+            "[INSTRUCTION] Ask if the suspect worked as a photographer at Reno Media Company.",
+            "[INSTRUCTION] Ask if the suspect worked under Vinh Davis."
         ]
         self._finished = False
         self._currentQuestion = 0
         self._startedInstruction = False
-        self._currentEvidence = None
-        self._sentimentAnalyzer = sentimentAnalyzer
 
     def askQuestion(self):
         if not self._startedInstruction:
@@ -24,19 +22,18 @@ class AIInitialPhase(AI):
 
             response = self.sendToGPT(gptInput)
             self._startedInstruction = True
-
-            if isinstance(response, list):
-                self._sentimentAnalyzer.classifyEachDetective(response)
-
             return response
         else:
             return self._questions[self._currentQuestion]
 
     def processResponse(self, userResponse):
-        preppedResponse = "[MARK]: " + userResponse
-        self._aiHistory.addUserInput(preppedResponse)
-
-        gptResponse = self.evaluateResponse(userResponse)
+        if self._currentQuestion == 0:
+            #Getting players name
+            gptResponse = self.evaluateResponse(userResponse)
+        else:
+            preppedResponse = f"[{self._aiHistory.getPlayerName()}]: " + userResponse
+            self._aiHistory.addUserInput(preppedResponse)
+            gptResponse = self.evaluateResponse(userResponse)
 
         if gptResponse == "Correct":
             self._currentQuestion += 1
@@ -45,33 +42,55 @@ class AIInitialPhase(AI):
         else:
             self._questions[self._currentQuestion] = gptResponse
 
-    # Purpose: Classifies sentiment of the detective response to the player's response to the evidence
-    def classifyDetectivesSentiment (self):
-        lastTwoResponses = self._aiResponse[-2:]
-        sentiments = self._sentimentAnalyzer.classifyEachDetective(lastTwoResponses)
-
-        self._sentimentAnalyzer._millerSentiment = sentiments.get("Miller", "neutral")
-        self._sentimentAnalyzer._harrisSentiment = sentiments.get("Harris", "neutral")
-
-    def getSentiment(self):
-        return {
-            "Harris": getattr(self._sentimentAnalyzer, "_harrisSentiment", "neutral"),
-            "Miller": getattr(self._sentimentAnalyzer, "_millerSentiment", "neutral")
-        }
-
-    def evaluateResponse(self, user_response):
+    def evaluateResponse(self, userResponse):
+        playerName = self._aiHistory.getPlayerName()
         gptInput = self._aiHistory.getHistory()[:]
         originalQuestion = self._questions[self._currentQuestion]
 
-        if self._currentQuestion == 3:
+        if self._currentQuestion == 0:
+            # For getting the players name
             instruction = dedent(f'''
-                [INSTRUCTION] Evaluate Mark's response to the question: "{originalQuestion}"
-                His response was: "{user_response}"
+                [INSTRUCTION] You are evaluating the suspect's response to the question: "{originalQuestion}"  
+                The suspect's response was: "{userResponse}".
+
+                Your goal is to determine if the suspect has provided a valid NAME.
+
+                **Rules:**
+                - A first name alone is also valid.
+                - If a valid name is provided (but NOT "Vinh Le"), return:
+                {{"name": "Full name or first name here" }}
+                - If no valid name is provided:
+                - either Detective Miller or Detective Harris to naturally ask again for the suspect's name.
+                - Return the Detective speaking naturally asking for the name again in a string format
+                - If the name "Vinh Le" is provided, treat it as INVALID and mention its the name of the victim in the response.
+
+                **Important Detective Rules:**
+                - Only one detective speaks at a time.
+                - Stay focused on asking for the suspect's name — do not change the topic.
+                - Do not reveal any case details (murder, bruises, arguments, Vinh relationship).
+                - Speak naturally and conversationally.
+                - Do not include any extra commentary or explanations.
+            ''')
+
+            gptInput.append({"role": "user", "content": instruction})
+
+            response = self.sendToGPT(gptInput)
+
+            if isinstance(response, tuple):
+                self._aiHistory.updatePlayerName(response[1])
+                return response[0]
+            else:
+                return response
+            
+        elif self._currentQuestion == 3:
+            instruction = dedent(f'''
+                [INSTRUCTION] Evaluate {playerName}'s response to the question: "{originalQuestion}"
+                His response was: "{userResponse}"
 
                 Your job is to determine if the response is now acceptable and truthful, based on the current message and the prior dialogue.
 
                 **Only do the following:**
-                - If Mark confirms that he worked under Vinh Davis — even informally or after some resistance — respond with **Correct** and nothing else.
+                - If {playerName} confirms that he worked under Vinh Davis — even informally or after some resistance — respond with **Correct** and nothing else.
                 - Trust the overall intent. If he eventually says something like "Yes", "he was my boss", or "I worked for him", treat it as a valid confirmation — even if he initially dodged.
                 - Do not keep repeating the question if he already answered it. Look at the full context, not just this one message.
                 - Only repeat the question if his response is still evasive, contradictory, or sarcastic without clarification.
@@ -85,10 +104,10 @@ class AIInitialPhase(AI):
             ''')
         else:
             instruction = dedent(f'''
-                [INSTRUCTION] Evaluate Mark's response to the question: "{originalQuestion}"
-                His response was: "{user_response}"
+                [INSTRUCTION] Evaluate {playerName}'s response to the question: "{originalQuestion}"
+                His response was: "{userResponse}"
 
-                Your job is to verify whether Mark is telling the truth based on what you know.
+                Your job is to verify whether {playerName} is telling the truth based on what you know.
 
                 **Respond with only one of the following:**
                 - **Correct** (if the answer is truthful, even if expressed indirectly or creatively — such as “Yes”, “I worked under him”, “He worked for me”, “I did my job under him”, etc.)
@@ -96,13 +115,14 @@ class AIInitialPhase(AI):
 
                 **Important behavior rules:**
                 - Both detectives must remain focused on the current question. Do not have them both ask questions at the same time. They may reinforce each other, apply pressure, or rephrase the same question, but never change the topic.
-                - If you believe Mark answers the question truthfully, do not ask follow-up questions.
+                - If you believe {playerName} answers the question truthfully, do not ask follow-up questions.
                 - Do NOT bring up any unrelated details (murder, argument, bruises, etc.)
                 - Do NOT move onto another question until the answer is valid and complete.
                 - Speak naturally, taking turns between Harris and Miller as needed.
             ''')
 
         gptInput.append({"role": "user", "content": instruction})
+
         response = self.sendToGPT(gptInput)
         return response
 
@@ -111,7 +131,7 @@ class AIInitialPhase(AI):
             self._finished = True
 
     def generateResponse(self):
-        if self._finished:
+        if self._finished: 
             return False
         else:
             return self.askQuestion()
