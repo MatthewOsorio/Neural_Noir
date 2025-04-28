@@ -344,7 +344,7 @@ class TutorialRoom:
 
         # Get speaker and sentiment for animation
         speaker = self.state.speakers[count]
-        sentiment = self.game._aiController.getSentiment().get(speaker, "neutral")
+        sentiment = self.state.sentiments[count]
 
         # Play animation based on sentiment
         if speaker in self.sentimentToAnimation and sentiment in self.sentimentToAnimation[speaker]:
