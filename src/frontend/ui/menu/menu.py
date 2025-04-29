@@ -13,8 +13,11 @@ from frontend.ui.menu.AudioMenu import audioSettings
 from frontend.ui.menu.PauseMenu import PauseMenu
 from frontend.ui.menu.QuitMenu import confirmQuit
 
+from frontend.ui.menu.TutorialsMenu import TutorialsMenu
+
 from frontend.ui.audio import audioManager
 import frontend.ui.ScriptDisplay as ScriptDisplay
+import json
 
 import os
 from panda3d.core import Filename
@@ -44,14 +47,38 @@ class menuManager:
         self.initializeBackground()
         
         self.audio = audioManager(self.base)
-        
+        self.pauseMenu = None
+        self.mainMenu = None
+        self.quitMenu = None
+        self.audioMenu = None
+        self.tutorialsMenu = None
+        self.settingsMenu = None
+
         self.gameStart = startFlag
         self.gameState = 'menu'
+        self.tutorialStart = startFlag
+
+        self.defaultValues = {
+            "emotibit": True,
+            "sfxVolume": 0.5,
+            "voiceVolume": 0.5,
+            "subtitles": False,
+            "difficulty": "easy",
+            "font": "stylized"
+        }
 
         self.mainBackground = base.loader.loadTexture(Background)
         self.black = base.loader.loadTexture(Black)
         self.room = base.loader.loadTexture(Room)
         self.font = base.loader.loadFont(Limelight)
+        self.userSettings = os.path.join(current_dir, "..", "userSettings.json")
+
+        if os.path.exists(self.userSettings) == False:
+            print("Creating user settings file")
+            with open(self.userSettings, "w", encoding="utf-8") as file:
+                json.dump(self.defaultValues, file)
+        else:
+            print("User settings file found")
 
         self.limeLight = "../Assets/Fonts/Limelight/Limelight-Regular.ttf"
         self.mainBackGround = "../Assets/Images/NeuralNoir_Background_Image.jpg"
@@ -61,10 +88,14 @@ class menuManager:
         self.mainMenu = mainMenu(self, self.base)
         self.settingsMenu = settingsMenu(self, self.base)
         self.audioMenu = audioSettings(self, self.base, self.audio)
-        self.pauseMenu = None
+        
         self.quitMenu = confirmQuit(self, self.base)
+        self.tutorialsMenu = TutorialsMenu(self, self.base)
 
         self.subtitles = False
+
+        self.mainTextColor = (1,1,1,1)
+        self.hoverColor = (1,1,0.5,1)
 
     def initializeBackground(self):
         if self.titleImage is not None: 
@@ -103,8 +134,14 @@ class menuManager:
             print("No pause menu")
 
     def beginGame(self):
+        self.tutorialStart = False
         self.gameStart = True
         #print("Menu -", self.gameStart)
+        self.gameState = 'gameplay'
+
+    def beginTutorial(self):
+        self.gameStart = False
+        self.tutorialStart = True
         self.gameState = 'gameplay'
 
     def initializePauseMenu(self):
@@ -114,5 +151,53 @@ class menuManager:
         self.quitMenu.hide()
         self.pauseMenu.displayPauseMenu()
     
+    def showTutorials(self):
+        self.showImage()
+        self.tutorialsMenu.show()
         
+
+    def setFontLime(self):
+        self.font = self.base.loader.loadFont(Limelight)
+        if self.mainMenu is not None:
+            self.mainMenu.updateFont()
+
+        if self.audioMenu is not None:
+            self.audioMenu.updateFont()
+
+        if self.pauseMenu is not None:
+            self.pauseMenu.updateFont()
+
+        if self.settingsMenu is not None:
+            self.settingsMenu.updateFont()
+
+        if self.quitMenu is not None:
+            self.quitMenu.updateFont()
+
+        if self.tutorialsMenu is not None:
+            self.tutorialsMenu.updateFont()
         
+    def setFontNormal(self):
+        self.font = self.base.loader.loadFont("cmss12.egg")
+        if self.mainMenu is not None:
+            self.mainMenu.updateFont()
+
+        if self.audioMenu is not None:
+            self.audioMenu.updateFont()
+
+        if self.pauseMenu is not None:
+            self.pauseMenu.updateFont()
+
+        if self.settingsMenu is not None:
+            self.settingsMenu.updateFont()
+
+        if self.quitMenu is not None:
+            self.quitMenu.updateFont()
+        
+        if self.tutorialsMenu is not None:
+            self.tutorialsMenu.updateFont()
+
+    def setColorHover (self, button):
+        button["text_fg"] = self.hoverColor
+
+    def setColorDefault (self, button):
+        button["text_fg"] = self.mainTextColor

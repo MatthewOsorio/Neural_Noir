@@ -66,9 +66,21 @@ class mainMenu:
             text_font = self.manager.font,
             text_fg = (1,1,1,1),
             scale=0.1,
-            pos=(-1, 0, -0.3),
+            pos=(-1, 0, -0.6),
             parent=self.mainMenu,
             command=self.moveToQuit,
+            frameColor = (0,0,0,0)
+        )
+
+
+        self.tutorialsButton = DirectButton(
+            text="Tutorials",
+            text_font = self.manager.font,
+            text_fg = (1,1,1,1),
+            scale=0.1,
+            pos=(-1, 0, -0.3),
+            parent=self.mainMenu,
+            command=self.moveToTutorials,
             frameColor = (0,0,0,0)
         )
 
@@ -92,6 +104,8 @@ class mainMenu:
         self.quitButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.quitButton))  # Mouse enters
         self.quitButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.quitButton)) 
         
+        self.tutorialsButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.tutorialsButton))  # Mouse enters
+        self.tutorialsButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.tutorialsButton)) 
 
     def startGame(self):
         self.hide()
@@ -105,6 +119,11 @@ class mainMenu:
     def moveToQuit(self):
         self.hide()
         self.manager.showQuit()
+
+    def moveToTutorials(self):
+        self.hide()
+        self.manager.hideImage()
+        self.manager.showTutorials()
         
     def show(self):
         self.mainMenu.show()
@@ -117,3 +136,11 @@ class mainMenu:
 
     def setColorDefault (self, button):
         button["text_fg"] = self.mainTextColor
+
+    def updateFont(self):
+        self.startButton["text_font"] = self.manager.font
+        self.settingsButton["text_font"] = self.manager.font
+        self.tutorialsButton["text_font"] = self.manager.font
+        self.quitButton["text_font"] = self.manager.font
+        self.titleText.font = self.manager.font
+        self.bottomText.font = self.manager.font

@@ -6,6 +6,7 @@ from direct.interval.IntervalGlobal import *
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 from panda3d.core import TransparencyAttrib
+import json
 
 class audioSettings:
     def __init__(self, manager, base, audio, back_callback=None):    
@@ -28,7 +29,7 @@ class audioSettings:
             pos=(0, 0, 0)
         )
 
-        self.backImage.setColor(0, 0, 0, 0.5)
+        self.backImage.setColor(0, 0, 0, 0.8)
         self.backImage.setTransparency(TransparencyAttrib.MAlpha)
 
         self.topText = TextNode('TopText')
@@ -111,7 +112,9 @@ class audioSettings:
             scale = 0.12,
             pos = (0,0,-0.7),
             parent = self.audioMenu,
-            command = self.handleBack
+            command = self.handleBack,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
 
         self.testInput = DirectButton(
@@ -120,7 +123,9 @@ class audioSettings:
             scale = 0.1,
             pos = (-0.6,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioInput
+            command = self.audio.testAudioInput,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
 
         self.testOutput = DirectButton(
@@ -129,8 +134,22 @@ class audioSettings:
             scale = 0.1,
             pos = (0.6,0,-0.9),
             parent = self.audioMenu,
-            command = self.audio.testAudioOutput
+            command = self.audio.testAudioOutput,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+
+        if settings["subtitles"] == True:
+            self.turnSubtitlesOn(True)
+        else:
+            self.turnSubtitlesOff(True)
+
+        self.setInitialValues(settings)
+
+        self.setButtonHovers()
 
         self.hide()
 
@@ -148,24 +167,103 @@ class audioSettings:
 
     def show(self):
         self.audioMenu.show()
+        if self.base.interrogationRoom != None:
+            self.setVoiceVolumeSlider(self.base.interrogationRoom.voiceVolume)
+            self.setSFXVolumeSlider(self.base.interrogationRoom.sfxVolume)
 
     def hide(self):
         self.audioMenu.hide()
 
     def setVolumeV(self):
         self.audio.setVolumeValue(self.volumeSlider['value'])
+        if self.manager.gameStart == True:
+            self.base.interrogationRoom.sfxVolume = self.volumeSlider['value']
+        else:
+            self.base.sfxVolume = self.volumeSlider['value']
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["sfxVolume"] = self.volumeSlider['value']
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(settings, file)
 
     def setVoiceVolumeV(self):
         if self.manager.gameStart == True:
-            #self.base.interrogationRoom.game.tts.audio.setVolume(self.voiceVolumeSlider['value'])
-            pass
+            self.base.interrogationRoom.game._tts.audio.setVolume(self.voiceVolumeSlider['value'])
+            self.base.interrogationRoom.voiceVolume = self.voiceVolumeSlider['value']
+        else:
+            self.base.voiceVolume = self.voiceVolumeSlider['value']
+        
 
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["voiceVolume"] = self.voiceVolumeSlider['value']
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(settings, file)
+            
     def turnSubtitlesOn(self, state):
         self.subTitlesOff["indicatorValue"] = False
+        self.subTitlesOn["indicatorValue"] = True
         self.subTitlesOff.setIndicatorValue
+        self.subTitlesOn.setIndicatorValue
         self.manager.subtitles = True
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["subtitles"] = True
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(settings, file)
     
     def turnSubtitlesOff(self, state):
         self.subTitlesOn["indicatorValue"] = False
+        self.subTitlesOff["indicatorValue"] = True
         self.subTitlesOn.setIndicatorValue
+        self.subTitlesOff.setIndicatorValue
         self.manager.subtitles = False
+
+        with open(self.manager.userSettings, "r", encoding="utf-8") as file:
+            settings = json.load(file)
+        settings["subtitles"] = False
+        with open(self.manager.userSettings, "w", encoding="utf-8") as file:
+            json.dump(settings, file)
+
+    def setVoiceVolumeSlider(self, value):
+        self.voiceVolumeSlider["value"] = value 
+        self.voiceVolumeSlider.setValue(value)
+        self.base.interrogationRoom.game._tts.audio.setVolume(value)
+    
+    def setSFXVolumeSlider(self, value):
+        self.volumeSlider["value"] = value 
+        self.volumeSlider.setValue(value)
+        self.audio.setVolumeValue(value)
+    
+    def setInitialValues(self, settings):
+        self.settings = settings
+        self.audio.setVolumeValue(self.settings.get("sfxVolume", 0.5))
+        self.base.sfxVolume = self.settings.get("sfxVolume", 0.5)
+        self.base.voiceVolume = self.settings.get("voiceVolume", 0.5)
+        self.voiceVolumeSlider["value"] = self.settings.get("voiceVolume", 0.5) 
+        self.voiceVolumeSlider.setValue(self.settings.get("voiceVolume", 0.5))
+        self.volumeSlider["value"] = self.settings.get("sfxVolume", 0.5)
+        self.volumeSlider.setValue(self.settings.get("sfxVolume", 0.5))
+
+    def setButtonHovers(self):
+        self.backButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.backButton)) 
+        self.backButton.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.backButton)) 
+    
+        self.testInput.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.testInput)) 
+        self.testInput.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.testInput))
+
+        self.testOutput.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.testOutput)) 
+        self.testOutput.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.testOutput))    
+
+    def updateFont(self):
+        self.backButton["text_font"] = self.manager.font
+        self.testInput["text_font"] = self.manager.font
+        self.testOutput["text_font"] = self.manager.font
+        self.subTitlesOn["text_font"] = self.manager.font
+        self.subTitlesOff["text_font"] = self.manager.font
+        self.topText.font = self.manager.font
+        self.volumeText.font = self.manager.font
+        self.voiceVolumeText.font = self.manager.font
+        self.subTitlesText.font = self.manager.font

@@ -5,7 +5,9 @@ from direct.gui.DirectLabel import DirectLabel
 from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 from direct.gui.DirectButton import DirectButton
+from direct.gui.DirectGui import DGG
 from panda3d.core import TextNode
+from panda3d.core import TransparencyAttrib
 
 class ScriptDisplay():
     def __init__(self, manager, gameManager, pauseMenu):
@@ -19,8 +21,9 @@ class ScriptDisplay():
         script = []
 
         for interaction in conversation:
-            script.append(f"Detective: {interaction[0]}")
-            script.append(f"Player: {interaction[1]}")
+            interactionString = f"{interaction[0]}: {interaction[1]}"
+            script.append(interactionString)
+            
 
         return script
     
@@ -29,9 +32,9 @@ class ScriptDisplay():
         sessionID = self.gameManager._sessionController.getSessionID()
         conversation = self.gameManager._database.fetchConversation(sessionID)
 
-        print("Fetched conversation from DB: ", conversation) # debug
+        #print("Fetched conversation from DB: ", conversation) # debug
         script = self.formatScript(conversation)
-        print("Formatted: script, script") #debug
+      #  print("Formatted: script, script") #debug
         return script
 
     def generateDisplayBox(self):
@@ -43,7 +46,16 @@ class ScriptDisplay():
         
         titleText = 'Script'
 
+        self.backImage = OnscreenImage(
+            self.pauseMenu.manager.black,
+            parent=self.scriptDisplay,
+            scale=(1.75, 0.9, 0.9),
+            pos=(0, 0, 0)
+        )
 
+        self.backImage.setColor(0, 0, 0, 0.8)
+        self.backImage.setTransparency(TransparencyAttrib.MAlpha)
+        
         title= DirectLabel(
                         parent=self.scriptDisplay,
                         text= titleText,
@@ -51,10 +63,10 @@ class ScriptDisplay():
                         pos= (-1.355, 0, 0.767),
                         frameColor= (0, 0, 0, 0),
                         text_fg = (255, 255, 255, 1),
-                        text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"))
+                        text_font = self.pauseMenu.manager.font)
 
         dialogue_texts = self.getScript()
-        print("Dialogue texts for display:", dialogue_texts) # debug
+      #  print("Dialogue texts for display:", dialogue_texts) # debug
         print("Creating GUI elements for ScriptDisplay") # debug
 
         line_height= 0.1
@@ -80,7 +92,8 @@ class ScriptDisplay():
             "../Assets/Images/paper.jpg",
             pos = (0, 0, 0),
             scale = (1.5,0,0.7),
-            parent = self.scriptDisplay
+            parent = self.scriptDisplay,
+            
         )
 
 
@@ -114,12 +127,19 @@ class ScriptDisplay():
 
         self.exitScriptButton = DirectButton(
             text="Back",
-            text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            text_font = self.pauseMenu.manager.font,
             scale=0.1,
             pos=(-1.385, 0, -0.85),
             parent=self.scriptDisplay,
-            command=self.goBackToPauseMenu
+            command=self.goBackToPauseMenu,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
         )
+
+        self.scriptBackground.setBin("fixed", 20)
+        self.backImage.setBin("fixed", 10)
+
+        self.setButtonHover()
 
         # self.getConversation() 
 
@@ -138,3 +158,11 @@ class ScriptDisplay():
     def returnToPause(self):
         self.hide()
         self.manager.show()
+
+    def setButtonHover(self):
+        self.exitScriptButton.bind(DGG.ENTER, lambda event: self.pauseMenu.manager.setColorHover(self.exitScriptButton)) 
+        self.exitScriptButton.bind(DGG.EXIT, lambda event: self.pauseMenu.manager.setColorDefault(self.exitScriptButton)) 
+
+    def updateFont(self):
+        self.exitScriptButton["text_font"] = self.pauseMenu.manager.font
+        self.exitScriptButton["text_font"] = self.pauseMenu.manager.font

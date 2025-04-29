@@ -1,7 +1,5 @@
-__all__ = ['AIInitialPhase','AIEarlyInterrogation', 'AIMidInterrogation', 'AIFinalInterrogation', 'AIContext']
+__all__ = ['AIInitialPhase','AIInterrogation', 'AIContext']
 
 from .AI_InitialPhase import AIInitialPhase
-from .AI_EarlyInterrogation import AIEarlyInterrogation
-from .AI_MidInterrogation import AIMidInterrogation
-from .AI_FinalInterrogation import AIFinalInterrogation
+from .AI_Interrogation import AIInterrogation
 from .AI_Context import AIContext

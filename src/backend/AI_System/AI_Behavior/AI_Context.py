@@ -20,3 +20,12 @@ class AIContext():
     
     def updateNervous(self, isNervous):
         self._state.updateNervous(isNervous)
+
+    def getCurrentEvidence(self):
+        print("Getting Evidence")
+        if self._state._currentEvidence is not None:
+            print("Evidence exists")
+            return self._state._currentEvidence[0]
+        else:
+            return None
+        

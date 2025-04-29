@@ -17,16 +17,25 @@ class State1:
         self.currentBaseE = 0
         self.currentBaseT = 0
 
+        self.speakers = []
+        self.texts = []
+        self.audioFilePaths = []
+        self.sentiments = []
+
     def testPrint(self):
         print("This is state 1")
 
     def setGame(self, game):
         self.game = game
-        taskMgr.doMethodLater(10, self.updateData, "data") 
+        taskMgr.doMethodLater(5, self.updateData, "data") 
     
     def begin(self):
         self.game._gameState.updateState(1)
         self.response = self.game.generateAIResponse()
+
+        if self.response is not False:
+            self.parseResponse(self.response)
+            
         return self.response
         
     def convert(self):
@@ -34,6 +43,7 @@ class State1:
     
     def generateResponse(self):
         self.response = self.game.generateAIResponse()
+        #self.response = False #JUST FOR TESTING PURPOSES DO NOT LEAVE IT FALSE
 
         if self.response == False:
             self.getAverageHeartRate()
@@ -42,6 +52,9 @@ class State1:
             self.updateBaseValues()
             self.endPhase = True
 
+        if self.response is not False:
+            self.parseResponse(self.response)
+            
         return self.response
 
     def updateData(self, task):
@@ -64,14 +77,14 @@ class State1:
     
     def getAverageEDA(self):
         if len(self.eda) > 0:
-            self.currentBaseE =  self.doMath(self.eda, 0)
+            self.currentBaseE =  self.doMath(self.eda, 0.1)
             return self.currentBaseE
         else:
             print("Error list legnth is 0.")
 
     def getAverageTemperature(self):
         if len(self.temperature) > 0:
-            self.currentBaseT = self.doMath(self.temperature, 0.1)
+            self.currentBaseT = self.doMath(self.temperature, 0.5)
             return self.currentBaseT
         else:
             print("Error list length is 0")
@@ -94,4 +107,36 @@ class State1:
     def updateBaseValues(self):
         #print(f"HR: {self.currentBaseH}")
         self.game.setRanges(self.currentBaseH, self.currentBaseE, self.currentBaseT)
+
+    def cleanUpTasks(self):
+        tskMgr.remove("data")
+
+    def parseResponse(self, response):
+
+        print (response)
+
+        for line in response:
+            speaker = line.get("Speaker")
+            text = line.get("Text")
+            audioF = line.get("AudioFilepath")
+            sentiment = line.get("Sentiment")
+
+            if speaker is not None:
+                self.speakers.append(speaker)
+            
+            if text is not None:
+                self.texts.append(text)
+
+            if audioF is not None:
+                self.audioFilePaths.append(audioF)
+
+            if sentiment is not None:
+                self.sentiments.append(sentiment)
+           # print(f"audio path: {line.get('AudioFilepath')}")
+    
+    def resetResponse(self):
+        self.speakers = []
+        self.texts = []
+        self.audioFilePaths = []
+        self.sentiments = []
 
