@@ -1,6 +1,6 @@
 from backend.BackendInterface.GameManager import GameManager
 from backend.StoryGraph.EndGame import EndGame
-from backend.TTSSystem.TextToSpeechController import TextToSpeechController
+# from backend.TTSSystem.TextToSpeechController import TextToSpeechController
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 from panda3d.core import TextNode
@@ -40,10 +40,11 @@ class State5:
         # self.ttsController.generateTTS(millerFinalLine)
         # self.ttsController.speak(millerFinalLine[0]["AudioFilepath"])
 
-        with open("src/frontend/ui/userSettings.json", "r") as file:
-            user_settings = json.load(file)
+        # with open("src/frontend/ui/userSettings.json", "r") as file:
+        #     user_settings = json.load(file)
 
-        self.verdict = endgame.determineEnding(user_settings)
+        # self.verdict = endgame.determineEnding(user_settings)
+        self.verdict = endgame.determineEnding()
         self.endPhase = self.overlay.base.ended = True
 
         if self.overlay is not None:
@@ -131,14 +132,14 @@ class State5:
         self.fadeInEndingScreen()
         self.displayEndingScreen()
 
-    def fadeInEndingScreen(self):
-        fade = LerpFunc(
-            self.endFrame.setAlphaScale,
-            fromData=0,
-            toData=1,
-            duration=2.0,
-        )
-        fade.start()
+    # def fadeInEndingScreen(self):
+    #     fade = LerpFunc(
+    #         self.endFrame.setAlphaScale,
+    #         fromData=0,
+    #         toData=1,
+    #         duration=2.0,
+    #     )
+    #     fade.start()
 
     def displayEndingScreen(self):
 
