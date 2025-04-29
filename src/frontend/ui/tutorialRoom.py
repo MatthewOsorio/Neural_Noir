@@ -279,7 +279,7 @@ class TutorialRoom:
             (0, 0, 0.1), 
             (0.5, 0, 0.3), 
             "Your transcribed reply will show up here. If you are happy with it, you can accept it. "
-            "If not, you are given one retry per question. Click accept to move onto the next question or retry to redo your reply to this question.",
+            "If not, you can retake it. Click accept to move onto the next question or retry to redo your reply to this question.",
             15)
         
         if self.tutorialEvents["Accept"] is False:

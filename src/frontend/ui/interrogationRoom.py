@@ -284,8 +284,6 @@ class InterrogationRoom:
             self.Overlay.acceptSpeechButton.show()
             self.Overlay.redoSpeechButton.show()
             
-        elif self.redoable is False:
-            self.Overlay.redoSpeechButton.hide()
 
         userInputActive = self.Overlay.userSpeech.getActive()
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
@@ -296,7 +294,7 @@ class InterrogationRoom:
                 self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
-            self.redoable = False
+            self.redoable = True
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
             taskMgr.add(self.speechUI, "UpdateSpeechTask")
