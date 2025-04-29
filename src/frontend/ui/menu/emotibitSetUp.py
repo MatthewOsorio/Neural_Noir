@@ -16,8 +16,6 @@ class EmotibitTutorial:
         self.active = False
         self.wordWrap = 50
 
-        self.bc = None
-
         self.frame = DirectFrame(
             frameColor=(0, 0, 0, 1),
             frameSize=(-2, 2, -2, 2),
@@ -28,40 +26,23 @@ class EmotibitTutorial:
             text="Back",
             scale=0.1,
             command=None,
-            pos=(0, 0, -0.5),
-            parent=self.frame
+            pos=(0, 0, -0.9),
+            parent=self.frame,
+            text_fg = (1, 1, 1, 1),
+            frameColor = (0, 0, 0, 0.8)
         )
 
-        self.displayHeartRate = OnscreenText(
-            text = "Heart Rate: 0",
-            scale = 0.18,
-            parent = self.frame,
-            fg = (1,1,1,1),
-            pos = (0,0.1,0)
-        )
+        self.button.bind(DGG.ENTER, lambda event: self.setColorHover(self.button))  
+        self.button.bind(DGG.EXIT, lambda event: self.setColorDefault(self.button)) 
 
-        self.displayEda = OnscreenText(
-            text = "EDA: 0",
-            scale = 0.18,
-            parent = self.frame,
-            fg = (1,1,1,1),
-            pos = (0,-0.3,0)
-        )
-
-        self.displayTemperature = OnscreenText(
-            text = "Temperature: 0",
-            scale = 0.18,
-            parent = self.frame,
-            fg = (1,1,1,1),
-            pos = (0,-0.7,0)
-        )
-
+        self.mainTextColor = (1,1,1,1)
+        self.hoverColor = (1,1,0.5,1)
 
         self.etTop = OnscreenText()
         self.et = OnscreenText()
         self.errorText = OnscreenText()
 
-        self.warningTextCreator(self.etTop, "EmotiBit Set Up", (0, 0.9), 0.1, self.frame, (1, 1, 1, 1))
+        self.warningTextCreator(self.etTop, "EmotiBit Set Up", (0, 0.7), 0.1, self.frame, (1, 1, 1, 1))
         self.warningTextCreator(
             self.et, 
             "Players who own an EmotiBit can use it to read their biometric data during gameplay. This game requires users connect to their EmotiBit via wifi connection." \
@@ -74,17 +55,10 @@ class EmotibitTutorial:
             "          3. Locate the microSD card in your files, and open 'Config.txt.'\n"
             "          4. Change the SSID and password to match your network.\n"
             "          5. Safely remove the microSD card and reinsert it into the base of the EmotiBit.\n\n\n\n"
-            "If you are playing with EmotiBit mode on, you should have the EmotiBit set up and connected before starting the game. Wearing the EmotiBit on your wrist is optimal.\n\n"
-            "The box below will display the user's biometric data. If you have an EmotiBit connected, the values should update roughly every 5 seconds."
-            "If there is no EmotiBit Connection, it will give an error message.", 
-            (0, 0.5), 0.05, self.frame, (1, 1, 1, 1))
-        self.warningTextCreator(
-            self.errorText, 
-            "Error: Cannot connect to EmotiBit.", 
-            (0, 0.1), 0.05, self.frame, (1, 1, 1, 1))      
+            "If you are playing with EmotiBit mode on, you should have the EmotiBit set up and connected before starting the game. Wearing the EmotiBit on your wrist is optimal.\n\n",
+            (0, 0.3), 0.05, self.frame, (1, 1, 1, 1))
+  
 
-        self.hideAllBio()
-        self.errorText.hide()  
         
     def show(self):
         self.active = True
@@ -104,51 +78,6 @@ class EmotibitTutorial:
             wordwrap= self.wordWrap
         )
 
-    def updateBiometric(self, task):
-        print("Update BC task")
-        heartRate = self.getHeartRate()  
-        if heartRate is not None and self.bc.bcTestFlag is not True:
-            self.showAllBio()
-            print("HR data")
-            self.displayHeartRate.setText("Heart Rate: " + str(round(heartRate, 2)))
-            
-        eda = self.getEda()
-        if eda is not None and self.bc.bcTestFlag is not True:
-            self.displayEda.setText("EDA: " + str(round(eda, 2)))
-            
-        temperature = self.getTemperature()
-        if temperature is not None and self.bc.bcTestFlag is not True:
-            self.displayTemperature.setText("Temperature: " + str(round(temperature, 2)))
-
-        if self.bc.bcTestFlag is True:
-            self.hideAllBio()
-            print("No data")
-            
-        return task.again
-        
-    def showAllBio(self):
-        self.displayHeartRate.show()
-        self.displayTemperature.show()
-        self.displayEda.show()
-        self.errorText.hide()
-
-    def hideAllBio(self):
-        self.displayHeartRate.hide()
-        self.displayTemperature.hide()
-        self.displayEda.hide()
-        self.errorText.show()
-
-    def getHeartRate(self):
-        hr = self.bc.getHeartRate()
-        return hr
-    
-    def getEda(self):
-        eda = self.bc.getEDA()
-        return eda
-    
-    def getTemperature(self):
-        temp = self.bc.getTemperature()
-        return temp
     
     def show(self):
         self.frame.show()
@@ -157,20 +86,17 @@ class EmotibitTutorial:
         self.frame.hide()
     
     def cleanUp(self):
-        self.bc._gameIsReady = False
-        self.bc.cleanThread()
-        taskMgr.remove("updateBio")
-        self.bc = None
+        pass
 
     def goBack(self):
         self.cleanUp()
         self.hide()
-        self.displayHeartRate.setText("Heart Rate: " + str(0))
-        self.displayEda.setText("EDA: " + str(0))
-        self.displayTemperature.setText("Temperature: " + str(0))
 
     def setUpBC(self):
-        self.bc = BiometricController()
-        self.bc._gameIsReady = True
-        print("Starting bc task")
-        taskMgr.doMethodLater(5, self.updateBiometric, "updateBio") 
+        pass
+
+    def setColorHover (self, button):
+        button["text_fg"] = self.hoverColor
+
+    def setColorDefault (self, button):
+        button["text_fg"] = self.mainTextColor
