@@ -43,7 +43,7 @@ class State1:
     
     def generateResponse(self):
         self.response = self.game.generateAIResponse()
-       # self.response = False #JUST FOR TESTING PURPOSES DO NOT LEAVE IT FALSE
+        #self.response = False #JUST FOR TESTING PURPOSES DO NOT LEAVE IT FALSE
 
         if self.response == False:
             self.getAverageHeartRate()
