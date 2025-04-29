@@ -85,7 +85,9 @@ class State5:
             parent = self.endFrame,
             text = "Verdict",
             fg = (1, 1, 1, 1),
-            scale = 0.25
+            scale = 0.25,
+            pos = (0, 0.7, 0.7),
+            font = self.overlay.base.menu.font
         )
 
         self.endFrame.setTransparency(TransparencyAttrib.MAlpha)
@@ -111,7 +113,7 @@ class State5:
             frameColor= (0, 0, 0, 0),
             pos= (0, 0, 0),
             scrollBarWidth= 0.05,
-            canvasSize=(-1.5, 1.5, 0.1-height , 0.1)    ,
+            canvasSize=(-1.5, 1.5, -0.8 , 0.1)    ,
             horizontalScroll_decButton_relief=None,
             horizontalScroll_incButton_relief=None,
             horizontalScroll_frameSize=(0, 0, 0, 0),
@@ -133,16 +135,19 @@ class State5:
             textYPos -= spacing
         
         self.button = DirectButton(
-            text = "Skip",
+            text = "Finish",
             command = self.returnToMain,
             sortOrder = 1,
             text_font = self.overlay.base.menu.font,
             text_fg = (1, 1, 1, 1),
             frameColor = (0, 0, 0, 0.8),
-            pos = (-1.7, -0.9, -0.9),
+            pos = (1.7, -0.9, -0.9),
             scale = 0.1,
             parent = self.endFrame
         )
+
+        self.button.bind(DGG.ENTER, lambda event: self.overlay.base.menu.setColorHover(self.button))  
+        self.button.bind(DGG.EXIT, lambda event: self.overlay.base.menu.setColorDefault(self.button)) 
 
         self.fadeInEndingScreen()
         self.displayEndingScreen()

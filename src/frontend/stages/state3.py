@@ -50,6 +50,7 @@ class State3:
     def begin(self):
         self.game._gameState.updateState(3)
         self.overlay.hideBioData()
+        self.overlay.evidenceBox.hide()
         self.passToVerdict()
         self.storyScene.playMidScene(onSuccessCallback=self.state3Interrogation)
 

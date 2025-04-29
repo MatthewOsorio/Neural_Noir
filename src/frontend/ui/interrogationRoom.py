@@ -221,13 +221,7 @@ class InterrogationRoom:
         self.pausable = False
         self.ended = False
         self.current = 0
-        self.Overlay.flashback.setImage(self.prompt)
-        self.Overlay.flashback.show()
-
-        flashback = self.Overlay.flashback.getActive()
-        while flashback == True:
-            flashback = self.Overlay.flashback.getActive()
-              
+       
         if self.useEmotibit == True:
             self.game._bioController.incrementError = True
             self.Overlay.startEmotiBitCheck()
@@ -329,7 +323,7 @@ class InterrogationRoom:
             taskMgr.doMethodLater(1.0, self.startNextStateTask, "StartNextTask")
 
     def startNextStateTask(self, task):
-        self.current = self.current + 2
+        self.current = self.current + 1
         print(f"State {self.current}")
         self.state = self.testStates[self.current]
 
