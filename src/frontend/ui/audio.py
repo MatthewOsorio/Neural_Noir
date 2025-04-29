@@ -12,6 +12,12 @@ import pygame
 import numpy as np
 import threading
 
+import os
+from panda3d.core import Filename
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sound1 = os.path.join(current_dir, "..", "..", "..", "Assets", "Audio", "ErrorSound.mp3")
+sound1 = os.path.normpath(sound1)
+
 # change to AudioIOManager
 class audioManager:
     def __init__(self, base):
@@ -27,7 +33,7 @@ class audioManager:
         #Sound effects library 
         self.soundEffects = {
             # DENY_SOUND.mp3 by ciapaqua -- https://freesound.org/s/637108/ -- License: Creative Commons 0
-            "errorSound" : pygame.mixer.Sound('../Neural_Noir/Assets/Audio/ErrorSound.mp3')
+            "errorSound" : pygame.mixer.Sound(sound1)
         }
 
         #self.soundTest = self.soundEffects.get("testMusic")
