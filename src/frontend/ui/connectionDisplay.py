@@ -28,11 +28,11 @@ class ConnectionDisplay:
 
     def displayCheckingInternet(self):
         self.initializeBackground()
-        self.text.setText("Checking internet connection...")
+        self.text.setText("Checking internet connection...\nThis may take a few seconds")
 
     def displayEstablishingConn(self):
         self.initializeBackground()
-        self.text.setText("Establishing connection with OpenAI...")
+        self.text.setText("Establishing connection with OpenAI...\nThis may take a few seconds")
 
     def displayInternetOffline(self):
         self.initializeBackground()

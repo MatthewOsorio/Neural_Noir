@@ -21,7 +21,7 @@ class ScriptDisplay():
         script = []
 
         for interaction in conversation:
-            interactionString = f"{interaction[0]}: {interaction[1]}"
+            interactionString = f"{interaction[0]}: {interaction[1]}\n"
             script.append(interactionString)
             
 
@@ -60,7 +60,7 @@ class ScriptDisplay():
                         parent=self.scriptDisplay,
                         text= titleText,
                         text_scale= (0.110, 0.110),
-                        pos= (-1.355, 0, 0.767),
+                        pos= (0, 0, 0.767),
                         frameColor= (0, 0, 0, 0),
                         text_fg = (255, 255, 255, 1),
                         text_font = self.pauseMenu.manager.font)
@@ -122,14 +122,18 @@ class ScriptDisplay():
                 text_fg=(0, 0, 0, 1),
                 text_wordwrap= 55
             )
-
+        count = text.count('\n') + 1
+        p = textYPos
+        p -= margin * count
+        bottom = p - 0.2  
+        scrollableFrame['canvasSize'] = (-canvasWidth/2, canvasWidth/2, bottom, margin)
         self.scriptBackground.setBin("fixed", 0)
 
         self.exitScriptButton = DirectButton(
             text="Back",
             text_font = self.pauseMenu.manager.font,
             scale=0.1,
-            pos=(-1.385, 0, -0.85),
+            pos=(0, 0, -0.85),
             parent=self.scriptDisplay,
             command=self.goBackToPauseMenu,
             frameColor = (0, 0, 0, 0.0),
