@@ -14,7 +14,7 @@ class TutorialsMenu:
         self.manager = manager
         self.base = base
 
-        self.eTutorial = EmotibitTutorial(self.base)
+        self.eTutorial = EmotibitTutorial(self.base, self.manager)
 
         self.tutorialsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -120,3 +120,7 @@ class TutorialsMenu:
         self.emotibitTutorialButton["text_font"] = self.manager.font
         self.backButton["text_font"] = self.manager.font
         self.topText.font = self.manager.font
+        self.updateEmotibitTutorialFont()
+
+    def updateEmotibitTutorialFont(self):
+        self.eTutorial.updateFonts()

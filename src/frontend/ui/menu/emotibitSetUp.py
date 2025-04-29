@@ -11,8 +11,9 @@ from direct.interval.LerpInterval import LerpPosInterval
 from backend.BiometricSystem.BiometricController import BiometricController
 
 class EmotibitTutorial:
-    def __init__(self, base):
+    def __init__(self, base, manager):
         self.base = base
+        self.manager = manager
         self.active = False
         self.wordWrap = 50
 
@@ -29,7 +30,8 @@ class EmotibitTutorial:
             pos=(0, 0, -0.9),
             parent=self.frame,
             text_fg = (1, 1, 1, 1),
-            frameColor = (0, 0, 0, 0.8)
+            frameColor = (0, 0, 0, 0.8),
+            text_font = self.manager.font
         )
 
         self.button.bind(DGG.ENTER, lambda event: self.setColorHover(self.button))  
@@ -38,16 +40,20 @@ class EmotibitTutorial:
         self.mainTextColor = (1,1,1,1)
         self.hoverColor = (1,1,0.5,1)
 
-        self.etTop = OnscreenText()
+        self.etTop = OnscreenText(
+            text = "EmotiBit Set Up",
+            scale = 0.1,
+            pos = (0, 0.7, 0.7),
+            parent = self.frame,
+            fg = (1, 1, 1, 1)
+        )
+
         self.et = OnscreenText()
         self.errorText = OnscreenText()
 
-        self.warningTextCreator(self.etTop, "EmotiBit Set Up", (0, 0.7), 0.1, self.frame, (1, 1, 1, 1))
         self.warningTextCreator(
             self.et, 
             "Players who own an EmotiBit can use it to read their biometric data during gameplay. This game requires users connect to their EmotiBit via wifi connection." \
-            "To connect your EmotiBit to your wifi, follow these steps:\n" 
-            "To connect your EmotiBit to your wifi, follow these steps:\n" 
             "To connect your EmotiBit to your wifi, follow these steps:\n\n\n\n" 
             "          1. Remove the microSD card from the base of the EmotiBit.\n" 
             "          2. Insert the microSD card into your computer.\n" 
@@ -58,7 +64,7 @@ class EmotibitTutorial:
             "If you are playing with EmotiBit mode on, you should have the EmotiBit set up and connected before starting the game. Wearing the EmotiBit on your wrist is optimal.\n\n",
             (0, 0.3), 0.05, self.frame, (1, 1, 1, 1))
   
-
+        self.etTop.setFont(self.manager.font)
         
     def show(self):
         self.active = True
@@ -100,3 +106,7 @@ class EmotibitTutorial:
 
     def setColorDefault (self, button):
         button["text_fg"] = self.mainTextColor
+
+    def updateFonts(self):
+        self.etTop.setFont(self.manager.font)
+        self.button["text_font"] = self.manager.font
