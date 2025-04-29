@@ -25,7 +25,7 @@ class Warning:
             text="I understand",
             scale=0.05,
             command=None,
-            pos=(0, 0, -0.5),
+            pos=(0, 0, -0.6),
             parent=self.frame,
             frameColor = (0, 0, 0, 0),
             text_fg = (1, 1, 1, 1)
@@ -48,13 +48,13 @@ class Warning:
             self.warningTextNLP, 
             "This game uses speech input. Your replies will be stored locally on your computer for viewing purposes, they are not stored remotely"
             ". However, they are used by ChatGPT to generate replies. " \
-            "Please refrain from using personal information."
+            "Please refrain from using sensitive information. "
             "To find out more about OpenAI's data usage policy, visit: https://openai.com/policies/usage-policies/", 
             (0, 0.3), 0.05, self.frame, (1, 1, 1, 1))
         self.warningTextCreator(
             self.warningTextBiometricData,
             "Biometric data can be used to influence the game's progression. Biometric data is not stored nor is it directly used by ChatGPT." \
-            "You can opt out of using biometric data in the settings menu.",
+            "You can opt out of using biometric data in the settings menu.\nPress 'I understand' to continue",
             (0, 0), 0.05, self.frame, (1, 1, 1, 1))
         
         
