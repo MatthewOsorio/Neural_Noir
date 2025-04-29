@@ -1,14 +1,12 @@
 class EndGame:
-    def __init__(self, storyGraph, settings):
+    def __init__(self, storyGraph, difficulty):
         self._storyGraph = storyGraph
-        self._settings = settings
+        self._difficulty = difficulty
 
     def determineEnding(self):
-        difficulty = self._settings.get("difficulty", "easy")
-
-        if difficulty.lower() == 'easy':
+        if self._difficulty == 'easy':
              finalVerdict = self._storyGraph.determineFinalVerdict()
-        elif difficulty.lower() == 'hard':
+        elif self._difficulty == 'hard':
              finalVerdict = self._storyGraph.determineFinalVerdictHardMode()
         finalVerdict = self._storyGraph.determineFinalVerdict()
         return finalVerdict

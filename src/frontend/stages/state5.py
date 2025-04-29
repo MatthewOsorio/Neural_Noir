@@ -36,10 +36,7 @@ class State5:
     def begin(self):
         self.game._gameState.updateState(5)
 
-        with open("src/frontend/ui/userSettings.json", "r") as file:
-            user_settings = json.load(file)
-
-        self.endgame = EndGame(self.game._aiController._storyGraph, user_settings)
+        self.endgame = EndGame(self.game._aiController._storyGraph, self.overlay.base.difficulty)
         self.endPhase = self.overlay.base.ended = True
         millerFinalLine = [{"Speaker": "Detective Miller", "Text": "Alright, we're done here."}]
         self.ttsController.generateTTS(millerFinalLine)
