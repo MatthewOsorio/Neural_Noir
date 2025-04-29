@@ -50,9 +50,9 @@ class MicTutorial:
         self.et = OnscreenText()
         self.errorText = OnscreenText()
 
-        self.warningTextCreator(
+        self.et = self.warningTextCreator(
             self.et, 
-            "Change this",
+            "Please ensure your microphone is plugged in and selected in your system settings.\nA microphone is needed for gameplay.\nYou can test your microphone in Settings > Audio > Microphone Test",
             (0, 0.3), 0.05, self.frame, (1, 1, 1, 1))
   
         self.etTop.setFont(self.manager.font)
