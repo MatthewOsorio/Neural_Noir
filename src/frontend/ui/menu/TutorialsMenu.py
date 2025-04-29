@@ -7,7 +7,7 @@ from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 
 from ..menu.emotibitSetUp import EmotibitTutorial
-
+from ..menu.micTutorial import MicTutorial
 
 class TutorialsMenu:
     def __init__(self, manager, base):
@@ -15,6 +15,7 @@ class TutorialsMenu:
         self.base = base
 
         self.eTutorial = EmotibitTutorial(self.base, self.manager)
+        self.mTutorial = MicTutorial(self.base, self.manager)
 
         self.tutorialsMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -65,6 +66,17 @@ class TutorialsMenu:
             text_fg = (1, 1, 1, 1)
         )
 
+        self.micTutorialButton = DirectButton(
+            text = "Microphone Tutorial",
+            text_font = self.manager.font,
+            scale = 0.1,
+            pos=(-1, 0, 0.-0.3),
+            parent = self.tutorialsMenu,
+            command = self.loadMicTutorial,
+            frameColor = (0, 0, 0, 0.0),
+            text_fg = (1, 1, 1, 1)
+        )
+
         self.backButton = DirectButton(
             text="Back",
             text_font = self.manager.font,
@@ -104,6 +116,15 @@ class TutorialsMenu:
     def hideEmotiBitTutorial(self):
         self.eTutorial.goBack()
         self.show()
+
+    def loadMicTutorial(self):
+        self.hide()
+        self.mTutorial.show()
+        self.mTutorial.button['command'] = self.hideMicTutorial
+
+    def hideMicTutorial(self):
+        self.mTutorial.goBack()
+        self.show()
     
     def setButtonHovers(self):
         self.startButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.startButton)) 
@@ -115,12 +136,20 @@ class TutorialsMenu:
         self.backButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.backButton)) 
         self.backButton.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.backButton)) 
 
+        self.micTutorialButton.bind(DGG.ENTER, lambda event: self.manager.setColorHover(self.micTutorialButton)) 
+        self.micTutorialButton.bind(DGG.EXIT, lambda event: self.manager.setColorDefault(self.micTutorialButton)) 
+
     def updateFont(self):
         self.startButton["text_font"] = self.manager.font
         self.emotibitTutorialButton["text_font"] = self.manager.font
         self.backButton["text_font"] = self.manager.font
+        self.micTutorialButton["text_font"] = self.manager.font
         self.topText.font = self.manager.font
         self.updateEmotibitTutorialFont()
+        self.updateMicTutorialFont()
 
     def updateEmotibitTutorialFont(self):
         self.eTutorial.updateFonts()
+
+    def updateMicTutorialFont(self):
+        self.mTutorial.updateFonts()

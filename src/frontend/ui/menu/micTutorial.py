@@ -9,7 +9,7 @@ import time
 from direct.task import Task
 from direct.interval.LerpInterval import LerpPosInterval
 
-class EmotibitTutorial:
+class MicTutorial:
     def __init__(self, base, manager):
         self.base = base
         self.manager = manager
@@ -40,7 +40,7 @@ class EmotibitTutorial:
         self.hoverColor = (1,1,0.5,1)
 
         self.etTop = OnscreenText(
-            text = "EmotiBit Set Up",
+            text = "Microphone Set Up",
             scale = 0.1,
             pos = (0, 0.7, 0.7),
             parent = self.frame,
@@ -52,18 +52,11 @@ class EmotibitTutorial:
 
         self.warningTextCreator(
             self.et, 
-            "Players who own an EmotiBit can use it to read their biometric data during gameplay. This game requires users connect to their EmotiBit via wifi connection." \
-            "To connect your EmotiBit to your wifi, follow these steps:\n\n\n\n" 
-            "          1. Remove the microSD card from the base of the EmotiBit.\n" 
-            "          2. Insert the microSD card into your computer.\n" 
-            "          2. Insert the microSD card into your computer.\n"
-            "          3. Locate the microSD card in your files, and open 'Config.txt.'\n"
-            "          4. Change the SSID and password to match your network.\n"
-            "          5. Safely remove the microSD card and reinsert it into the base of the EmotiBit.\n\n\n\n"
-            "If you are playing with EmotiBit mode on, you should have the EmotiBit set up and connected before starting the game. Wearing the EmotiBit on your wrist is optimal.\n\n",
+            "Change this",
             (0, 0.3), 0.05, self.frame, (1, 1, 1, 1))
   
         self.etTop.setFont(self.manager.font)
+        self.hide()
         
     def show(self):
         self.active = True
