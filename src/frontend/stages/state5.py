@@ -142,7 +142,7 @@ class State5:
             text_font = self.overlay.base.menu.font,
             text_fg = (1, 1, 1, 1),
             frameColor = (0, 0, 0, 0.8),
-            pos = (1.7, -0.9, -0.9),
+            pos = (0, -0.925, -0.925),
             scale = 0.1,
             parent = self.endFrame
         )
