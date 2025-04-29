@@ -39,7 +39,7 @@ class Connection:
                     }
                 ]
             )
-            print(completion)
+            # print(completion)
             print("OpenAI API connection successful.")
             return True
         except openai.APIError as e:
