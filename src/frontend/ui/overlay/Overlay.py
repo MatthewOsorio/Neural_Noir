@@ -93,7 +93,7 @@ class Overlay:
         )
 
         self.PTTButton = DirectButton(
-            text = "PTT",
+          #  text = "PTT",
             scale = 0.15,
             pos = (1.5, 0, -0.7),
             parent = self.overlay,
