@@ -48,6 +48,7 @@ class DatabaseController:
                     verdictID TEXT PRIMARY KEY,
                     evidence TEXT,
                     verdict TEXT,
+                    reasoning TEXT,
                     sessionID TEXT,
                     FOREIGN KEY (sessionID) REFERENCES GameSession(sessionID)
                 );                                          
@@ -83,16 +84,16 @@ class DatabaseController:
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
         
-    def insertVerdict(self, sessionID, evidence, verdict):
+    def insertVerdict(self, sessionID, evidence, verdict, reasoning):
         try:
             conn = self.getConnection()
             verdictID = str(uuid.uuid4())
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                        INSERT INTO Verdicts(verdictID, evidence, verdict, sessionID)
-                        VALUES (?, ?, ?, ?)
-                            """, (verdictID, evidence, verdict, sessionID))
+                        INSERT INTO Verdicts(verdictID, evidence, verdict, reasoning, sessionID)
+                        VALUES (?, ?, ?, ?, ?)
+                            """, (verdictID, evidence, verdict, reasoning, sessionID))
         except sqlite3.Error as e:
             raise Exception("Error executing insert statement", e)
 
@@ -102,7 +103,7 @@ class DatabaseController:
             with conn:
                 cur = conn.cursor()
                 cur.execute("""
-                        SELECT evidence, verdict
+                        SELECT evidence, verdict, reasoning
                         FROM Verdicts
                         WHERE sessionID = ?
                     """, (str(sessionID),))

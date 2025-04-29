@@ -95,7 +95,7 @@ class State5:
         verdicts = self.getVerdicts()
 
         for verdict in verdicts:
-            verdictStr = f"{verdict[0]} : {verdict[1]}"
+            verdictStr = f"{verdict[0]} : {verdict[1]} : {verdict[2]}\n"
             self.verdictsList.append(verdictStr)
             
         print(self.verdictsList)
@@ -129,7 +129,8 @@ class State5:
                 text_fg=(1, 1, 1, 1),
                 text_wordwrap= 55
             )
-            textYPos -= spacing
+            count = text.count('\n') + 1
+            textYPos -= spacing * count
         
         self.button = DirectButton(
             text = "Finish",
@@ -181,6 +182,7 @@ class State5:
     
     def returnToMain(self):
         self.endFrame.hide()
+        self.overlay.hideBioData()
         self.overlay.evidenceBox.hide()
         self.overlay.base.menu.pauseMenu.returnToMain()
 

@@ -48,7 +48,10 @@ class VerdictController:
         responseDict = json.loads(cleanedResponse)
         currentVerdict = responseDict.get("verdict", "inconclusive").lower()
 
-        self.sendVerdictToDB(evidence, currentVerdict)
+        currentReasoning = responseDict.get("reasoning", "null")
+ 
+        databaseThread = Thread(target=self.sendVerdictToDB, args=(evidence, currentVerdict, currentReasoning), daemon=True)
+        databaseThread.start()
         print(f"Verdict control verdict for {evidence} = {currentVerdict}")
         self.currentV = currentVerdict
         self.callbackF()
@@ -61,6 +64,5 @@ class VerdictController:
         self.callbackF = callback
 
     # Purpose: Sending verdict to database on a separate thread
-    def sendVerdictToDB(self, evidence, verdict):
-        databaseThread = Thread(target=self._sessionController.databaseAPI.insertVerdict, args=(self._sessionController.getSessionID(), evidence, verdict), daemon=True)
-        databaseThread.start()
+    def sendVerdictToDB(self, evidence, verdict, reasoning):
+        self._sessionController.databaseAPI.insertVerdict(self._sessionController.getSessionID(), evidence, verdict, reasoning)
