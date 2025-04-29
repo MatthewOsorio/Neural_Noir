@@ -25,6 +25,7 @@ class TextToSpeechController:
             thread.join()
 
     def ttsTask(self, index, speaker, text, responses):
+        speaker = speaker.replace("Detective ", "").strip()
         voice = self._voices.get(speaker)
         
         tts = self.gpt.audio.speech.create(

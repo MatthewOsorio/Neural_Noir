@@ -1,6 +1,6 @@
 from backend.BackendInterface.GameManager import GameManager
 from backend.StoryGraph.EndGame import EndGame
-# from backend.TTSSystem.TextToSpeechController import TextToSpeechController
+from backend.TTSSystem.TextToSpeechController import TextToSpeechController
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 from panda3d.core import TextNode
@@ -10,6 +10,7 @@ from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 import json
+from panda3d.core import TransparencyAttrib
 
 class State5:
     def __init__(self):
@@ -21,6 +22,7 @@ class State5:
         self.useEmotbit = None
         self.verdictsList = []
         self.ttsController = TextToSpeechController()
+        self.endgame = None
 
     def setGame(self, game):
         self.game = game
@@ -34,18 +36,31 @@ class State5:
     def begin(self):
         self.game._gameState.updateState(5)
 
-        endgame = EndGame(self.game._aiController._storyGraph)
+        with open("src/frontend/ui/userSettings.json", "r") as file:
+            user_settings = json.load(file)
 
-        # millerFinalLine = [{"Speaker": "Detective Miller", "Text": "Alright, we're done here."}]
-        # self.ttsController.generateTTS(millerFinalLine)
-        # self.ttsController.speak(millerFinalLine[0]["AudioFilepath"])
-
-        # with open("src/frontend/ui/userSettings.json", "r") as file:
-        #     user_settings = json.load(file)
-
-        # self.verdict = endgame.determineEnding(user_settings)
-        self.verdict = endgame.determineEnding()
+        self.endgame = EndGame(self.game._aiController._storyGraph, user_settings)
         self.endPhase = self.overlay.base.ended = True
+        millerFinalLine = [{"Speaker": "Detective Miller", "Text": "Alright, we're done here."}]
+        self.ttsController.generateTTS(millerFinalLine)
+        taskMgr.add(lambda task: self.waitForAudio(millerFinalLine[0], task), "waitTask")
+
+
+    def waitForAudio(self, line, task):
+        if "AudioFilepath" not in line:
+            return task.again
+        elif("AudioFilepath" in line):
+            self.continueEnd(line)
+            return task.done
+        
+    def continueEnd(self, line):
+        self.ttsController.speak(line["AudioFilepath"])
+
+
+
+        self.verdict = self.endgame.determineEnding()
+        self.verdict = self.endgame.determineEnding()
+        
 
         if self.overlay is not None:
             self.endingScreen()
@@ -132,14 +147,14 @@ class State5:
         self.fadeInEndingScreen()
         self.displayEndingScreen()
 
-    # def fadeInEndingScreen(self):
-    #     fade = LerpFunc(
-    #         self.endFrame.setAlphaScale,
-    #         fromData=0,
-    #         toData=1,
-    #         duration=2.0,
-    #     )
-    #     fade.start()
+    def fadeInEndingScreen(self):
+         fade = LerpFunc(
+             self.endFrame.setAlphaScale,
+             fromData=0,
+             toData=1,
+             duration=2.0,
+         )
+         fade.start()
 
     def displayEndingScreen(self):
 

@@ -329,7 +329,7 @@ class InterrogationRoom:
             taskMgr.doMethodLater(1.0, self.startNextStateTask, "StartNextTask")
 
     def startNextStateTask(self, task):
-        self.current = self.current + 1
+        self.current = self.current + 2
         print(f"State {self.current}")
         self.state = self.testStates[self.current]
 
@@ -385,7 +385,7 @@ class InterrogationRoom:
             self.sentimentToAnimation[speaker][sentiment]()
 
 
-        print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
+       # print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
         #self.game._tts.speak(self.state.audioFilePaths[count])
         self.thread = threading.Thread(target=self.playAudio, args=(self.state.audioFilePaths[count],), daemon=True)
         if self.threadEvent.is_set() == False:
