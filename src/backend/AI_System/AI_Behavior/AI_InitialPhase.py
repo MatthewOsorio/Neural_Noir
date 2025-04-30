@@ -56,7 +56,7 @@ class AIInitialPhase(AI):
                 Your goal is to determine if the suspect has provided a valid NAME.
 
                 **Rules:**
-                - A first name alone is also valid.
+                - A first name alone is also valid. If only a first name is provided, do NOT ask for a last name or full name.
                 - If a valid name is provided (but NOT "Vinh Davis"), return:
                 {{"name": "Full name or first name here" }}
                 - If no valid name is provided:
