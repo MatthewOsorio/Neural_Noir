@@ -316,12 +316,12 @@ class Overlay:
 
     #check connection to OpenAI API if there is internet 
     def checkGPTConnection(self):
-      #  status = self.connection.checkOpenai()
-        pass
-       # if not status and not self.connectionError:
-           # self.connectionError = True
+        status = self.connection.checkOpenai()
+       
+        if not status and not self.connectionError:
+            self.connectionError = True
             
-          #  taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
+            taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
         
     def handleConnectionError(self, task):
         self.hideAll()
@@ -333,7 +333,7 @@ class Overlay:
         self.hideAll()
         self.base.pausable = False
         self.errorScreen.connectionErrorText.setText("OpenAI Error")
-        self.errorScreen.connectionErrorText2.setText("Please check your OpenAI API key.")
+        self.errorScreen.connectionErrorText2.setText("Please check your OpenAI API key and OpenAI's network status.")
         self.errorScreen.showConnectionError()
         return task.done  
     

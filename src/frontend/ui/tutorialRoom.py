@@ -297,7 +297,7 @@ class TutorialRoom:
                 self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
-            self.redoable = False
+            self.redoable = True
             self.Overlay.tutorials.hideTutorialBox()
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
@@ -380,7 +380,7 @@ class TutorialRoom:
             self.setTutorialBox(
                 (1.5, 0, 0), 
                 (0.4, 0, 0.3), 
-                "After the detective asks you a question, a Push-to-Talk button will appear here. "
+                "After the detectives ask you a question, a Push-to-Talk button will appear here. "
                 "Press it to start recording your response. The recording will stop when you stop talking. ",
                 15)
         
@@ -420,8 +420,7 @@ class TutorialRoom:
             if self.tutorialEvents["PTT"] is True and self.tutorialEvents["Pause"] is False:
                 print("Setting events pause to true")
                 self.tutorialEvents["Pause"] = True
-
-            self.Overlay.ptt.showPTTButton()
+                
             #threading.Thread(target=self.processSpeech, daemon=True).start()
             if self.tutorialEvents["End"] is False:
                 print("Processing NExt")
@@ -438,6 +437,9 @@ class TutorialRoom:
             self.Overlay.ptt.showPTTButton()
             self.redoable = True
             taskMgr.add(self.speechUI, "UpdateSpeech")
+
+        if self.tutorialEvents["End"] is True:
+            self.Overlay.ptt.hidePTTButton()
 
     def cleanUpTasks(self):
         taskMgr.remove("Update")

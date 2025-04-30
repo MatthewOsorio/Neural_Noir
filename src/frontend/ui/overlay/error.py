@@ -36,7 +36,6 @@ class ErrorScreen:
 
         self.connectionErrorText2 = OnscreenText(
             text = "Please check your internet connection.",
-            font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
             scale = 0.1,
             parent = self.connectionError,
             fg = (1,1,1,1),
@@ -45,15 +44,18 @@ class ErrorScreen:
 
         self.connectionErrorButton = DirectButton(
             text = "Quit Game",
-            text_font = loader.loadFont("../Assets/Fonts/Limelight/Limelight-Regular.ttf"),
+            text_font = self.base.menu.font,
             scale = 0.1,
-            frameColor = (1, 1, 1, 1),
+            frameColor = (1, 1, 1, 0),
             parent = self.connectionError,
             pos = (0, 0, 0),
             command = self.closeGame,
-            sortOrder=3
+            sortOrder=3,
+            text_fg = (1, 1, 1, 1)
         )
 
+        self.connectionErrorButton.bind(DGG.ENTER, lambda event: self.base.menu.setColorHover(self.connectionErrorButton)) 
+        self.connectionErrorButton.bind(DGG.EXIT, lambda event: self.base.menu.setColorDefault(self.connectionErrorButton)) 
         self.connectionErrorBG.setBin("fixed", 2)
         self.connectionErrorText.setBin("fixed", 3)
         self.connectionErrorText2.setBin("fixed", 3)

@@ -97,7 +97,7 @@ class State5:
         for verdict in verdicts:
             verdictStr = f"{verdict[0]} : {verdict[1]} : {verdict[2]}\n"
             self.verdictsList.append(verdictStr)
-            
+
         print(self.verdictsList)
 
         verdictCount = len(self.verdictsList)
@@ -108,7 +108,7 @@ class State5:
             parent= self.endFrame,
             frameSize= (-1.5, 1.5, -0.70, 0.70),
             frameColor= (0, 0, 0, 0),
-            pos= (0, 0, 0),
+            pos= (0, 0, -0.1),
             scrollBarWidth= 0.05,
             canvasSize=(-1.5, 1.5, -0.8 , 0.1)    ,
             horizontalScroll_decButton_relief=None,
@@ -131,6 +131,9 @@ class State5:
             )
             count = text.count('\n') + 1
             textYPos -= spacing * count
+
+        bottom = textYPos - 0.2  
+        self.scrollableFrame['canvasSize'] = (-1.5, 1.5, bottom, 0.1)
         
         self.button = DirectButton(
             text = "Finish",
@@ -139,7 +142,7 @@ class State5:
             text_font = self.overlay.base.menu.font,
             text_fg = (1, 1, 1, 1),
             frameColor = (0, 0, 0, 0.8),
-            pos = (1.7, -0.9, -0.9),
+            pos = (0, -0.925, -0.925),
             scale = 0.1,
             parent = self.endFrame
         )
