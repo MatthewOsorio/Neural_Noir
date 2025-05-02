@@ -3,14 +3,26 @@ from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 from panda3d.core import TextNode
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.interval.IntervalGlobal import *
+from direct.interval.IntervalGlobal import LerpFunc
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
+
+from panda3d.core import loadPrcFileData
+loadPrcFileData('', 'audio-library-name p3openal_audio')
+import os
+from panda3d.core import Filename
+music_path = "C:/Users/chris/OneDrive/Documents/GitHub/Neural_Noir/Assets/Audio/menuMusic.wav"
+music_path = Filename.fromOsSpecific(music_path).getFullpath()
 
 class mainMenu:
     def __init__(self, manager, base):
 
         self.base = base
         self.manager = manager
+
+        self.menuMusic = self.base.loader.loadSfx(music_path)
+
+        self.playMusic()
 
         self.mainMenu = DirectFrame(
             frameColor=(0, 0, 0, 0),
@@ -72,7 +84,6 @@ class mainMenu:
             frameColor = (0,0,0,0)
         )
 
-
         self.tutorialsButton = DirectButton(
             text="Tutorials",
             text_font = self.manager.font,
@@ -107,10 +118,31 @@ class mainMenu:
         self.tutorialsButton.bind(DGG.ENTER, lambda event: self.setColorHover(self.tutorialsButton))  # Mouse enters
         self.tutorialsButton.bind(DGG.EXIT, lambda event: self.setColorDefault(self.tutorialsButton)) 
 
+    def playMusic(self):
+        self.menuMusic.setVolume(0.8)
+        self.menuMusic.setLoop(True)
+        self.menuMusic.play()
+
+    def fadeOutMusic(self):
+        self.lerp = LerpFunc(
+            self.menuMusic.setVolume,
+            fromData=self.menuMusic.getVolume(),
+            toData=0.0,
+            duration=2.0,
+            name="fadeOutMusic"
+        )
+        self.lerp.setDoneEvent("fadeOutMusicDone")
+        self.lerp.start()
+        self.base.accept("fadeOutMusicDone", self.onFadeOutComplete)
+
+    def onFadeOutComplete(self):
+        self.menuMusic.stop()
+    
     def startGame(self):
         self.hide()
         self.manager.hideImage()
         self.manager.beginGame()
+        self.fadeOutMusic()
 
     def moveToSettings(self):
         self.hide()
