@@ -6,9 +6,9 @@ class AIInitialPhase(AI):
         super().__init__(history, sentimentAnalyzer)
         self._questions = [
             "[INSTRUCTION] Ask the suspect for what their name is. DO NOT MENTION THEIR NAME.",
-            #"[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
-            #"[INSTRUCTION] Ask if the suspect worked as a photographer at Reno Media Company.",
-            #"[INSTRUCTION] Ask if the suspect worked under Vinh Davis."
+            "[INSTRUCTION] Ask if the suspect worked at Reno Media Company.",
+            "[INSTRUCTION] Ask if the suspect worked as a photographer at Reno Media Company.",
+            "[INSTRUCTION] Ask if the suspect worked under Vinh Davis."
         ]
         self._finished = False
         self._currentQuestion = 0
