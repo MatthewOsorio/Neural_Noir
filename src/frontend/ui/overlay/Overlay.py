@@ -93,7 +93,10 @@ class Overlay:
         )
 
         self.PTTButton = DirectButton(
-            text = "PTT",
+            text = "Push\nTo\nTalk",
+            text_font = self.base.menu.font,
+            text_scale = 0.4,
+            text_pos = (0, 0.3, 0.3),
             scale = 0.15,
             pos = (1.5, 0, -0.7),
             parent = self.overlay,
@@ -112,7 +115,8 @@ class Overlay:
             parent = self.overlay,
             frameColor=(0, 0, 0, 1),
             text_fg = (1, 1, 1, 1),
-            sortOrder=1
+            sortOrder=1,
+            text_font = self.base.menu.font
         )
 
         self.redoSpeechButton = DirectButton(
@@ -123,8 +127,15 @@ class Overlay:
             parent = self.overlay,
             frameColor=(0, 0, 0, 1),
             text_fg = (1, 1, 1, 1),
-            sortOrder=1
+            sortOrder=1,
+            text_font = self.base.menu.font
         )
+
+        self.redoSpeechButton.bind(DGG.ENTER, lambda event: self.base.menu.setColorHover(self.redoSpeechButton)) 
+        self.redoSpeechButton.bind(DGG.EXIT, lambda event: self.base.menu.setColorDefault(self.redoSpeechButton)) 
+
+        self.acceptSpeechButton.bind(DGG.ENTER, lambda event: self.base.menu.setColorHover(self.acceptSpeechButton)) 
+        self.acceptSpeechButton.bind(DGG.EXIT, lambda event: self.base.menu.setColorDefault(self.acceptSpeechButton)) 
 
         self.subtitlesBox = OnscreenImage(
             self.base.base.menuManager.backGroundBlack,
@@ -186,7 +197,7 @@ class Overlay:
         self.updateFont()
 
         taskMgr.doMethodLater(5, self.updateOverlay, "updateOverlayTask") 
-        taskMgr.doMethodLater(5, self.checkInternetConnection, "checkConnectionTask") 
+        taskMgr.doMethodLater(3, self.checkInternetConnection, "checkConnectionTask") 
 
 
     def show(self):
@@ -308,12 +319,12 @@ class Overlay:
 
     #check connection to OpenAI API if there is internet 
     def checkGPTConnection(self):
-      #  status = self.connection.checkOpenai()
-        pass
-      #  if not status and not self.connectionError:
-          #  self.connectionError = True
+        status = self.connection.checkOpenai()
+       
+        if not status and not self.connectionError:
+            self.connectionError = True
             
-           # taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
+            taskMgr.add(lambda task: self.handleOpenAIError(task), "showConnectionErrorTask")
         
     def handleConnectionError(self, task):
         self.hideAll()
@@ -325,7 +336,7 @@ class Overlay:
         self.hideAll()
         self.base.pausable = False
         self.errorScreen.connectionErrorText.setText("OpenAI Error")
-        self.errorScreen.connectionErrorText2.setText("Please check your OpenAI API key.")
+        self.errorScreen.connectionErrorText2.setText("Please check your OpenAI API key and OpenAI's network status.")
         self.errorScreen.showConnectionError()
         return task.done  
     

@@ -208,12 +208,7 @@ class TutorialRoom:
         self.ended = False
         self.current = 0
         self.Overlay.flashback.setImage(self.prompt)
-        self.Overlay.flashback.show()
 
-        flashback = self.Overlay.flashback.getActive()
-        while flashback == True:
-            flashback = self.Overlay.flashback.getActive()
-              
         if self.useEmotibit == True:
             self.game._bioController.incrementError = True
             self.Overlay.startEmotiBitCheck()
@@ -284,7 +279,7 @@ class TutorialRoom:
             (0, 0, 0.1), 
             (0.5, 0, 0.3), 
             "Your transcribed reply will show up here. If you are happy with it, you can accept it. "
-            "If not, you are given one retry per question. Click accept to move onto the next question or retry to redo your reply to this question.",
+            "If not, you can retake it. Click accept to move onto the next question or retry to redo your reply to this question.",
             15)
         
         if self.tutorialEvents["Accept"] is False:
@@ -302,7 +297,7 @@ class TutorialRoom:
                 self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
-            self.redoable = False
+            self.redoable = True
             self.Overlay.tutorials.hideTutorialBox()
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
@@ -385,7 +380,7 @@ class TutorialRoom:
             self.setTutorialBox(
                 (1.5, 0, 0), 
                 (0.4, 0, 0.3), 
-                "After the detective asks you a question, a Push-to-Talk button will appear here. "
+                "After the detectives ask you a question, a Push-to-Talk button will appear here. "
                 "Press it to start recording your response. The recording will stop when you stop talking. ",
                 15)
         
@@ -409,12 +404,12 @@ class TutorialRoom:
             self.setTutorialBox(
                 (0, 0, 0.1), 
                 (0.5, 0, 0.3), 
-                "Congratulations! You've made it through the tutorial. You can continue to talk to the detectives here, or you can " \
-                "exit to the main menu from the pause screen whenever you are ready.",
+                "Congratulations! You've made it through the tutorial. Exit the game through the pause screen (esc) when you are ready.",
                 15
                 )
         
             self.Overlay.tutorials.showTutorialBox(False)   
+            
 
         #If the game has not been quit, restart the process
         if self.ended == False and not self.Overlay.connectionError:            
@@ -425,17 +420,26 @@ class TutorialRoom:
             if self.tutorialEvents["PTT"] is True and self.tutorialEvents["Pause"] is False:
                 print("Setting events pause to true")
                 self.tutorialEvents["Pause"] = True
-
-
-            self.Overlay.ptt.showPTTButton()
+                
             #threading.Thread(target=self.processSpeech, daemon=True).start()
-            self.processNext()
+            if self.tutorialEvents["End"] is False:
+                print("Processing NExt")
+                self.processNext()
+            elif(self.tutorialEvents["End"] is True):
+                print("end")
+                self.pausable = True
+
             return task.done
     
     def processNext(self):
-        self.Overlay.ptt.showPTTButton()
-        self.redoable = True
-        taskMgr.add(self.speechUI, "UpdateSpeech")
+
+        if self.tutorialEvents["End"] is False:
+            self.Overlay.ptt.showPTTButton()
+            self.redoable = True
+            taskMgr.add(self.speechUI, "UpdateSpeech")
+
+        if self.tutorialEvents["End"] is True:
+            self.Overlay.ptt.hidePTTButton()
 
     def cleanUpTasks(self):
         taskMgr.remove("Update")

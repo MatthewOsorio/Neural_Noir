@@ -1,6 +1,6 @@
 from backend.BackendInterface.GameManager import GameManager
 from backend.StoryGraph.EndGame import EndGame
-# from backend.TTSSystem.TextToSpeechController import TextToSpeechController
+from backend.TTSSystem.TextToSpeechController import TextToSpeechController
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 from panda3d.core import TextNode
@@ -10,6 +10,7 @@ from direct.gui.OnscreenText import OnscreenText
 from direct.gui.DirectGui import *
 from direct.gui.DirectScrolledFrame import DirectScrolledFrame
 import json
+from panda3d.core import TransparencyAttrib
 
 class State5:
     def __init__(self):
@@ -21,6 +22,7 @@ class State5:
         self.useEmotbit = None
         self.verdictsList = []
         self.ttsController = TextToSpeechController()
+        self.endgame = None
 
     def setGame(self, game):
         self.game = game
@@ -34,18 +36,28 @@ class State5:
     def begin(self):
         self.game._gameState.updateState(5)
 
-        endgame = EndGame(self.game._aiController._storyGraph)
-
-        # millerFinalLine = [{"Speaker": "Detective Miller", "Text": "Alright, we're done here."}]
-        # self.ttsController.generateTTS(millerFinalLine)
-        # self.ttsController.speak(millerFinalLine[0]["AudioFilepath"])
-
-        # with open("src/frontend/ui/userSettings.json", "r") as file:
-        #     user_settings = json.load(file)
-
-        # self.verdict = endgame.determineEnding(user_settings)
-        self.verdict = endgame.determineEnding()
+        self.endgame = EndGame(self.game._aiController._storyGraph, self.overlay.base.difficulty)
         self.endPhase = self.overlay.base.ended = True
+        millerFinalLine = [{"Speaker": "Detective Miller", "Text": "Alright, we're done here."}]
+        self.ttsController.generateTTS(millerFinalLine)
+        taskMgr.add(lambda task: self.waitForAudio(millerFinalLine[0], task), "waitTask")
+
+
+    def waitForAudio(self, line, task):
+        if "AudioFilepath" not in line:
+            return task.again
+        elif("AudioFilepath" in line):
+            self.continueEnd(line)
+            return task.done
+        
+    def continueEnd(self, line):
+        self.ttsController.speak(line["AudioFilepath"])
+
+
+
+        self.verdict = self.endgame.determineEnding()
+        self.verdict = self.endgame.determineEnding()
+        
 
         if self.overlay is not None:
             self.endingScreen()
@@ -70,7 +82,9 @@ class State5:
             parent = self.endFrame,
             text = "Verdict",
             fg = (1, 1, 1, 1),
-            scale = 0.25
+            scale = 0.25,
+            pos = (0, 0.7, 0.7),
+            font = self.overlay.base.menu.font
         )
 
         self.endFrame.setTransparency(TransparencyAttrib.MAlpha)
@@ -81,9 +95,9 @@ class State5:
         verdicts = self.getVerdicts()
 
         for verdict in verdicts:
-            verdictStr = f"{verdict[0]} : {verdict[1]}"
+            verdictStr = f"{verdict[0]} : {verdict[1]} : {verdict[2]}\n"
             self.verdictsList.append(verdictStr)
-            
+
         print(self.verdictsList)
 
         verdictCount = len(self.verdictsList)
@@ -94,9 +108,9 @@ class State5:
             parent= self.endFrame,
             frameSize= (-1.5, 1.5, -0.70, 0.70),
             frameColor= (0, 0, 0, 0),
-            pos= (0, 0, 0),
+            pos= (0, 0, -0.1),
             scrollBarWidth= 0.05,
-            canvasSize=(-1.5, 1.5, 0.1-height , 0.1)    ,
+            canvasSize=(-1.5, 1.5, -0.8 , 0.1)    ,
             horizontalScroll_decButton_relief=None,
             horizontalScroll_incButton_relief=None,
             horizontalScroll_frameSize=(0, 0, 0, 0),
@@ -115,31 +129,38 @@ class State5:
                 text_fg=(1, 1, 1, 1),
                 text_wordwrap= 55
             )
-            textYPos -= spacing
+            count = text.count('\n') + 1
+            textYPos -= spacing * count
+
+        bottom = textYPos - 0.2  
+        self.scrollableFrame['canvasSize'] = (-1.5, 1.5, bottom, 0.1)
         
         self.button = DirectButton(
-            text = "Skip",
+            text = "Finish",
             command = self.returnToMain,
             sortOrder = 1,
             text_font = self.overlay.base.menu.font,
             text_fg = (1, 1, 1, 1),
             frameColor = (0, 0, 0, 0.8),
-            pos = (-1.7, -0.9, -0.9),
+            pos = (0, -0.925, -0.925),
             scale = 0.1,
             parent = self.endFrame
         )
 
+        self.button.bind(DGG.ENTER, lambda event: self.overlay.base.menu.setColorHover(self.button))  
+        self.button.bind(DGG.EXIT, lambda event: self.overlay.base.menu.setColorDefault(self.button)) 
+
         self.fadeInEndingScreen()
         self.displayEndingScreen()
 
-    # def fadeInEndingScreen(self):
-    #     fade = LerpFunc(
-    #         self.endFrame.setAlphaScale,
-    #         fromData=0,
-    #         toData=1,
-    #         duration=2.0,
-    #     )
-    #     fade.start()
+    def fadeInEndingScreen(self):
+         fade = LerpFunc(
+             self.endFrame.setAlphaScale,
+             fromData=0,
+             toData=1,
+             duration=2.0,
+         )
+         fade.start()
 
     def displayEndingScreen(self):
 
@@ -164,6 +185,7 @@ class State5:
     
     def returnToMain(self):
         self.endFrame.hide()
+        self.overlay.hideBioData()
         self.overlay.evidenceBox.hide()
         self.overlay.base.menu.pauseMenu.returnToMain()
 

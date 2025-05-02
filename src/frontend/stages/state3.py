@@ -50,6 +50,7 @@ class State3:
     def begin(self):
         self.game._gameState.updateState(3)
         self.overlay.hideBioData()
+        self.overlay.evidenceBox.hide()
         self.passToVerdict()
         self.storyScene.playMidScene(onSuccessCallback=self.state3Interrogation)
 
@@ -69,7 +70,8 @@ class State3:
             self.currentEvidence = self.overlay.base.game._aiController.getCurrentEvidence()
             self.overlay.base.currentEvidence = self.evidenceString()
             self.overlay.evidenceBoxSetText()
-            self.overlay.evidenceBoxPopOut()
+            if self.overlay.base.difficulty == "easy":
+                self.overlay.evidenceBoxPopOut()
             self.parseResponse(self.response)
 
             from direct.task import Task

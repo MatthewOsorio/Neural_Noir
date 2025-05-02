@@ -1,22 +1,29 @@
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import MovieTexture, CardMaker, TransparencyAttrib, AudioSound, TextureStage, Filename
 from direct.task import Task
+from panda3d.core import MovieTexture, CardMaker, TextureStage, AudioSound
 import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+video1 = os.path.join(current_dir, "..", "..", "..", "Assets", "Scenes", "earlyPhaseScene.mp4")
+video1 = os.path.normpath(video1)
+video1 = Filename.fromOsSpecific(video1).getFullpath()
 
-def to_panda_path(path):
-    path = os.path.abspath(path).replace("\\", "/")
-    if path[1] == ":":
-        path = "/" + path[0].lower() + path[2:]
-    return path
+video2 = os.path.join(current_dir, "..", "..", "..", "Assets", "Scenes", "midPhaseScene.mp4")
+video2 = os.path.normpath(video2)
+video2 = Filename.fromOsSpecific(video2).getFullpath()
+
+video3 = os.path.join(current_dir, "..", "..", "..", "Assets", "Scenes", "finalPhaseScene.mp4")
+video3 = os.path.normpath(video3)
+video3 = Filename.fromOsSpecific(video3).getFullpath()
 
 class StoryScene:
     def __init__(self, base):
         self.base = base
 
         # Paths
-        early_scene_path = to_panda_path("Assets/Scenes/earlyPhaseScene.mp4")
-        mid_scene_path = to_panda_path("Assets/Scenes/midPhaseScene.mp4")
-        final_scene_path = to_panda_path("Assets/Scenes/finalPhaseScene.mp4")
+        early_scene_path = video1
+        mid_scene_path = video2
+        final_scene_path = video3
 
         # Load movie textures
         self.storySceneEarly = MovieTexture("earlyScene")

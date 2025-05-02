@@ -43,7 +43,7 @@ class State1:
     
     def generateResponse(self):
         self.response = self.game.generateAIResponse()
-       # self.response = False #JUST FOR TESTING PURPOSES DO NOT LEAVE IT FALSE
+        #self.response = False #JUST FOR TESTING PURPOSES DO NOT LEAVE IT FALSE
 
         if self.response == False:
             self.getAverageHeartRate()
@@ -69,7 +69,7 @@ class State1:
 
     def getAverageHeartRate(self):
         if len(self.heartRate) > 0:
-            self.currentBaseH = self.doMath(self.heartRate, 1)
+            self.currentBaseH = self.doMath(self.heartRate, 3)
             print(self.currentBaseH)
             return self.currentBaseH
         else:
@@ -84,7 +84,7 @@ class State1:
 
     def getAverageTemperature(self):
         if len(self.temperature) > 0:
-            self.currentBaseT = self.doMath(self.temperature, 0.5)
+            self.currentBaseT = self.doMath(self.temperature, 2)
             return self.currentBaseT
         else:
             print("Error list length is 0")

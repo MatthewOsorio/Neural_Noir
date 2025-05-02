@@ -221,13 +221,7 @@ class InterrogationRoom:
         self.pausable = False
         self.ended = False
         self.current = 0
-        self.Overlay.flashback.setImage(self.prompt)
-        self.Overlay.flashback.show()
-
-        flashback = self.Overlay.flashback.getActive()
-        while flashback == True:
-            flashback = self.Overlay.flashback.getActive()
-              
+       
         if self.useEmotibit == True:
             self.game._bioController.incrementError = True
             self.Overlay.startEmotiBitCheck()
@@ -290,8 +284,6 @@ class InterrogationRoom:
             self.Overlay.acceptSpeechButton.show()
             self.Overlay.redoSpeechButton.show()
             
-        elif self.redoable is False:
-            self.Overlay.redoSpeechButton.hide()
 
         userInputActive = self.Overlay.userSpeech.getActive()
         if userInputActive == False and self.Overlay.userSpeech.redo == False:
@@ -302,7 +294,7 @@ class InterrogationRoom:
                 self.thread.start()
             return task.done
         elif self.redoable == True and userInputActive == False and self.Overlay.userSpeech.redo == True:
-            self.redoable = False
+            self.redoable = True
             self.Overlay.hideUserInputBox()
             self.Overlay.ptt.showPTTButton()
             taskMgr.add(self.speechUI, "UpdateSpeechTask")
@@ -385,7 +377,7 @@ class InterrogationRoom:
             self.sentimentToAnimation[speaker][sentiment]()
 
 
-        print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
+       # print (f"Audio Path {count}: {self.state.audioFilePaths[count]}")
         #self.game._tts.speak(self.state.audioFilePaths[count])
         self.thread = threading.Thread(target=self.playAudio, args=(self.state.audioFilePaths[count],), daemon=True)
         if self.threadEvent.is_set() == False:
