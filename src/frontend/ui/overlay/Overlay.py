@@ -93,7 +93,10 @@ class Overlay:
         )
 
         self.PTTButton = DirectButton(
-          #  text = "PTT",
+            text = "Push\nTo\nTalk",
+            text_font = self.base.menu.font,
+            text_scale = 0.4,
+            text_pos = (0, 0.3, 0.3),
             scale = 0.15,
             pos = (1.5, 0, -0.7),
             parent = self.overlay,
