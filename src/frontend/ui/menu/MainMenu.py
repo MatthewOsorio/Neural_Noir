@@ -11,7 +11,10 @@ from panda3d.core import loadPrcFileData
 loadPrcFileData('', 'audio-library-name p3openal_audio')
 import os
 from panda3d.core import Filename
-music_path = "C:/Users/chris/OneDrive/Documents/GitHub/Neural_Noir/Assets/Audio/menuMusic.wav"
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+music_path = os.path.join(current_dir, "..", "..", "..", "..", "Assets", "Audio", "menuMusic.wav")
+music_path = os.path.normpath(music_path)
 music_path = Filename.fromOsSpecific(music_path).getFullpath()
 
 class mainMenu:

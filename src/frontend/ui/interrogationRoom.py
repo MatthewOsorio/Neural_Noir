@@ -19,13 +19,15 @@ from panda3d.core import *
 import os
 from panda3d.core import Filename
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
 prompt = os.path.join(current_dir, "..", "..", "..", "Assets", "Images", "introPromptTest.png")
 prompt = os.path.normpath(prompt)
 prompt = Filename.fromOsSpecific(prompt).getFullpath()
 
 from panda3d.core import loadPrcFileData
 loadPrcFileData('', 'audio-library-name p3openal_audio')
-buzzingLight = "C:/Users/chris/OneDrive/Documents/GitHub/Neural_Noir/Assets/Audio/flickering_light.mp3"
+buzzingLight = os.path.join(current_dir, "..", "..", "..", "Assets", "Audio", "flickering_light.mp3")
+buzzingLight = os.path.normpath(buzzingLight)
 buzzingLight = Filename.fromOsSpecific(buzzingLight).getFullpath()
 
 #Code originally written by Christine 
