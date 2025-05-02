@@ -56,11 +56,11 @@ class EmotibitTutorial:
             "To connect your EmotiBit to your wifi, follow these steps:\n\n\n\n" 
             "          1. Remove the microSD card from the base of the EmotiBit.\n" 
             "          2. Insert the microSD card into your computer.\n" 
-            "          2. Insert the microSD card into your computer.\n"
             "          3. Locate the microSD card in your files, and open 'Config.txt.'\n"
             "          4. Change the SSID and password to match your network.\n"
             "          5. Safely remove the microSD card and reinsert it into the base of the EmotiBit.\n\n\n\n"
-            "If you are playing with EmotiBit mode on, you should have the EmotiBit set up and connected before starting the game. Wearing the EmotiBit on your wrist is optimal.\n\n",
+            "If you are playing with EmotiBit mode on, you should have the EmotiBit set up and connected before starting the game. Wearing the EmotiBit on your wrist is optimal.\n\n"
+            "For more help with setting up the EmotiBit, please see the EmotiBit documentation: https://github.com/EmotiBit/EmotiBit_Docs\n\n",
             (0, 0.3), 0.05, self.frame, (1, 1, 1, 1))
   
         self.etTop.setFont(self.manager.font)
