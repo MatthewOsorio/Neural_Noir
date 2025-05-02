@@ -10,6 +10,7 @@ from frontend.stages.state4 import State4
 from frontend.stages.state5 import State5
 from direct.actor.Actor import Actor
 from direct.task import Task
+from direct.interval.IntervalGlobal import LerpFunc
 from direct.task.TaskManagerGlobal import taskMgr
 import threading
 
@@ -21,6 +22,11 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 prompt = os.path.join(current_dir, "..", "..", "..", "Assets", "Images", "introPromptTest.png")
 prompt = os.path.normpath(prompt)
 prompt = Filename.fromOsSpecific(prompt).getFullpath()
+
+from panda3d.core import loadPrcFileData
+loadPrcFileData('', 'audio-library-name p3openal_audio')
+buzzingLight = "C:/Users/chris/OneDrive/Documents/GitHub/Neural_Noir/Assets/Audio/flickering_light.mp3"
+buzzingLight = Filename.fromOsSpecific(buzzingLight).getFullpath()
 
 #Code originally written by Christine 
 #Modified by Evie 
@@ -38,6 +44,8 @@ class InterrogationRoom:
 
         #pause game if escape is pressed
         self.base.accept('escape', self.pauseGame)
+
+        self.lightSound = self.base.loader.loadSfx(buzzingLight)
 
         self.voiceVolume = self.base.voiceVolume
         self.sfxVolume = self.base.sfxVolume
@@ -137,7 +145,27 @@ class InterrogationRoom:
             #print("X: ", self.x, " ", "Y: ", self.y)
 
         return base.cont
-      
+    
+    def playBuzzingLight(self):
+        self.lightSound.setVolume(0.3)
+        self.lightSound.setLoop(True)
+        self.lightSound.play()
+
+    def fadeOutBuzzingLight(self):
+        self.lerp = LerpFunc(
+            self.lightSound.setVolume,
+            fromData=self.lightSound.getVolume(),
+            toData=0.0,
+            duration=2.0,
+            name="fadeOutMusic"
+        )
+        self.lerp.setDoneEvent("fadeOutMusicDone")
+        self.lerp.start()
+        self.base.accept("fadeOutMusicDone", self.onFadeOutComplete)
+
+    def onFadeOutComplete(self):
+        self.lightSound.stop()
+        
     def loadModels(self):
         # Load the room model
         self.room = self.base.loader.loadModel("../blender/converted_room_whole/room.bam")
@@ -207,14 +235,35 @@ class InterrogationRoom:
         # self.base.render.setLight(self.plnp)
 
         # Ambient lighting
+        # self.ambient = AmbientLight('ambient')
+        # self.ambient.setColor((0.3, 0.3, 0.3, 1))
+        # self.ambientNP = self.base.render.attachNewNode(self.ambient)
+        # self.base.render.setLight(self.ambientNP)
+
         self.ambient = AmbientLight('ambient')
-        self.ambient.setColor((0.3, 0.3, 0.3, 1))
+        self.ambient.setColor((0.1, 0.1, 0.1, 1))  # Very dim
         self.ambientNP = self.base.render.attachNewNode(self.ambient)
         self.base.render.setLight(self.ambientNP)
+
+        # Focused spotlight between the detectives
+        self.spotlight = Spotlight('spotlight')
+        self.spotlight.setColor((1.0, 0.95, 0.8, 1))  # Slightly warm
+        self.spotlight.setExponent(60)               # Focus intensity
+        self.spotlight.getLens().setFov(15)          # Beam width
+        self.spotlight.getLens().setNearFar(0.1, 100)
+
+        # Position above table (adjust as needed)
+        self.spotlightNP = self.base.render.attachNewNode(self.spotlight)
+        self.spotlightNP.setPos(5.6, 6, 4)  # above the middle of the table
+        self.spotlightNP.lookAt(5.6, 6, 0) # pointing downward
+
+        # Attach to scene
+        self.base.render.setLight(self.spotlightNP)
 
    #Run on separate thread
 
     def beginInterrogation(self):
+        self.playBuzzingLight()
         self.menu.audioMenu.setVoiceVolumeSlider(self.voiceVolume)
         self.menu.audioMenu.setSFXVolumeSlider(self.sfxVolume)
 
@@ -348,6 +397,9 @@ class InterrogationRoom:
             self.state.begin()
         elif(self.ended is False):
             taskMgr.add(lambda task: self.responseUI(task), "UpdateResponseTask")
+
+        if isinstance(self.state, State5):
+            self.fadeOutBuzzingLight()
 
         print("End")
 
